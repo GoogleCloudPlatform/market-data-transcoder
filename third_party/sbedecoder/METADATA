@@ -1,0 +1,14 @@
+name: "sbedecoder"
+description:
+    "sbedecoder is a simple python package for parsing SBE encoded data."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/tfgm/sbedecoder"
+  }
+  version: "3876d2c"
+  last_upgrade_date { year: 2022 month: 8 day: 18 }
+  license_type: NOTICE
+  local_modifications: "Endianess property is now read in from the schema file. Added more Python type support."
+}

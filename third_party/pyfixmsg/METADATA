@@ -1,0 +1,16 @@
+name: "pyfixmsgis"
+description:
+    "pyfixmsgis a library for parsing, manipulating and serialising FIX "
+    "messages, primarily geared towards testing. The library supports both "
+    "Python 2 and 3."
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/morganstanley/pyfixmsg"
+  }
+  version: "f68bc1a"
+  last_upgrade_date { year: 2022 month: 8 day: 18 }
+  license_type: NOTICE
+  local_modifications: "Added more Python type support."
+}
