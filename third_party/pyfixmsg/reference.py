@@ -11,6 +11,9 @@ Note::
    this module doesn't (yet) support hops as part of a message header (in FIX4.4 onwards)
 
 """
+from google.cloud import bigquery
+
+from transcoder.message.DatacastField import DatacastField
 
 try:
     from lxml.etree import Comment, parse
@@ -26,10 +29,16 @@ HEADER_TAGS = [8, 9, 35, 1128, 1156, 1129, 49, 56, 115, 128,
 TRAILER_TAGS = [93, 89, 10]
 ENCODED_DATA_TAGS = [349, 351, 353, 355, 357, 359, 361, 363, 365]
 HEADER_SORT_MAP = {t: i for i, t in enumerate(HEADER_TAGS)}
-HEADER_SORT_MAP.update({10: int(10e9), 89: int(10e9-1), 93: int(10e9-2)})
+HEADER_SORT_MAP.update({10: int(10e9), 89: int(10e9 - 1), 93: int(10e9 - 2)})
+
+BOOLEAN_TYPES = ['boolean']
+INTEGER_TYPES = ['int', 'dayofmonth', 'length']
+FLOAT_TYPES = ['float', 'qty', 'price', 'priceoffset', 'amt']
+STRING_TYPES = ['string', 'currency', 'exchange', 'multiplevaluestring', 'char', 'utctimestamp', 'utctimeonly',
+                'localmktdate', 'utcdate', 'monthyear', 'data']
 
 
-class FixTag(object):
+class FixTag(DatacastField):
     """
     Fix tag representation. A fix tag has name, tag (number), type and valid values (enum)
     """
@@ -50,6 +59,7 @@ class FixTag(object):
         self.tag = tag
         self.type = tagtype
         self._values = values
+        self._is_enum = len(values) > 0
         self._val_by_name = {}
         self._val_by_val = {}
 
@@ -100,6 +110,67 @@ class FixTag(object):
         if not self._val_by_val:
             self._val_by_val = {val: name for val, name in self._values}
         return self._val_by_val[value]
+
+    def get_avro_field_type(self):
+        _type = self.type.lower()
+        if self._is_enum is True or _type in STRING_TYPES:
+            return ['null', 'string']
+        elif _type in INTEGER_TYPES:
+            return ['null', 'int']
+        elif _type in FLOAT_TYPES:
+            return ['null', 'float']
+        elif _type in BOOLEAN_TYPES:
+            return ['null', 'boolean']
+        else:
+            return ['null', 'string']
+
+    def create_avro_field(self, part: DatacastField = None):
+        return {'name': self.name, 'type': self.get_avro_field_type()}
+
+    def cast_value_to_type(self, value, type_name: str, is_nullable: bool = True):
+        result = value
+        _type = type_name.lower()
+        if self._is_enum is True:
+            result = self.enum_by_value(value)
+        elif _type in STRING_TYPES:
+            result = str(value)
+        elif _type in INTEGER_TYPES:
+            result = int(value)
+        elif _type in FLOAT_TYPES:
+            result = float(value)
+        elif _type in BOOLEAN_TYPES:
+            result = bool(value)
+        else:
+            result = str(value)
+        return result
+
+    def get_bigquery_field_type(self):
+        _type = self.type.lower()
+        if self._is_enum is True or _type in STRING_TYPES:
+            return 'STRING'
+        elif _type in INTEGER_TYPES:
+            return 'NUMERIC'
+        elif _type in FLOAT_TYPES:
+            return 'FLOAT'
+        elif _type in BOOLEAN_TYPES:
+            return 'BOOLEAN'
+        else:
+            return 'STRING'
+
+    def create_bigquery_field(self, part: DatacastField = None):
+        return bigquery.SchemaField(self.name, self.get_bigquery_field_type(), mode="NULLABLE")
+
+    def is_equal(self, other):
+        is_fix_tag = isinstance(other, self.__class__)
+        if not is_fix_tag:
+            return False
+        if self.name == other.name and self.tag == other.tag and self.type == other.type:
+            return True
+        else:
+            return False
+
+    def __repr__(self):
+        return 'FixTag(name: %s, tag: %s, type: %s)' % (self.name, self.tag, self.type)
 
 
 class TagsReference(object):
@@ -246,9 +317,20 @@ class Group(object):
         self.count_tag = count_tag
         self.name = count_tag.name
         self.tags = set(t[0].tag for t in self.composition if isinstance(t[0], FixTag))
+        self.all_child_tags = self.parse_child_tags(self.composition)
         self.groups = {group.count_tag.tag: group for group in _get_groups(self.composition)}
         self._sorting_key = None
         self._spec = spec
+
+    def parse_child_tags(self, composition):
+        tags = set()
+        for element, required in composition:
+            if isinstance(element, FixTag):
+                if element.tag not in tags:
+                    tags.add(element.tag)
+            elif isinstance(element, Component):
+                tags.update(self.parse_child_tags(element.composition))
+        return tags
 
     @property
     def sorting_key(self):
@@ -335,6 +417,9 @@ class MessageType(object):
         if insert_at:
             self.sorting_key[count_tag.tag] = insert_at
             # Will sort by tag number after the sorted tags otherwise
+
+    def __repr__(self):
+        return 'MessageType(name: %s)' % self.name
 
 
 def _extract_sorting_key(definition, spec, sorting_key=None, index=0):

@@ -1,16 +1,16 @@
 '''
 Main FixMessage class and supporting tools
 '''
-import re
-import decimal
-import warnings
 import datetime
+import decimal
+import re
+import warnings
 
 import six
 
-import pyfixmsg
-from pyfixmsg.codecs.stringfix import Codec
-from pyfixmsg.util import native_str
+from . import len_and_chsum, RepeatingGroup
+from .codecs.stringfix import Codec
+from .util import native_str
 
 TAGS_AS_DATE = (432, 7509, 52)
 GTD_EXPIRE_DATE_TAG = 432
@@ -50,7 +50,7 @@ class FixFragment(dict):
         """
         Length of the body of the message in bytes
         """
-        return pyfixmsg.len_and_chsum(self)[0]
+        return len_and_chsum(self)[0]
 
     def find_all(self, tag):
         """
@@ -73,7 +73,7 @@ class FixFragment(dict):
         if tag in self:
             yield [tag, ]
         for innertag, value in list(self.items()):
-            if isinstance(value, pyfixmsg.RepeatingGroup):
+            if isinstance(value, RepeatingGroup):
                 for path in value.find_all(tag):
                     result = [innertag, ]
                     result.extend(path)
@@ -88,7 +88,7 @@ class FixFragment(dict):
         # but the only quick alternative is to search for i in values which is going to match way too much
         # as the values are string on normal tags, searching for tag 12 in "48=21;31=12;' will match, which
         # is obviously wrong
-        for group in (i for i in list(self.values()) if isinstance(i, pyfixmsg.RepeatingGroup)):
+        for group in (i for i in list(self.values()) if isinstance(i, RepeatingGroup)):
             if any((msg.anywhere(tag) for msg in group)):
                 return True
         return False
@@ -101,7 +101,7 @@ class FixFragment(dict):
         :rtype: ``generator``
         """
         for tag, value in list(self.items()):
-            if isinstance(value, pyfixmsg.RepeatingGroup):
+            if isinstance(value, RepeatingGroup):
                 for inner_tag in value.all_tags():
                     yield inner_tag
             yield tag
@@ -374,14 +374,14 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
         FIX checksum
         """
         if value is None:
-            value = pyfixmsg.len_and_chsum(self)[1] % 256
+            value = len_and_chsum(self)[1] % 256
         return '{0:03d}'.format(value % 256)
 
     def set_len_and_chksum(self):
         """
         Assign length and checksum based on current contents
         """
-        length, raw_checksum = pyfixmsg.len_and_chsum(self)
+        length, raw_checksum = len_and_chsum(self)
         self[9] = str(length)
         self[10] = self.checksum(raw_checksum)
 

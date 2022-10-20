@@ -1,6 +1,5 @@
 """Small utility-type functions"""
 
-import sys
 import datetime
 
 import six

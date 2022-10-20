@@ -1,0 +1,11 @@
+.env
+.idea/
+*.pyc
+.DS_Store
+__pycache__/
+*.egg-info/
+venv/
+avroOut/
+errorOut/
+.vscode/
+transcoder/.run

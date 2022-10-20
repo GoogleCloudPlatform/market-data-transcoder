@@ -6,9 +6,9 @@ from collections import deque
 
 import six
 
-from pyfixmsg import RepeatingGroup
-from pyfixmsg.util import int_or_str
-from pyfixmsg.reference import HEADER_TAGS, HEADER_SORT_MAP, ENCODED_DATA_TAGS
+from third_party.pyfixmsg import RepeatingGroup
+from third_party.pyfixmsg.reference import HEADER_TAGS, ENCODED_DATA_TAGS, HEADER_SORT_MAP
+from third_party.pyfixmsg.util import int_or_str
 
 SEPARATOR = '\1'
 """
@@ -80,6 +80,7 @@ class Codec(object):
           observations above.
         :type separator: ``unicode``
         """
+
         def pushback_generator(iterator):
             """
             Generator which allows to push back a previously picked item
@@ -112,9 +113,11 @@ class Codec(object):
                 d=re.escape(delimiter), s=re.escape(separator)), encoding='ascii'), re.DOTALL)
             if self.encoding is not None:
                 encoding = None  # No need to decode
-                warnings.warn('Processing a unicode message and ignore the argument "decode_as={}"'.format(self.encoding))
+                warnings.warn(
+                    'Processing a unicode message and ignore the argument "decode_as={}"'.format(self.encoding))
             if self.decode_all_as_347:
-                warnings.warn('Processing a unicode message and ignore the argument "decode_all_as_347={}"'.format(self.decode_all_as_347))
+                warnings.warn('Processing a unicode message and ignore the argument "decode_all_as_347={}"'.format(
+                    self.decode_all_as_347))
         elif isinstance(buff, bytes):
             custom_r = re.compile(six.ensure_binary(FIX_REGEX_STRING.format(
                 d=re.escape(delimiter), s=re.escape(separator)), encoding='ascii'), re.DOTALL)
@@ -140,15 +143,18 @@ class Codec(object):
             tagvals = ((int_or_str(tval[0], encoding_347), six.ensure_text(tval[1], encoding_347)) for tval in tagvals)
         elif encoding:
             tagvals = ((int_or_str(tval[0], encoding),
-                        six.ensure_text(tval[1], (encoding_347 if encoding_347 and tval[0].decode() in ENCODED_TAG_SET else encoding))
-                       ) for tval in tagvals)
+                        six.ensure_text(tval[1], (
+                            encoding_347 if encoding_347 and tval[0].decode() in ENCODED_TAG_SET else encoding))
+                        ) for tval in tagvals)
         elif not input_in_unicode and six.PY3:
             tagvals = ((int_or_str(tval[0], 'ascii'),
-                        six.ensure_text(tval[1], (encoding_347 if encoding_347 and tval[0].decode() in ENCODED_TAG_SET else 'UTF-8'))
-                       ) for tval in tagvals)
+                        six.ensure_text(tval[1], (
+                            encoding_347 if encoding_347 and tval[0].decode() in ENCODED_TAG_SET else 'UTF-8'))
+                        ) for tval in tagvals)
         elif input_in_unicode and six.PY2:
             tagvals = ((int_or_str(six.ensure_binary(tval[0]), 'ascii'),
-                        six.ensure_binary(tval[1], (encoding_347 if encoding_347 and tval[0].encode() in ENCODED_TAG_SET else 'UTF-8'))
+                        six.ensure_binary(tval[1], (
+                            encoding_347 if encoding_347 and tval[0].encode() in ENCODED_TAG_SET else 'UTF-8'))
                         ) for tval in tagvals)
         else:
             tagvals = ((int_or_str(tval[0]), tval[1]) for tval in tagvals)
@@ -184,7 +190,10 @@ class Codec(object):
         member = self._frg_class()
         first_tag = None
         inner_groups = group.groups
-        valid_tags = group.tags
+
+        # MS: Changed to all child tags
+        valid_tags = group.all_child_tags
+
         for tag, value in enumerator:
             if first_tag is None:
                 # handle first tag: we expect all the members of the group to start with this tag

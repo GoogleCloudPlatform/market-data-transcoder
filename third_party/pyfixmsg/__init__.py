@@ -1,7 +1,6 @@
 '''
 TODO Write doc
 '''
-import sys
 import itertools
 
 import six

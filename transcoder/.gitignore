@@ -1,0 +1,10 @@
+.env
+.idea/
+*.pyc
+.DS_Store
+__pycache__/
+*.egg-info/
+*.avro
+*.avsc
+avroOut/
+venv/

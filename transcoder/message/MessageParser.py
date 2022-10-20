@@ -1,0 +1,216 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+import base64
+import importlib
+import json
+import logging
+import os
+from datetime import datetime
+
+from transcoder.message import DatacastParser, ParsedMessage
+from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
+from transcoder.message.MessageUtil import get_message_parser
+from transcoder.output import OutputManager
+from transcoder.output.OutputUtil import get_output_manager
+from transcoder.source import Source
+from transcoder.source.SourceUtil import get_message_source
+
+
+class MessageParser:
+    def __init__(self, factory, schema_file_path: str, source_file_path: str, source_file_format_type: str,
+                 source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
+                 is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
+                 output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
+                 message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
+                 error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
+                 sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
+                 fix_header_tags: str = None):
+        self.source_file_path = source_file_path
+        self.source_file_format_type = source_file_format_type
+        self.source_file_endian = source_file_endian
+        self.skip_lines = skip_lines
+        self.skip_bytes = skip_bytes
+        self.message_skip_bytes = message_skip_bytes
+        self.is_base_64_encoded = is_base_64_encoded
+        self.continue_on_error = continue_on_error
+        self.error_output_path = error_output_path
+        self.lazy_create_resources = lazy_create_resources
+        self.quiet = quiet
+        self.create_schema_enforcing_topics = create_schema_enforcing_topics
+        self.output_manager: OutputManager = None
+        self.message_handlers = {}
+        self.all_message_type_handlers = []
+        self.all_handlers = []
+        self.handlers_enabled = False
+        self.file_name_without_extension = os.path.basename(os.path.splitext(source_file_path)[0])
+
+        self.error_writer = ErrorWriter(prefix=self.file_name_without_extension,
+                                        output_path=self.error_output_path,
+                                        is_base_64_encoded=self.is_base_64_encoded)
+
+        if output_type is not None:
+            self.output_manager = get_output_manager(output_type,
+                                                     output_prefix=self.file_name_without_extension,
+                                                     output_file_path=output_path,
+                                                     output_encoding=output_encoding,
+                                                     destination_project_id=destination_project_id,
+                                                     destination_dataset_id=destination_dataset_id,
+                                                     lazy_create_resources=lazy_create_resources,
+                                                     create_schema_enforcing_topics=create_schema_enforcing_topics)
+
+        self.setup_handlers(message_handlers)
+        self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
+                                                                 sampling_count=sampling_count,
+                                                                 message_type_inclusions=message_type_inclusions,
+                                                                 message_type_exclusions=message_type_exclusions,
+                                                                 fix_header_tags=fix_header_tags)
+
+    def setup_handlers(self, message_handlers: str):
+        if message_handlers is None or message_handlers == "":
+            return
+
+        self.handlers_enabled = True
+        handler_strs = message_handlers.split()
+        for handler_cls_name in handler_strs:
+            module = importlib.import_module('transcoder.message.handler')
+            class_ = getattr(module, handler_cls_name)
+            instance = class_(self)
+            self.all_handlers.append(instance)
+
+            if instance.supports_all_message_types is True:
+                self.all_message_type_handlers.append(instance)
+                continue
+
+            supported_msg_types = instance.supported_message_types
+            for t in supported_msg_types:
+                if t in self.message_handlers:
+                    handler_list = self.message_handlers[t]
+                    if instance not in handler_list:
+                        self.message_handlers[t].append(instance)
+                else:
+                    self.message_handlers[t] = [instance]
+
+    def process(self):
+        start_time = datetime.now()
+        self.process_schemas()
+
+        source: Source = get_message_source(self.source_file_path, self.source_file_format_type,
+                                            self.source_file_endian, skip_lines=self.skip_lines,
+                                            skip_bytes=self.skip_bytes, message_skip_bytes=self.message_skip_bytes)
+
+        self.process_data(source)
+
+        if self.output_manager is not None:
+            self.output_manager.wait_for_completion()
+
+        if logging.getLogger().isEnabledFor(logging.INFO):
+            end_time = datetime.now()
+            time_diff = end_time - start_time
+            total_seconds = time_diff.total_seconds()
+
+            if self.message_parser.use_sampling is True:
+                logging.info(f'Sampling count: {self.message_parser.sampling_count}')
+
+            if self.message_parser.message_type_inclusions is not None:
+                logging.info(f'Message type inclusions: {self.message_parser.message_type_inclusions}')
+            elif self.message_parser.message_type_exclusions is not None:
+                logging.info(f'Message type exclusions: {self.message_parser.message_type_exclusions}')
+
+            logging.info(f'Source record count: {source.record_count}')
+            logging.info(f'Processed record count: {self.message_parser.record_count}')
+            logging.info(f'Processed schema count: {self.message_parser.total_schema_count}')
+            logging.info(f'Summary of message counts: {self.message_parser.record_type_count}')
+            logging.info(f'Summary of error message counts: {self.message_parser.error_record_type_count}')
+            logging.info(f'Message rate: {round(source.record_count / total_seconds, 6)} per second')
+            logging.info(f'Total runtime in seconds: {round(total_seconds, 6)}')
+            logging.info(f'Total runtime in minutes: {round(total_seconds / 60, 6)}')
+
+    def process_schemas(self):
+        spec_schemas = self.message_parser.process_schema()
+        for schema in spec_schemas:
+            if len(schema.fields) == 0:
+                logging.info(f'Schema "{schema.name}" contains no field definitions, skipping schema creation')
+                continue
+
+            for handler in self.all_handlers:
+                if handler.supports_all_message_types is True \
+                        or schema.message_id in handler.supported_message_types:
+                    handler.append_manufactured_fields(schema)
+
+            self.output_manager.enqueue_schema(schema)
+
+        # Only need to wait if lazy create is off and you want to force creation before data is read
+        if self.lazy_create_resources is False:
+            self.output_manager.wait_for_schema_creation()
+
+    def process_data(self, source):
+        with source:
+            for raw_record in source.get_message_iterator():
+                message: ParsedMessage = None
+                try:
+                    self.error_writer.set_step(TranscodeStep.decode_message)
+                    source_message = self.decode_source_message(raw_record)
+                    self.error_writer.set_step(TranscodeStep.parse_message)
+                    message = self.message_parser.process_message(source_message)
+
+                    if message is None:
+                        continue
+
+                    if message.exception is not None:
+                        self.handle_exception(raw_record, message, message.exception)
+
+                    # For messages that contain no fields, the dictionary will be empty.
+                    # Skip as no schema is created for these.
+                    if message.is_empty():
+                        continue
+
+                    if self.handlers_enabled is True:
+                        self.error_writer.set_step(TranscodeStep.execute_handlers)
+                        for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
+                            self.error_writer.set_step(TranscodeStep.execute_handler, type(handler).__name__)
+                            handler.handle(message)
+
+                    if self.output_manager is not None:
+                        self.error_writer.set_step(TranscodeStep.write_output_record)
+                        self.output_manager.write_record(message.name, message.dictionary)
+
+                    if self.quiet is False:
+                        if isinstance(message.dictionary, bytes):
+                            print(message.dictionary)
+                        else:
+                            print(json.dumps(message.dictionary))
+                except Exception as ex:
+                    self.handle_exception(raw_record, message, ex)
+
+    def handle_exception(self, raw_record, message, exception):
+        if message is not None:
+            self.message_parser.increment_error_summary_count(message.name)
+        else:
+            self.message_parser.increment_error_summary_count()
+
+        self.error_writer.write_error(raw_record, message, exception)
+
+        if self.continue_on_error is False:
+            raise exception
+
+    def decode_source_message(self, record):
+        if self.is_base_64_encoded is True:
+            return base64.b64decode(record)
+        else:
+            return record

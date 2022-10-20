@@ -1,3 +1,3 @@
-from .schema import SBESchema, MDPSchema
-from .message import SBEMessage, SBEMessageFactory, MDPMessageFactory
+from .message import SBEMessage, SBEMessageFactory
 from .parser import SBEParser
+from .schema import SBESchema, MDPSchema
