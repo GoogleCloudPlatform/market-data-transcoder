@@ -18,6 +18,10 @@
 # limitations under the License.
 #
 
+"""Datacast Transcoder
+This script provides a default implementation for the Datacast Transcoder MessageParser class.
+"""
+
 import argparse
 import logging
 import os
@@ -63,7 +67,8 @@ def main():
                                            'each distinct '
                                            'message type to process, any additional will be skipped')
     source_options_group.add_argument('--skip_bytes', type=int, default=0,
-                                      help='Number of bytes to skip before processing the file. Useful for skipping file-level headers')
+                                      help='Number of bytes to skip before processing the file. Useful for skipping '
+                                           'file-level headers')
     source_options_group.add_argument('--skip_lines', type=int, default=0,
                                       help='Number of lines to skip before processing the file')
     source_options_group.add_argument('--source_file_endian', choices=['big', 'little'], default='big',
@@ -75,16 +80,22 @@ def main():
                                       default='fastavro',
                                       help='Output format type')
     output_options_group.add_argument('--error_output_path',
-                                      help='Error output file path if --continue_on_error flag enabled. Defaults to errorOut')
+                                      help='Error output file path if --continue_on_error flag enabled. Defaults to '
+                                           'errorOut')
     output_options_group.add_argument('--lazy_create_resources', action='store_true',
                                       help='Flag indicating that output resources for message types '
-                                           'should be only created as messages of each type are encountered in the source data. Default behavior is to create resources for each message type before messages are processed. Particularly useful when working with FIX but only processing a limited set of message types in the source data')
+                                           'should be only created as messages of each type are encountered in the '
+                                           'source data. Default behavior is to create resources for each message '
+                                           'type before messages are processed. Particularly useful when working with '
+                                           'FIX but only processing a limited set of message types in the source data')
 
     gcp_options_group = arg_parser.add_argument_group('Google Cloud arguments')
-    gcp_options_group.add_argument('--destination_project_id', help='The Google Cloud project ID for the destination resource')
+    gcp_options_group.add_argument('--destination_project_id', help='The Google Cloud project ID for the destination '
+                                                                    'resource')
 
     bigquery_options_group = arg_parser.add_argument_group('BigQuery arguments')
-    bigquery_options_group.add_argument('--destination_dataset_id', help='The BigQuery dataset for the destination. If it does not exist, it will be created')
+    bigquery_options_group.add_argument('--destination_dataset_id', help='The BigQuery dataset for the destination. '
+                                                                         'If it does not exist, it will be created')
 
     pubsub_options_group = arg_parser.add_argument_group('Pub/Sub arguments')
     pubsub_options_group.add_argument('--output_encoding', default='binary', choices=['binary', 'json'],

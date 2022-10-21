@@ -212,5 +212,4 @@ class MessageParser:
     def decode_source_message(self, record):
         if self.is_base_64_encoded is True:
             return base64.b64decode(record)
-        else:
-            return record
+        return record

@@ -98,8 +98,7 @@ class ErrorWriter:
             return base64.b64encode(record).decode('utf-8')
         elif isinstance(record, str):
             return base64.b64encode(record.encode('utf-8')).decode('utf-8')
-        else:
-            return base64.b64encode(record)
+        return base64.b64encode(record)
 
     def __del__(self):
         if self.file is not None:

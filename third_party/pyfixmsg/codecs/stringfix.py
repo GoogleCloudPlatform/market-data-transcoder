@@ -265,8 +265,7 @@ class Codec(object):
             tag_vals = list(msg.items())
             tag_vals.sort(key=lambda x: HEADER_SORT_MAP.get(x[0], int(1e9 + x[0])))
             return tag_vals
-        else:
-            return sort_values(msg, self.spec.msg_types[msg[35]])
+        return sort_values(msg, self.spec.msg_types[msg[35]])
 
     def serialise(self, msg, separator=SEPARATOR, delimiter=DELIMITER, encoding=None):
         """

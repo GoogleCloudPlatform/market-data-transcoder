@@ -158,7 +158,6 @@ class SBESchema(object):
             is_string_type = field_type['primitive_type'] == 'char' and 'length' in field_type and int(
                 field_type['length']) > 1
 
-            # TODO: MS Verify
             if is_string_type is False:
                 is_string_type = field_type['primitive_type'] == 'char' and 'length' in field_definition and int(
                     field_definition['length']) > 1
@@ -173,7 +172,6 @@ class SBESchema(object):
 
             field_length = field_type.get('length', None)
 
-            # TODO: MS Verify
             if is_string_type is True and 'length' in field_definition and int(field_definition['length']) > 1:
                 field_length = int(field_definition['length'])
 
