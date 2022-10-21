@@ -38,7 +38,7 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def get_message_iterator(self):
         if self.file_size == 0:
             return
-        elif self.skip_lines > 0:
+        if self.skip_lines > 0:
             for _ in range(self.skip_lines):
                 self.file_handle.readline()
         while line := self.file_handle.readline():

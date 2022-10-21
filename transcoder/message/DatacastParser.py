@@ -83,7 +83,7 @@ class DatacastParser:
             msg_type_str = str(msg_type)
             if self.message_type_inclusions is not None and msg_type_str not in self.message_type_inclusions:
                 return False
-            elif self.message_type_exclusions is not None and msg_type_str in self.message_type_exclusions:
+            if self.message_type_exclusions is not None and msg_type_str in self.message_type_exclusions:
                 return False
         return True
 

@@ -25,7 +25,7 @@ class RepeatingGroup(list):
         * self.first_tag (the first repeated tag)
         * self.standard (reserved)
         """
-        super(RepeatingGroup, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.number_tag = None
         self.standard = True
         self.first_tag = None
@@ -97,7 +97,7 @@ class RepeatingGroup(list):
         return sum(len_and_chsum(member)[0] for member in self)
 
 
-class RepeatingGroupFactory(object):
+class RepeatingGroupFactory:
     """ An easy way to create a repeating group for a given tag, without having to define all the tags yourself, takes
     the standard ones"""
 

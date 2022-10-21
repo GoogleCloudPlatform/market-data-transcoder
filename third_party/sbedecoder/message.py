@@ -78,8 +78,8 @@ def is_empty_byte_array(_raw_value: bytes) -> bool:
         zero_byte_arr = True
         for byte in _raw_value:
             if byte != 0:
-                zero_byte_arr = False;
-                break;
+                zero_byte_arr = False
+                break
     return zero_byte_arr
 
 
@@ -192,8 +192,7 @@ class SBEMessageField(DatacastField):
             for index, part in enumerate(field.parts):
                 children.append(bigquery.SchemaField(part.name, SBEMessageField.get_bigquery_field_type(part)))
             return bigquery.SchemaField(field.name, 'RECORD', mode="NULLABLE", fields=children)
-        else:
-            return bigquery.SchemaField(field.name, SBEMessageField.get_bigquery_field_type(field), mode="NULLABLE")
+        return bigquery.SchemaField(field.name, SBEMessageField.get_bigquery_field_type(field), mode="NULLABLE")
 
 
 class TypeMessageField(SBEMessageField):

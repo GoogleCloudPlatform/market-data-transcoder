@@ -27,7 +27,7 @@ def get_message_factory(name: str, schema_file_path: str) -> SBEMessageFactory:
 
     if name == 'asx':
         return AsxMessageFactory(schema)
-    elif name == 'cme':
+    if name == 'cme':
         return CmeMessageFactory(schema)
-    elif name == 'memx':
+    if name == 'memx':
         return MemxMessageFactory(schema)

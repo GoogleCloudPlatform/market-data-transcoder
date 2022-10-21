@@ -52,7 +52,7 @@ class BaseAvroOutputManager(OutputManager):
         if schema.name in self.schemas.keys():
             del self.schemas[schema.name]
         if schema.name in self.writers.keys():
-            self.writers[schema.name].close
+            self.writers[schema.name].close()
             del self.writers[schema.name]
 
         schema_dict = {'type': 'record', 'namespace': 'sbeMessage', 'name': schema.name, 'fields': _fields}
@@ -64,8 +64,8 @@ class BaseAvroOutputManager(OutputManager):
         raise OutputFunctionNotDefinedError
 
     def _save_schema(self, name, schema_json):
-        with open(self._get_file_name(name, 'avsc'), 'wt') as f:
-            f.write(schema_json)
+        with open(self._get_file_name(name, 'avsc'), 'wt') as file:
+            file.write(schema_json)
 
     def _get_file_name(self, name, extension):
         return self.output_path + '/' + self.prefix + '-' + name + '.' + extension

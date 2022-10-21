@@ -36,7 +36,7 @@ def convert_to_underscore(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
-class SBESchema(object):
+class SBESchema:
     def __init__(self, include_message_size_header=False, use_description_as_message_name=False,
                  enum_fallback_to_name=False, include_constants_in_offset=True):
         self.messages = []
@@ -158,7 +158,6 @@ class SBESchema(object):
             is_string_type = field_type['primitive_type'] == 'char' and 'length' in field_type and int(
                 field_type['length']) > 1
 
-            # TODO: MS Verify
             if is_string_type is False:
                 is_string_type = field_type['primitive_type'] == 'char' and 'length' in field_definition and int(
                     field_definition['length']) > 1
@@ -173,7 +172,6 @@ class SBESchema(object):
 
             field_length = field_type.get('length', None)
 
-            # TODO: MS Verify
             if is_string_type is True and 'length' in field_definition and int(field_definition['length']) > 1:
                 field_length = int(field_definition['length'])
 
@@ -228,7 +226,7 @@ class SBESchema(object):
             field_length = field_type.get('length', None)
             if field_length is not None:
                 field_length = int(field_length)
-                for i in range(field_length):
+                for i in range(field_length):  # pylint: disable=unused-variable
                     unpack_fmt += primitive_type_fmt
             else:
                 # Field length is just the primitive type length
@@ -513,7 +511,7 @@ class SBESchema(object):
 
 class MDPSchema(SBESchema):
     def __init__(self):
-        super(MDPSchema, self).__init__(include_message_size_header=True, use_description_as_message_name=True)
+        super().__init__(include_message_size_header=True, use_description_as_message_name=True)
 
 
 class SchemaByteOrderNotDefinedError(Exception):
