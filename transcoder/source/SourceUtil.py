@@ -18,7 +18,8 @@
 #
 
 from transcoder.source import Source
-from transcoder.source.file import *
+from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMessageSource, \
+    LineDelimitedFileMessageSource, CmeBinaryPacketFileMessageSource
 
 
 def all_source_identifiers():

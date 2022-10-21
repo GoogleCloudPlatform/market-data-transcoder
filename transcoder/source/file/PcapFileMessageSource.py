@@ -33,7 +33,7 @@ class PcapFileMessageSource(FileMessageSource):
     def __init__(self, file_path: str, message_skip_bytes: int = 0, length_threshold: int = 50):
         super().__init__(file_path)
         self.message_skip_bytes = message_skip_bytes
-        self.pcap_reader = None
+        self.pcap_reader: dpkt.pcap.Reader = None
         self.length_threshold = length_threshold
 
     def open(self):
@@ -42,10 +42,12 @@ class PcapFileMessageSource(FileMessageSource):
         self.pcap_reader = dpkt.pcap.Reader(self.file_handle)
 
     def get_message_iterator(self):
-        for ts, packet in self.pcap_reader:
+        # pylint: disable=unused-variable
+        # pylint: disable=no-member
+        for timestamp, packet in self.pcap_reader:
             ethernet = dpkt.ethernet.Ethernet(packet)
             if not isinstance(ethernet.data, dpkt.ip.IP):
-                logging.debug('Packet type not supported %s\n' % ethernet.data.__class__.__name__)
+                logging.debug(f'Packet type not supported {ethernet.data.__class__.__name__}\n')
             else:
                 proto = ethernet.ip.tcp if 'tcp' in ethernet.ip.__dict__.keys() else ethernet.ip.udp
                 pck_len = len(proto.data)
@@ -54,4 +56,3 @@ class PcapFileMessageSource(FileMessageSource):
                     yield stripped
                     self.increment_count()
             self._log_percentage_read()
-        return

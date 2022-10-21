@@ -98,13 +98,13 @@ class MessageParser:
                 continue
 
             supported_msg_types = instance.supported_message_types
-            for t in supported_msg_types:
-                if t in self.message_handlers:
-                    handler_list = self.message_handlers[t]
+            for supported_type in supported_msg_types:
+                if supported_type in self.message_handlers:
+                    handler_list = self.message_handlers[supported_type]
                     if instance not in handler_list:
-                        self.message_handlers[t].append(instance)
+                        self.message_handlers[supported_type].append(instance)
                 else:
-                    self.message_handlers[t] = [instance]
+                    self.message_handlers[supported_type] = [instance]
 
     def process(self):
         start_time = datetime.now()
