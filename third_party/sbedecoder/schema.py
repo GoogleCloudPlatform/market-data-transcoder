@@ -511,7 +511,7 @@ class SBESchema:
 
 class MDPSchema(SBESchema):
     def __init__(self):
-        super(MDPSchema, self).__init__(include_message_size_header=True, use_description_as_message_name=True)
+        super().__init__(include_message_size_header=True, use_description_as_message_name=True)
 
 
 class SchemaByteOrderNotDefinedError(Exception):
