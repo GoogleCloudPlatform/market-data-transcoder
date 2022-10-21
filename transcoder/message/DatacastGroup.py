@@ -41,8 +41,8 @@ class DatacastGroup(DatacastField):
             field = part
 
         children = []
-        for f in self.fields:
-            children.append(f.create_avro_field())
+        for child_field in self.fields:
+            children.append(child_field.create_avro_field())
 
         return {
             'name': field.name,
@@ -69,4 +69,4 @@ class DatacastGroup(DatacastField):
         return bigquery.SchemaField(field.name, 'RECORD', mode="REPEATED", fields=children)
 
     def __repr__(self):
-        return 'DatacastGroup(name: %s)' % self.name
+        return f'DatacastGroup(name: {self.name})'

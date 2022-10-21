@@ -27,16 +27,16 @@ from transcoder.message import ParsedMessage
 
 
 class TranscodeStep(Enum):
-    unknown = 'UNKNOWN'
-    decode_message = 'decode_message'
-    parse_message = 'parse_message'
-    execute_handlers = 'execute_handlers'
-    execute_handler = 'execute_handler'
-    write_output_record = 'write_output_record'
+    UNKNOWN = 'UNKNOWN'
+    DECODE_MESSAGE = 'decode_message'
+    PARSE_MESSAGE = 'parse_message'
+    EXECUTE_HANDLERS = 'execute_handlers'
+    EXECUTE_HANDLER = 'execute_handler'
+    WRITE_OUTPUT_RECORD = 'write_output_record'
 
     @classmethod
     def _missing_(cls, value):
-        return TranscodeStep.unknown
+        return TranscodeStep.UNKNOWN
 
     def __str__(self):
         return self.value
@@ -49,7 +49,7 @@ class ErrorWriter:
     def __init__(self, prefix: str, is_base_64_encoded: bool = False, output_path: str = None):
         self.prefix: str = prefix
         self.is_base_64_encoded = is_base_64_encoded
-        self.step: TranscodeStep = TranscodeStep.unknown
+        self.step: TranscodeStep = TranscodeStep.UNKNOWN
         self.note: str = ''
 
         if output_path is None:

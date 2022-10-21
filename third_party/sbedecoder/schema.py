@@ -36,7 +36,7 @@ def convert_to_underscore(name):
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
-class SBESchema(object):
+class SBESchema:
     def __init__(self, include_message_size_header=False, use_description_as_message_name=False,
                  enum_fallback_to_name=False, include_constants_in_offset=True):
         self.messages = []

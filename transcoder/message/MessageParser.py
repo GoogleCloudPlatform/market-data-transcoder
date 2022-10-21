@@ -164,9 +164,9 @@ class MessageParser:
             for raw_record in source.get_message_iterator():
                 message: ParsedMessage = None
                 try:
-                    self.error_writer.set_step(TranscodeStep.decode_message)
+                    self.error_writer.set_step(TranscodeStep.DECODE_MESSAGE)
                     source_message = self.decode_source_message(raw_record)
-                    self.error_writer.set_step(TranscodeStep.parse_message)
+                    self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                     message = self.message_parser.process_message(source_message)
 
                     if message is None:
@@ -181,13 +181,13 @@ class MessageParser:
                         continue
 
                     if self.handlers_enabled is True:
-                        self.error_writer.set_step(TranscodeStep.execute_handlers)
+                        self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
                         for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
-                            self.error_writer.set_step(TranscodeStep.execute_handler, type(handler).__name__)
+                            self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
                             handler.handle(message)
 
                     if self.output_manager is not None:
-                        self.error_writer.set_step(TranscodeStep.write_output_record)
+                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                         self.output_manager.write_record(message.name, message.dictionary)
 
                     if self.quiet is False:
