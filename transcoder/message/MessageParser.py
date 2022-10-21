@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# pylint: disable=broad-except
+
 import base64
 import importlib
 import json
@@ -125,27 +128,27 @@ class MessageParser:
             total_seconds = time_diff.total_seconds()
 
             if self.message_parser.use_sampling is True:
-                logging.info(f'Sampling count: {self.message_parser.sampling_count}')
+                logging.info('Sampling count: %s', self.message_parser.sampling_count)
 
             if self.message_parser.message_type_inclusions is not None:
-                logging.info(f'Message type inclusions: {self.message_parser.message_type_inclusions}')
+                logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
             elif self.message_parser.message_type_exclusions is not None:
-                logging.info(f'Message type exclusions: {self.message_parser.message_type_exclusions}')
+                logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
-            logging.info(f'Source record count: {source.record_count}')
-            logging.info(f'Processed record count: {self.message_parser.record_count}')
-            logging.info(f'Processed schema count: {self.message_parser.total_schema_count}')
-            logging.info(f'Summary of message counts: {self.message_parser.record_type_count}')
-            logging.info(f'Summary of error message counts: {self.message_parser.error_record_type_count}')
-            logging.info(f'Message rate: {round(source.record_count / total_seconds, 6)} per second')
-            logging.info(f'Total runtime in seconds: {round(total_seconds, 6)}')
-            logging.info(f'Total runtime in minutes: {round(total_seconds / 60, 6)}')
+            logging.info('Source record count: %s', source.record_count)
+            logging.info('Processed record count: %s', self.message_parser.record_count)
+            logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
+            logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
+            logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
+            logging.info('Message rate: %s per second', round(source.record_count / total_seconds, 6))
+            logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
+            logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
     def process_schemas(self):
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
             if len(schema.fields) == 0:
-                logging.info(f'Schema "{schema.name}" contains no field definitions, skipping schema creation')
+                logging.info('Schema "%s" contains no field definitions, skipping schema creation', schema.name)
                 continue
 
             for handler in self.all_handlers:

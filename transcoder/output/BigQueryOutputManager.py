@@ -50,16 +50,16 @@ class BigQueryOutputManager(OutputManager):
         table_ref = bigquery.TableReference(self.dataset_ref, name)
         try:
             self.client.get_table(table_ref)
-            logging.debug("Table {} already exists.".format(table_ref.table_id))
+            logging.debug('Table %s already exists.', table_ref.table_id)
             return True
         except NotFound:
-            logging.debug("Table {} is not found.".format(table_ref.table_id))
+            logging.debug('Table %s is not found.', table_ref.table_id)
             return False
 
     @staticmethod
     def _is_schema_equal(schema_1, schema_2):
         if len(schema_1) != len(schema_2):
-            logging.debug(f'Schema list length difference')
+            logging.debug('Schema list length difference')
             return False
         x = range(len(schema_1))
         for i in x:
