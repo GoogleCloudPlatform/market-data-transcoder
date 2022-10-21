@@ -27,7 +27,7 @@ class FixFragment(dict):
 
     def __init__(self, *args, **kwargs):
         """FixFragment constructor."""
-        super(FixFragment, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.typed_values = True
 
     @classmethod
@@ -191,7 +191,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
                 del msg[9]
             if 10 in msg:
                 del msg[10]
-        if super(FixMessage, self).__eq__(other):
+        if super().__eq__(other):
             if (hasattr(other, 'time') and
                     (other.time == self.time) and
                     (other.recipient == self.recipient)):
@@ -199,7 +199,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
         return False
 
     def __ne__(self, other):
-        if super(FixMessage, self).__ne__(other) or other.time != self.time:
+        if super().__ne__(other) or other.time != self.time:
             return True
         return False
 
@@ -258,7 +258,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
             self.tag_order = getattr(args[0], 'tag_order', None)
         else:
             self.tag_order = None
-        super(FixMessage, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def tags(self):
