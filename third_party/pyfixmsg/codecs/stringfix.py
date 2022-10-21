@@ -27,7 +27,7 @@ HEADER_TAGS_SET = {str(tag) for tag in HEADER_TAGS}
 ENCODED_TAG_SET = {str(tag) for tag in ENCODED_DATA_TAGS}
 
 
-class Codec(object):
+class Codec:
     """
     FIX codec. Initialise with a :py:class:`~pyfixmsg.reference.FixSpec` to support
     repeating groups.
@@ -128,7 +128,7 @@ class Codec(object):
 
         if not self._no_groups and self.spec is not None:
             for i in range(4):
-                if tagvals[i][0] in (b'35', u'35'):
+                if tagvals[i][0] in (b'35', '35'):
                     msg_type = self.spec.msg_types.get(tagvals[i][1])
 
         if not input_in_unicode:
@@ -169,7 +169,7 @@ class Codec(object):
             if tag not in groups:
                 msg[tag] = value
             else:
-                if value in (b'0', u'0'):
+                if value in (b'0', '0'):
                     msg[tag] = RepeatingGroup.create_repeating_group(tag)
                 else:
                     contents, last_tagval = self._process_group(tag, tagvals,
