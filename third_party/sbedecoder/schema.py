@@ -226,7 +226,7 @@ class SBESchema:
             field_length = field_type.get('length', None)
             if field_length is not None:
                 field_length = int(field_length)
-                for i in range(field_length):
+                for i in range(field_length):  # pylint: disable=unused-variable
                     unpack_fmt += primitive_type_fmt
             else:
                 # Field length is just the primitive type length

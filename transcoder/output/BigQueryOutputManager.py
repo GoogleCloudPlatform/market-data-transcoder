@@ -61,8 +61,8 @@ class BigQueryOutputManager(OutputManager):
         if len(schema_1) != len(schema_2):
             logging.debug('Schema list length difference')
             return False
-        x = range(len(schema_1))
-        for i in x:
+        field_count = range(len(schema_1))
+        for i in field_count:
             f_1: bigquery.SchemaField = schema_1[i]
             f_2: bigquery.SchemaField = schema_2[i]
             f_1_api_repr = f_1.to_api_repr()
@@ -98,7 +98,7 @@ class BigQueryOutputManager(OutputManager):
         table_ref = bigquery.TableReference(self.dataset_ref, record_type_name)
         errors = self.client.insert_rows_json(table_ref, [record])
         if errors:
-            logging.error("Encountered errors while inserting rows: {}".format(errors))
+            logging.error('Encountered errors while inserting rows: %s', errors)
 
     def _create_dataset(self, dataset_ref):
         dataset = self.client.create_dataset(dataset_ref, timeout=30)
