@@ -25,7 +25,7 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 class AsxMessageFactory(SBEMessageFactory):
     def __init__(self, schema):
-        super(AsxMessageFactory, self).__init__(schema)
+        super().__init__(schema)
 
     def build(self, msg_buffer, offset):
         message_type_str = struct.unpack_from('>c', msg_buffer, offset)[0]

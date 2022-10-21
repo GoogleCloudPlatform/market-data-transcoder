@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# pylint: disable=broad-except
+
 import base64
 import importlib
 import json
@@ -98,13 +101,13 @@ class MessageParser:
                 continue
 
             supported_msg_types = instance.supported_message_types
-            for t in supported_msg_types:
-                if t in self.message_handlers:
-                    handler_list = self.message_handlers[t]
+            for supported_type in supported_msg_types:
+                if supported_type in self.message_handlers:
+                    handler_list = self.message_handlers[supported_type]
                     if instance not in handler_list:
-                        self.message_handlers[t].append(instance)
+                        self.message_handlers[supported_type].append(instance)
                 else:
-                    self.message_handlers[t] = [instance]
+                    self.message_handlers[supported_type] = [instance]
 
     def process(self):
         start_time = datetime.now()
@@ -125,27 +128,27 @@ class MessageParser:
             total_seconds = time_diff.total_seconds()
 
             if self.message_parser.use_sampling is True:
-                logging.info(f'Sampling count: {self.message_parser.sampling_count}')
+                logging.info('Sampling count: %s', self.message_parser.sampling_count)
 
             if self.message_parser.message_type_inclusions is not None:
-                logging.info(f'Message type inclusions: {self.message_parser.message_type_inclusions}')
+                logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
             elif self.message_parser.message_type_exclusions is not None:
-                logging.info(f'Message type exclusions: {self.message_parser.message_type_exclusions}')
+                logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
-            logging.info(f'Source record count: {source.record_count}')
-            logging.info(f'Processed record count: {self.message_parser.record_count}')
-            logging.info(f'Processed schema count: {self.message_parser.total_schema_count}')
-            logging.info(f'Summary of message counts: {self.message_parser.record_type_count}')
-            logging.info(f'Summary of error message counts: {self.message_parser.error_record_type_count}')
-            logging.info(f'Message rate: {round(source.record_count / total_seconds, 6)} per second')
-            logging.info(f'Total runtime in seconds: {round(total_seconds, 6)}')
-            logging.info(f'Total runtime in minutes: {round(total_seconds / 60, 6)}')
+            logging.info('Source record count: %s', source.record_count)
+            logging.info('Processed record count: %s', self.message_parser.record_count)
+            logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
+            logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
+            logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
+            logging.info('Message rate: %s per second', round(source.record_count / total_seconds, 6))
+            logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
+            logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
     def process_schemas(self):
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
             if len(schema.fields) == 0:
-                logging.info(f'Schema "{schema.name}" contains no field definitions, skipping schema creation')
+                logging.info('Schema "%s" contains no field definitions, skipping schema creation', schema.name)
                 continue
 
             for handler in self.all_handlers:
@@ -164,9 +167,9 @@ class MessageParser:
             for raw_record in source.get_message_iterator():
                 message: ParsedMessage = None
                 try:
-                    self.error_writer.set_step(TranscodeStep.decode_message)
+                    self.error_writer.set_step(TranscodeStep.DECODE_MESSAGE)
                     source_message = self.decode_source_message(raw_record)
-                    self.error_writer.set_step(TranscodeStep.parse_message)
+                    self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                     message = self.message_parser.process_message(source_message)
 
                     if message is None:
@@ -181,13 +184,13 @@ class MessageParser:
                         continue
 
                     if self.handlers_enabled is True:
-                        self.error_writer.set_step(TranscodeStep.execute_handlers)
+                        self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
                         for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
-                            self.error_writer.set_step(TranscodeStep.execute_handler, type(handler).__name__)
+                            self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
                             handler.handle(message)
 
                     if self.output_manager is not None:
-                        self.error_writer.set_step(TranscodeStep.write_output_record)
+                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                         self.output_manager.write_record(message.name, message.dictionary)
 
                     if self.quiet is False:
@@ -212,5 +215,4 @@ class MessageParser:
     def decode_source_message(self, record):
         if self.is_base_64_encoded is True:
             return base64.b64decode(record)
-        else:
-            return record
+        return record

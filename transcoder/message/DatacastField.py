@@ -29,5 +29,5 @@ class DatacastField:
     def create_bigquery_field(self, part=None):
         raise OutputFunctionNotDefinedError
 
-    def cast_value_to_type(self, value, type, is_nullable: bool = True) -> Any:
+    def cast_value_to_type(self, value, type, is_nullable: bool = True) -> Any:  # pylint: disable=unused-argument
         return str(value)

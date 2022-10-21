@@ -31,7 +31,6 @@ class CmeBinaryPacketHandler(MessageHandler):
     def append_manufactured_fields(self, schema: DatacastSchema):
         if schema.name != 'MDIncrementalRefreshOrderBook47':
             schema.fields.append(MessageHandlerFloatField('timestamp_seconds'))
-        return None
 
     def handle(self, message: ParsedMessage):
         if message.name == 'MDIncrementalRefreshOrderBook47':

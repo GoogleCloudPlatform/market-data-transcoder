@@ -50,32 +50,32 @@ class BigQueryOutputManager(OutputManager):
         table_ref = bigquery.TableReference(self.dataset_ref, name)
         try:
             self.client.get_table(table_ref)
-            logging.debug("Table {} already exists.".format(table_ref.table_id))
+            logging.debug('Table %s already exists.', table_ref.table_id)
             return True
         except NotFound:
-            logging.debug("Table {} is not found.".format(table_ref.table_id))
+            logging.debug('Table %s is not found.', table_ref.table_id)
             return False
 
     @staticmethod
     def _is_schema_equal(schema_1, schema_2):
         if len(schema_1) != len(schema_2):
-            logging.debug(f'Schema list length difference')
+            logging.debug('Schema list length difference')
             return False
-        x = range(len(schema_1))
-        for i in x:
+        field_count = range(len(schema_1))
+        for i in field_count:
             f_1: bigquery.SchemaField = schema_1[i]
             f_2: bigquery.SchemaField = schema_2[i]
             f_1_api_repr = f_1.to_api_repr()
             f_2_api_repr = f_2.to_api_repr()
             if f_1_api_repr != f_2_api_repr:
-                logging.debug(f'Schema field compare is not equal:\nschema_1: {f_1_api_repr}\nschema_2: {f_2_api_repr}')
+                logging.debug('Schema field compare is not equal:\nschema_1: %s\nschema_2: %s', f_1_api_repr, f_2_api_repr)
                 return False
         return True
 
     def _add_schema(self, schema: DatacastSchema):
         bq_schema = _fields = self._get_field_list(schema.fields)
         table_ref = bigquery.TableReference(self.dataset_ref, schema.name)
-        
+
         if self._does_table_exist(schema.name) is True:
             existing_table = self.client.get_table(table_ref)
             if self._is_schema_equal(existing_table.schema, bq_schema) is False:
@@ -98,7 +98,7 @@ class BigQueryOutputManager(OutputManager):
         table_ref = bigquery.TableReference(self.dataset_ref, record_type_name)
         errors = self.client.insert_rows_json(table_ref, [record])
         if errors:
-            logging.error("Encountered errors while inserting rows: {}".format(errors))
+            logging.error('Encountered errors while inserting rows: %s', errors)
 
     def _create_dataset(self, dataset_ref):
         dataset = self.client.create_dataset(dataset_ref, timeout=30)

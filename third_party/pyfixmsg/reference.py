@@ -173,7 +173,7 @@ class FixTag(DatacastField):
         return 'FixTag(name: %s, tag: %s, type: %s)' % (self.name, self.tag, self.type)
 
 
-class TagsReference(object):
+class TagsReference:
     """ Container for tags with maps by name and tag"""
 
     def __init__(self, tags, eager=False):
@@ -219,7 +219,7 @@ class TagsReference(object):
         return self._by_tag[tag]
 
 
-class FixSpec(object):
+class FixSpec:
     """
     A python-friendly representation of a FIX spec.
     This class is built from an XML file sourced from Quickfix (http://www.quickfixengine.org/).
@@ -297,7 +297,7 @@ def _get_groups(composition):
                 yield group
 
 
-class Group(object):
+class Group:
     """
     Representation of the specification of a Repeating Group.
     """
@@ -359,7 +359,7 @@ class Group(object):
             # Will sort by tag number after the sorted tags otherwise
 
 
-class Component(object):
+class Component:
     """Representation of the specification of a Component"""
 
     def __init__(self, element, spec):
@@ -382,7 +382,7 @@ class Component(object):
         return self._sorting_key
 
 
-class MessageType(object):
+class MessageType:
     """
     Message Type representation. Contains the valid tags, their order, valid repeating groups,
     components etc.

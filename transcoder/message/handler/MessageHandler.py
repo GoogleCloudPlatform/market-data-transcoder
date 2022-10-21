@@ -33,7 +33,7 @@ class MessageHandler:
     def supported_message_types(self):
         return []
 
-    def append_manufactured_fields(self, schema):
+    def append_manufactured_fields(self, schema):  # pylint: disable=unused-argument
         return None
 
     def handle(self, message: ParsedMessage):
