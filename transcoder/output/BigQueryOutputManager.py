@@ -74,7 +74,8 @@ class BigQueryOutputManager(OutputManager):
             f_1_api_repr = f_1.to_api_repr()
             f_2_api_repr = f_2.to_api_repr()
             if f_1_api_repr != f_2_api_repr:
-                logging.debug('Schema field compare is not equal:\nschema_1: %s\nschema_2: %s', f_1_api_repr, f_2_api_repr)
+                logging.debug('Schema field compare is not equal:\nschema_1: %s\nschema_2: %s', f_1_api_repr,
+                              f_2_api_repr)
                 return False
         return True
 
