@@ -32,11 +32,13 @@ from google.api_core.exceptions import AlreadyExists, NotFound, InvalidArgument
 from google.cloud import pubsub_v1
 from google.cloud.pubsub import SchemaServiceClient
 from google.cloud.pubsub_v1.publisher.futures import Future
-from google.pubsub_v1 import Encoding
+from google.pubsub_v1 import Encoding, Topic, UpdateTopicRequest
 from google.pubsub_v1.types import Schema
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSchemaOutOfSyncError
 
 
@@ -130,6 +132,8 @@ class PubSubOutputManager(OutputManager):
 
         _existing_topic = self._get_topic(topic_path)
         if _existing_topic is not None:
+            self._check_existing_label(_existing_topic)
+
             expected_encoding = Encoding.BINARY if self.is_binary_encoded is True else Encoding.JSON
             schema_settings = _existing_topic.schema_settings
 
@@ -144,7 +148,7 @@ class PubSubOutputManager(OutputManager):
         else:
             request_dict = {
                 "name": topic_path,
-                "labels": {"datacast": "1"}
+                "labels": GOOGLE_PACKAGED_SOLUTION_LABEL_DICT
             }
 
             if self.create_schema_enforcing_topics is True:
@@ -160,6 +164,21 @@ class PubSubOutputManager(OutputManager):
             except InvalidArgument as ex:
                 logging.error(ex)
                 raise
+
+    def _check_existing_label(self, _existing_topic):
+        if GOOGLE_PACKAGED_SOLUTION_KEY not in _existing_topic.labels \
+                or _existing_topic.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
+            topic = Topic()
+            topic.name = _existing_topic.name
+            topic.labels[GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE
+            request = UpdateTopicRequest(
+                topic=topic,
+                update_mask={"paths": ["labels"]}
+            )
+            try:
+                self.publisher.update_topic(request=request)
+            except Exception as err:
+                logging.warning("Failed to update topic labels: %s", err)
 
     @staticmethod
     def get_callback(publish_future: Future, data: str) -> Callable[[pubsub_v1.publisher.futures.Future], None]:

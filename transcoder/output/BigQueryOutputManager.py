@@ -24,6 +24,8 @@ from google.cloud.exceptions import NotFound, Conflict
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
 
 
@@ -38,6 +40,12 @@ class BigQueryOutputManager(OutputManager):
 
         if self._does_dataset_exist(self.dataset_ref) is False:
             self._create_dataset(self.dataset_ref)
+        else:
+            dataset = self.client.get_dataset(self.dataset_ref)
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in dataset.labels or \
+                    dataset.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
+                dataset.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL_DICT)
+                self.client.update_dataset(dataset, ["labels"])
 
         self.tables = list(self.client.list_tables(dataset_id))
         for table_id in list(map(lambda x: x.table_id, self.tables)):
@@ -68,7 +76,8 @@ class BigQueryOutputManager(OutputManager):
             f_1_api_repr = f_1.to_api_repr()
             f_2_api_repr = f_2.to_api_repr()
             if f_1_api_repr != f_2_api_repr:
-                logging.debug('Schema field compare is not equal:\nschema_1: %s\nschema_2: %s', f_1_api_repr, f_2_api_repr)
+                logging.debug('Schema field compare is not equal:\nschema_1: %s\nschema_2: %s', f_1_api_repr,
+                              f_2_api_repr)
                 return False
         return True
 
@@ -78,11 +87,21 @@ class BigQueryOutputManager(OutputManager):
 
         if self._does_table_exist(schema.name) is True:
             existing_table = self.client.get_table(table_ref)
+
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in existing_table.labels \
+                    or existing_table.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
+                existing_table.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL_DICT)
+                try:
+                    self.client.update_table(existing_table, ["labels"])
+                except Exception as err:
+                    logging.warning("Failed to update table labels: %s", err)
+
             if self._is_schema_equal(existing_table.schema, bq_schema) is False:
                 raise BigQueryTableSchemaOutOfSyncError(
                     f'The schema for table "{table_ref}" differs from the definition for schema "{schema.name}"')
         else:
             table = bigquery.Table(table_ref, schema=bq_schema)
+            table.labels = GOOGLE_PACKAGED_SOLUTION_LABEL_DICT
             try:
                 self.client.create_table(table, exists_ok=True)
             except Conflict as error:
@@ -101,7 +120,9 @@ class BigQueryOutputManager(OutputManager):
             logging.error('Encountered errors while inserting rows: %s', errors)
 
     def _create_dataset(self, dataset_ref):
-        dataset = self.client.create_dataset(dataset_ref, timeout=30)
+        dataset = bigquery.Dataset(dataset_ref)
+        dataset.labels = GOOGLE_PACKAGED_SOLUTION_LABEL_DICT
+        dataset = self.client.create_dataset(dataset, timeout=30)
         logging.debug("Created dataset {}.{}".format(self.client.project, dataset.dataset_id))
 
     def _does_dataset_exist(self, dataset_ref) -> bool:
