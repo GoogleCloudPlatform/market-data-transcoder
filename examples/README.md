@@ -94,7 +94,7 @@ wget 'https://github.com/Open-Markets-Initiative/Data/blob/main/Cme/Mdp3.Sbe.v1.
 
 bin/txcode \
   --source_file SnapshotFullRefreshTcpLongQty.pcap \         
-  --schema_file tepmlates_FixBinary_v12.xml \                
+  --schema_file templates_FixBinary_v12.xml \                
   --factory cme \                                            
   --source_file_format_type pcap \                           
   --message_skip_bytes 16 \                                  
