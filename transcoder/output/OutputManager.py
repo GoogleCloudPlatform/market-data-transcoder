@@ -24,7 +24,9 @@ from concurrent.futures import ThreadPoolExecutor
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output.exception import OutputFunctionNotDefinedError, OutputManagerSchemaError
 
-GOOGLE_PACKAGED_SOLUTION_LABEL = {"goog-packaged-solution": "datacast"}
+GOOGLE_PACKAGED_SOLUTION_KEY = "goog-packaged-solution"
+GOOGLE_PACKAGED_SOLUTION_LABEL = {GOOGLE_PACKAGED_SOLUTION_KEY: "datacast"}
+
 
 class OutputManager:
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):

@@ -24,7 +24,7 @@ from google.cloud.exceptions import NotFound, Conflict
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL, GOOGLE_PACKAGED_SOLUTION_KEY
 from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
 
 
@@ -39,6 +39,11 @@ class BigQueryOutputManager(OutputManager):
 
         if self._does_dataset_exist(self.dataset_ref) is False:
             self._create_dataset(self.dataset_ref)
+        else:
+            dataset = self.client.get_dataset(self.dataset_ref)
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in dataset.labels:
+                dataset.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL)
+                self.client.update_dataset(dataset, ["labels"])
 
         self.tables = list(self.client.list_tables(dataset_id))
         for table_id in list(map(lambda x: x.table_id, self.tables)):
@@ -79,6 +84,11 @@ class BigQueryOutputManager(OutputManager):
 
         if self._does_table_exist(schema.name) is True:
             existing_table = self.client.get_table(table_ref)
+
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in existing_table.labels:
+                existing_table.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL)
+                self.client.update_table(existing_table, ["labels"])
+
             if self._is_schema_equal(existing_table.schema, bq_schema) is False:
                 raise BigQueryTableSchemaOutOfSyncError(
                     f'The schema for table "{table_ref}" differs from the definition for schema "{schema.name}"')
