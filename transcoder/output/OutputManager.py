@@ -25,7 +25,8 @@ from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output.exception import OutputFunctionNotDefinedError, OutputManagerSchemaError
 
 GOOGLE_PACKAGED_SOLUTION_KEY = "goog-packaged-solution"
-GOOGLE_PACKAGED_SOLUTION_LABEL = {GOOGLE_PACKAGED_SOLUTION_KEY: "datacast"}
+GOOGLE_PACKAGED_SOLUTION_VALUE = "datacast"
+GOOGLE_PACKAGED_SOLUTION_LABEL_DICT = {GOOGLE_PACKAGED_SOLUTION_KEY: GOOGLE_PACKAGED_SOLUTION_VALUE}
 
 
 class OutputManager:
