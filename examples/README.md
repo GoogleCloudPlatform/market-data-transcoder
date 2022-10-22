@@ -381,7 +381,7 @@ bin/txcode  \
   --output_encoding binary \
   --quiet \
   --message_type_inclusions future_symbol_directory \
-  --destination_project_id $PROJECT_ID \
+  --destination_project_id $(gcloud config get-value project) \
   --destination_dataset_id asx_datasphere \
   --message_handlers TimestampPullForwardHandler
 ```
