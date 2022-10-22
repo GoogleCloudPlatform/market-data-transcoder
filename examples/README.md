@@ -86,12 +86,15 @@ This example extracts and transcodes messages embedded within a PCAP file. A CME
 ### CLI
 
 ```
-# download PCAP to local file system
+# download SBE template XML
+wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary_v12.xml'
+
+# download example PCAP to local file system
 wget 'https://github.com/Open-Markets-Initiative/Data/blob/main/Cme/Mdp3.Sbe.v1.12/SnapshotFullRefreshTcpLongQty.68.Tcp.pcap?raw=true' -O SnapshotFullRefreshTcpLongQty.pcap
 
 bin/txcode \
   --source_file SnapshotFullRefreshTcpLongQty.pcap \         
-  --schema_file templates_FixBinary_v12.xml \                
+  --schema_file tepmlates_FixBinary_v12.xml \                
   --factory cme \                                            
   --source_file_format_type pcap \                           
   --message_skip_bytes 16 \                                  
@@ -431,8 +434,10 @@ This example reads a file containing a single FIX message per line and a FIX sch
 ### CLI
 
 ```
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 bin/txcode \
-  --source_file ../fix2json/testfiles/42_order_single.txt \
+  --source_file 42_order_single.txt \
   --schema_file ../fix2json/dict/FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
