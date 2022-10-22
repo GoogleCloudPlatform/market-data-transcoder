@@ -32,12 +32,12 @@ from google.api_core.exceptions import AlreadyExists, NotFound, InvalidArgument
 from google.cloud import pubsub_v1
 from google.cloud.pubsub import SchemaServiceClient
 from google.cloud.pubsub_v1.publisher.futures import Future
-from google.pubsub_v1 import Encoding
+from google.pubsub_v1 import Encoding, Topic
 from google.pubsub_v1.types import Schema
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL, GOOGLE_PACKAGED_SOLUTION_KEY
 from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSchemaOutOfSyncError
 
 
@@ -87,7 +87,7 @@ class PubSubOutputManager(OutputManager):
         result = self.schema_client.get_schema(request={"name": schema_path})
         return result
 
-    def _get_topic(self, topic_path):
+    def _get_topic(self, topic_path) -> Topic:
         result = list(filter(lambda x: x.name == topic_path, self.topics))
         if len(result) == 1:
             return result[0]
@@ -131,6 +131,9 @@ class PubSubOutputManager(OutputManager):
 
         _existing_topic = self._get_topic(topic_path)
         if _existing_topic is not None:
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in _existing_topic.labels:
+                # UPDATE
+
             expected_encoding = Encoding.BINARY if self.is_binary_encoded is True else Encoding.JSON
             schema_settings = _existing_topic.schema_settings
 
