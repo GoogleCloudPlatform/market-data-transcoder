@@ -166,7 +166,8 @@ class PubSubOutputManager(OutputManager):
                 raise
 
     def _check_existing_label(self, _existing_topic):
-        if GOOGLE_PACKAGED_SOLUTION_KEY not in _existing_topic.labels:
+        if GOOGLE_PACKAGED_SOLUTION_KEY not in _existing_topic.labels \
+                or _existing_topic.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
             topic = Topic()
             topic.name = _existing_topic.name
             topic.labels[GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE

@@ -24,7 +24,8 @@ from google.cloud.exceptions import NotFound, Conflict
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
 
 
@@ -41,7 +42,8 @@ class BigQueryOutputManager(OutputManager):
             self._create_dataset(self.dataset_ref)
         else:
             dataset = self.client.get_dataset(self.dataset_ref)
-            if GOOGLE_PACKAGED_SOLUTION_KEY not in dataset.labels:
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in dataset.labels or \
+                    dataset.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
                 dataset.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL_DICT)
                 self.client.update_dataset(dataset, ["labels"])
 
@@ -86,9 +88,13 @@ class BigQueryOutputManager(OutputManager):
         if self._does_table_exist(schema.name) is True:
             existing_table = self.client.get_table(table_ref)
 
-            if GOOGLE_PACKAGED_SOLUTION_KEY not in existing_table.labels:
+            if GOOGLE_PACKAGED_SOLUTION_KEY not in existing_table.labels \
+                    or existing_table.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
                 existing_table.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL_DICT)
-                self.client.update_table(existing_table, ["labels"])
+                try:
+                    self.client.update_table(existing_table, ["labels"])
+                except Exception as err:
+                    logging.warning("Failed to update table labels: %s", err)
 
             if self._is_schema_equal(existing_table.schema, bq_schema) is False:
                 raise BigQueryTableSchemaOutOfSyncError(
