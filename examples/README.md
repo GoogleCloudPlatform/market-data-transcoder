@@ -1,6 +1,6 @@
 # Transcoder examples
 
-*Note: The examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install) and [jq](https://stedolan.github.io/jq/download/) are installed on the system.*
+*_Note_: Some of the examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install), [jq](https://stedolan.github.io/jq/download/), and [wget](https://www.gnu.org/software/wget/) are installed on the system.*
 
 ## Ingest the contents of a CME Group Datamine packet capture file into BigQuery
 
