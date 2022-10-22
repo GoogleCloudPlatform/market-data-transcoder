@@ -24,6 +24,7 @@ from google.cloud.exceptions import NotFound, Conflict
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL
 from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
 
 
@@ -83,6 +84,7 @@ class BigQueryOutputManager(OutputManager):
                     f'The schema for table "{table_ref}" differs from the definition for schema "{schema.name}"')
         else:
             table = bigquery.Table(table_ref, schema=bq_schema)
+            table.labels = GOOGLE_PACKAGED_SOLUTION_LABEL
             try:
                 self.client.create_table(table, exists_ok=True)
             except Conflict as error:
@@ -101,7 +103,9 @@ class BigQueryOutputManager(OutputManager):
             logging.error('Encountered errors while inserting rows: %s', errors)
 
     def _create_dataset(self, dataset_ref):
-        dataset = self.client.create_dataset(dataset_ref, timeout=30)
+        dataset = bigquery.Dataset(dataset_ref)
+        dataset.labels = GOOGLE_PACKAGED_SOLUTION_LABEL
+        dataset = self.client.create_dataset(dataset, timeout=30)
         logging.debug("Created dataset {}.{}".format(self.client.project, dataset.dataset_id))
 
     def _does_dataset_exist(self, dataset_ref) -> bool:

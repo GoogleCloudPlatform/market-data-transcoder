@@ -37,6 +37,7 @@ from google.pubsub_v1.types import Schema
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
+from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL
 from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSchemaOutOfSyncError
 
 
@@ -144,7 +145,7 @@ class PubSubOutputManager(OutputManager):
         else:
             request_dict = {
                 "name": topic_path,
-                "labels": {"datacast": "1"}
+                "labels": GOOGLE_PACKAGED_SOLUTION_LABEL
             }
 
             if self.create_schema_enforcing_topics is True:
