@@ -117,6 +117,7 @@ INFO:root:Total runtime in minutes: 0.00011
 
 ### View transcoded Avro
 ```
+# The avro-tools JAR file can be found at https://dlcdn.apache.org/avro/stable/java/
 java -jar avro-tools-1.11.0.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLongQty.68.Tcp-SnapshotFullRefreshTCPLongQty68.avro 
 ```
 
