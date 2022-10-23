@@ -1,6 +1,6 @@
 # Transcoder examples
 
-*_Note_: Some of the examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install), [jq](https://stedolan.github.io/jq/download/), and [wget](https://www.gnu.org/software/wget/) are installed on the system.*
+*_Note_: Some of the examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install), [jq](https://stedolan.github.io/jq/download/), [wget](https://www.gnu.org/software/wget/), and [java](https://www.java.com/en/download/manual.jsp) are installed on the system.*
 
 ## Ingest the contents of a CME Group Datamine packet capture file into BigQuery
 
@@ -120,8 +120,9 @@ INFO:root:Total runtime in minutes: 0.00011
 
 ### View transcoded Avro
 ```
-# download JAR to inspect Avro files 
+# download avro-tools JAR to inspect Avro files 
 wget https://dlcdn.apache.org/avro/stable/java/avro-tools-1.11.1.jar
+
 java -jar avro-tools-1.11.1.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLongQty.68.Tcp-SnapshotFullRefreshTCPLongQty68.avro 
 ```
 
