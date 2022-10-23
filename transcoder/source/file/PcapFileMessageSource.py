@@ -47,7 +47,7 @@ class PcapFileMessageSource(FileMessageSource):
         for timestamp, packet in self.pcap_reader:
             ethernet = dpkt.ethernet.Ethernet(packet)
             if not isinstance(ethernet.data, dpkt.ip.IP):
-                logging.debug(f'Packet type not supported {ethernet.data.__class__.__name__}\n')
+                logging.debug('Packet type not supported %s\n', ethernet.data.__class__.__name__)
             else:
                 proto = ethernet.ip.tcp if 'tcp' in ethernet.ip.__dict__.keys() else ethernet.ip.udp
                 pck_len = len(proto.data)
