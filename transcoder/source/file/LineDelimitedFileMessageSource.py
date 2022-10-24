@@ -33,7 +33,7 @@ class LineDelimitedFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rt')
+        self.file_handle = open(self.path, 'rt')  # pylint: disable=consider-using-with
 
     def get_message_iterator(self):
         if self.file_size == 0:

@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from third_party.pyfixmsg.parser import FixParser
 from third_party.sbedecoder import SBEParser
 from .AsxMessageFactory import AsxMessageFactory

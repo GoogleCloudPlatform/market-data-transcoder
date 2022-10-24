@@ -38,7 +38,7 @@ class PcapFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')
+        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
         self.pcap_reader = dpkt.pcap.Reader(self.file_handle)
 
     def get_message_iterator(self):

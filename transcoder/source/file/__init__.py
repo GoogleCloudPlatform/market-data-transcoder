@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from .FileMessageSource import FileMessageSource
 from .LengthDelimitedFileMessageSource import LengthDelimitedFileMessageSource
 from .LineDelimitedFileMessageSource import LineDelimitedFileMessageSource

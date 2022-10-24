@@ -19,15 +19,21 @@
 
 from third_party.sbedecoder import SBESchema, SBEMessageFactory
 from transcoder.message.factory import AsxMessageFactory, CmeMessageFactory, MemxMessageFactory
+from transcoder.message.factory.exception.FactoryNotFoundError import FactoryNotFoundError
 
 
 def get_message_factory(name: str, schema_file_path: str) -> SBEMessageFactory:
     schema = SBESchema(enum_fallback_to_name=True, include_constants_in_offset=False)
     schema.parse(schema_file_path)
+    factory: SBEMessageFactory = None
 
     if name == 'asx':
-        return AsxMessageFactory(schema)
-    if name == 'cme':
-        return CmeMessageFactory(schema)
-    if name == 'memx':
-        return MemxMessageFactory(schema)
+        factory = AsxMessageFactory(schema)
+    elif name == 'cme':
+        factory = CmeMessageFactory(schema)
+    elif name == 'memx':
+        factory = MemxMessageFactory(schema)
+    else:
+        raise FactoryNotFoundError(f'Factory with name "{name}" is not valid')
+
+    return factory

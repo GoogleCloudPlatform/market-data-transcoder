@@ -11,6 +11,8 @@ else:
     STRSUM = sum
 
 
+# pylint: disable=invalid-name
+
 class RepeatingGroup(list):
     """ Implementation of repeating groups for pyfixmsg.FixMessage.
     The repeating group will look like {opening_tag:[FixMessage,FixMessage]} in the fix message

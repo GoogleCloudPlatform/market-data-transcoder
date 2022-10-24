@@ -17,4 +17,6 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from .SourceUtil import all_source_identifiers

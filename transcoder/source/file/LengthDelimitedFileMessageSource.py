@@ -37,7 +37,7 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')
+        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
         if self.skip_bytes > 0:
             self.file_handle.read(self.skip_bytes)
 
