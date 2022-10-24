@@ -86,8 +86,7 @@ def is_empty_byte_array(_raw_value: bytes) -> bool:
 def get_bool_value(_raw_value) -> bool:
     if _raw_value == 1 or _raw_value == 'True':
         return True
-    else:
-        return False
+    return False
 
 
 class SBEMessageField(DatacastField):
@@ -131,14 +130,12 @@ class SBEMessageField(DatacastField):
         if type(field) is TypeMessageField:
             if field.is_bool_type is True:
                 return ['null', 'boolean']  # BQ converts to BOOLEAN
-            else:
-                mapped_type = avro_type_map[field.primitive_type]
-                return ['null', mapped_type]
+            mapped_type = avro_type_map[field.primitive_type]
+            return ['null', mapped_type]
         elif type(field) is EnumMessageField:
             if field.is_bool_type is True:
                 return ['null', 'boolean']  # BQ converts to BOOLEAN
-            else:
-                return ['null', 'string']
+            return ['null', 'string']
         elif type(field) is SetMessageField:
             return ['null', 'string']
         else:
