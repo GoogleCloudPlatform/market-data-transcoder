@@ -110,7 +110,7 @@ class BigQueryOutputManager(OutputManager):
                 # https://cloud.google.com/bigquery/docs/error-messages
                 logging.warning('Table conflict, already exists %s: %s', schema.name, error)
             except Exception as error:
-                logging.error(f'Error creating table %s: %s', schema.name, error)
+                logging.error('Error creating table %s: %s', schema.name, error)
                 raise
 
     def _write_record(self, record_type_name, record):
