@@ -108,9 +108,9 @@ class BigQueryOutputManager(OutputManager):
                 # MS: 2022-10-12 Adding exists_ok to create_table call so that the Conflict is not raised
                 # b/153072942
                 # https://cloud.google.com/bigquery/docs/error-messages
-                logging.warning(f'Table conflict, already exists {schema.name}: {error}')
+                logging.warning('Table conflict, already exists %s: %s', schema.name, error)
             except Exception as error:
-                logging.error(f'Error creating table {schema.name}: {error}')
+                logging.error(f'Error creating table %s: %s', schema.name, error)
                 raise
 
     def _write_record(self, record_type_name, record):
