@@ -24,9 +24,6 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
 class CmeMessageFactory(SBEMessageFactory):
-    def __init__(self, schema):
-        super().__init__(schema)
-
     def build(self, msg_buffer, offset):
         template_id = unpack_from('<H', msg_buffer, 2)[0]
 

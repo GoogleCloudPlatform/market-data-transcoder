@@ -45,6 +45,8 @@ class OutputManager:
         return list(map(self._create_field, fields))
 
     def enqueue_schema(self, schema):
+        """Enqueues a schema for creation. If lazy_create_resources is enabled, schemas will only be created
+        on-demand when required """
         if self.lazy_create_resources is False:
             future = self.schema_thread_pool_executor.submit(self.add_schema, schema)
             self.schema_futures.append(future)

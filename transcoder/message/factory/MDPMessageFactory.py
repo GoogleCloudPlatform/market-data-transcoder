@@ -25,9 +25,6 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
 class MDPMessageFactory(SBEMessageFactory):
-    def __init__(self, schema):
-        super(MDPMessageFactory, self).__init__(schema)
-
     def build(self, msg_buffer, offset):
         # Peek at the template id to figure out what class to build.
         # This looks past the starting 2 byte MsgSize header that is CME specific

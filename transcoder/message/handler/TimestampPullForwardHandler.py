@@ -34,7 +34,6 @@ class TimestampPullForwardHandler(MessageHandler):
     def append_manufactured_fields(self, schema: DatacastSchema):
         if schema.name != self.time_message_type_name:
             schema.fields.append(MessageHandlerIntField(self.new_timestamp_field_name))
-        return None
 
     def handle(self, message: ParsedMessage):
         if message.name == self.time_message_type_name:

@@ -26,6 +26,8 @@ from transcoder.source.file.FileMessageSource import FileMessageSource
 
 
 class PcapFileMessageSource(FileMessageSource):
+    """Reads pcap files and yields individual records for message consumption"""
+
     @staticmethod
     def source_type_identifier():
         return 'pcap'
@@ -38,7 +40,7 @@ class PcapFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')
+        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
         self.pcap_reader = dpkt.pcap.Reader(self.file_handle)
 
     def get_message_iterator(self):
@@ -47,7 +49,7 @@ class PcapFileMessageSource(FileMessageSource):
         for timestamp, packet in self.pcap_reader:
             ethernet = dpkt.ethernet.Ethernet(packet)
             if not isinstance(ethernet.data, dpkt.ip.IP):
-                logging.debug(f'Packet type not supported {ethernet.data.__class__.__name__}\n')
+                logging.debug('Packet type not supported %s\n', ethernet.data.__class__.__name__)
             else:
                 proto = ethernet.ip.tcp if 'tcp' in ethernet.ip.__dict__.keys() else ethernet.ip.udp
                 pck_len = len(proto.data)

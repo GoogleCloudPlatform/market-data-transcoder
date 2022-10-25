@@ -17,5 +17,7 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from .CmeBinaryPacketHandler import CmeBinaryPacketHandler
 from .TimestampPullForwardHandler import TimestampPullForwardHandler

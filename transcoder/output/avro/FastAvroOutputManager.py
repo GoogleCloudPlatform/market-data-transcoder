@@ -27,7 +27,7 @@ from transcoder.output.avro.BaseAvroOutputManager import BaseAvroOutputManager
 class FastAvroOutputManager(BaseAvroOutputManager):
     def _add_schema(self, schema: DatacastSchema):
         super()._add_schema(schema)
-        output_file = open(self._get_file_name(schema.name, 'avro'), 'a+b')
+        output_file = open(self._get_file_name(schema.name, 'avro'), 'a+b')  # pylint: disable=consider-using-with
         self.writers[schema.name] = output_file
 
     def _write_record(self, record_type_name, record):

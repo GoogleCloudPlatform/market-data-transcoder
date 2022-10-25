@@ -18,6 +18,7 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 
