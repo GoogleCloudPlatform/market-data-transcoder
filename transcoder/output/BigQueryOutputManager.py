@@ -30,6 +30,8 @@ from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
 
 
 class BigQueryOutputManager(OutputManager):
+    """Manages creation of BigQuery dataset and table objects"""
+
     def __init__(self, project_id: str, dataset_id, output_prefix: str = None, lazy_create_resources: bool = False):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.project_id = project_id
@@ -93,7 +95,7 @@ class BigQueryOutputManager(OutputManager):
                 existing_table.labels.update(GOOGLE_PACKAGED_SOLUTION_LABEL_DICT)
                 try:
                     self.client.update_table(existing_table, ["labels"])
-                except Exception as err:
+                except Exception as err:  # pylint: disable=broad-except
                     logging.warning("Failed to update table labels: %s", err)
 
             if self._is_schema_equal(existing_table.schema, bq_schema) is False:
@@ -123,13 +125,13 @@ class BigQueryOutputManager(OutputManager):
         dataset = bigquery.Dataset(dataset_ref)
         dataset.labels = GOOGLE_PACKAGED_SOLUTION_LABEL_DICT
         dataset = self.client.create_dataset(dataset, timeout=30)
-        logging.debug("Created dataset {}.{}".format(self.client.project, dataset.dataset_id))
+        logging.debug('Created dataset %s.%s', self.client.project, dataset.dataset_id)
 
     def _does_dataset_exist(self, dataset_ref) -> bool:
         try:
             self.client.get_dataset(dataset_ref)
-            logging.debug("Dataset {} already exists".format(dataset_ref))
+            logging.debug('Dataset %s already exists', dataset_ref)
             return True
         except NotFound:
-            logging.debug("Dataset {} is not found".format(dataset_ref))
+            logging.debug('Dataset %s is not found', dataset_ref)
             return False
