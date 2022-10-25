@@ -26,6 +26,8 @@ MILLISECONDS = 1
 HEADER_TAGS_SET = {str(tag) for tag in HEADER_TAGS}
 ENCODED_TAG_SET = {str(tag) for tag in ENCODED_DATA_TAGS}
 
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 
 class Codec:
     """

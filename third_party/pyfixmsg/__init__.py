@@ -99,6 +99,7 @@ class RepeatingGroup(list):
         return sum(len_and_chsum(member)[0] for member in self)
 
 
+# pylint: disable=too-few-public-methods
 class RepeatingGroupFactory:
     """ An easy way to create a repeating group for a given tag, without having to define all the tags yourself, takes
     the standard ones"""
