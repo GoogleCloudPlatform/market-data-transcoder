@@ -21,6 +21,9 @@ from transcoder.source.file import LengthDelimitedFileMessageSource
 
 
 class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
+    """CME binary package file message source implementation. Derives from length delimited source and overrides the
+    message slicing logic """
+
     @staticmethod
     def source_type_identifier():
         return 'cme_binary_packet'
