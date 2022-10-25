@@ -1,6 +1,6 @@
 # Transcoder examples
 
-*Note: The examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install) and [jq](https://stedolan.github.io/jq/download/) are installed on the system.*
+*_Note_: Some of the examples below assume that [gcloud](https://cloud.google.com/sdk/docs/install), [jq](https://stedolan.github.io/jq/download/), [wget](https://www.gnu.org/software/wget/), and [java](https://www.java.com/en/download/manual.jsp) are installed on the system.*
 
 ## Ingest the contents of a CME Group Datamine packet capture file into BigQuery
 
@@ -86,7 +86,10 @@ This example extracts and transcodes messages embedded within a PCAP file. A CME
 ### CLI
 
 ```
-# download PCAP to local file system
+# download SBE template XML
+wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary_v12.xml'
+
+# download example PCAP to local file system
 wget 'https://github.com/Open-Markets-Initiative/Data/blob/main/Cme/Mdp3.Sbe.v1.12/SnapshotFullRefreshTcpLongQty.68.Tcp.pcap?raw=true' -O SnapshotFullRefreshTcpLongQty.pcap
 
 bin/txcode \
@@ -117,7 +120,10 @@ INFO:root:Total runtime in minutes: 0.00011
 
 ### View transcoded Avro
 ```
-java -jar avro-tools-1.11.0.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLongQty.68.Tcp-SnapshotFullRefreshTCPLongQty68.avro 
+# download avro-tools JAR to inspect Avro files 
+wget https://dlcdn.apache.org/avro/stable/java/avro-tools-1.11.1.jar
+
+java -jar avro-tools-1.11.1.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLongQty.68.Tcp-SnapshotFullRefreshTCPLongQty68.avro 
 ```
 
 ### Output
@@ -376,7 +382,7 @@ bin/txcode  \
   --output_encoding binary \
   --quiet \
   --message_type_inclusions future_symbol_directory \
-  --destination_project_id $PROJECT_ID \
+  --destination_project_id $(gcloud config get-value project) \
   --destination_dataset_id asx_datasphere \
   --message_handlers TimestampPullForwardHandler
 ```
@@ -430,8 +436,10 @@ This example reads a file containing a single FIX message per line and a FIX sch
 ### CLI
 
 ```
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 bin/txcode \
-  --source_file ../fix2json/testfiles/42_order_single.txt \
+  --source_file 42_order_single.txt \
   --schema_file ../fix2json/dict/FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
