@@ -7,7 +7,7 @@ wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.
 
 python3 main.py \
   --source_file 42_order_single.txt \
-  --schema_file ../fix2json/dict/FIX42.xml \
+  --schema_file FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
   --continue_on_error \
