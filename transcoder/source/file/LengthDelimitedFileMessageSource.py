@@ -23,6 +23,8 @@ from transcoder.source.file.FileMessageSource import FileMessageSource
 
 
 class LengthDelimitedFileMessageSource(FileMessageSource):
+    """Reads length delimited files and yields individual records for message consumption"""
+
     @staticmethod
     def source_type_identifier():
         return 'length_delimited'
@@ -37,7 +39,7 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')
+        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
         if self.skip_bytes > 0:
             self.file_handle.read(self.skip_bytes)
 

@@ -30,7 +30,7 @@ from transcoder.output.avro.BaseAvroOutputManager import BaseAvroOutputManager
 class AvroOutputManager(BaseAvroOutputManager):
     def _add_schema(self, schema: DatacastSchema):
         super()._add_schema(schema)
-        output_file = open(self._get_file_name(schema.name, 'avro'), 'wb')
+        output_file = open(self._get_file_name(schema.name, 'avro'), 'wb')  # pylint: disable=consider-using-with
         writer = DataFileWriter(output_file, DatumWriter(), self.schemas[schema.name])
         self.writers[schema.name] = writer
 

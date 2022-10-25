@@ -45,4 +45,4 @@ class FileMessageSource(Source):
 
     def _log_percentage_read(self):
         if self.log_percentage_read_enabled is True:
-            logging.debug(f'Percentage read: {round((self.file_handle.tell() / self.file_size) * 100, 6)}%')
+            logging.debug('Percentage read: %f%%', round((self.file_handle.tell() / self.file_size) * 100, 6))

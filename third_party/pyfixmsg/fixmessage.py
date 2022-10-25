@@ -12,6 +12,8 @@ from . import len_and_chsum, RepeatingGroup
 from .codecs.stringfix import Codec
 from .util import native_str
 
+# pylint: disable=invalid-name
+
 TAGS_AS_DATE = (432, 7509, 52)
 GTD_EXPIRE_DATE_TAG = 432
 TAGS_AS_DECIMAL = (31, 32, 151, 14, 6)
@@ -209,7 +211,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
     def __ge__(self, other):
         return self.time >= other.time
 
-    def __copy__(self):
+    def _copy(self):
         """
         copy module support. This copies the message by serialising it and parsing the serialised
         data back into a new message. This is a lot faster than deepcopy or other techniques.
@@ -227,7 +229,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
 
     def copy(self):
         """ Copy interface without using the copy module"""
-        return self.__copy__()
+        return self._copy()
 
     def __init__(self, *args, **kwargs):
         """

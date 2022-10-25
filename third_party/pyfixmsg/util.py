@@ -15,8 +15,7 @@ def int_or_str(val, decode_as=None):
         if decode_as is None:
             if isinstance(val, (bytes, six.text_type)):
                 return val.strip()
-            else:
-                return str(val)
+            return str(val)
         elif isinstance(val, bytes):
             return val.decode(decode_as).strip()
         else:

@@ -17,10 +17,5 @@
 # limitations under the License.
 #
 
-# pylint: disable=invalid-name
-
-from .OutputFunctionNotDefinedError import OutputFunctionNotDefinedError
-from .OutputManagerSchemaError import OutputManagerSchemaError
-from .OutputNotAvailableError import OutputNotAvailableError
-from .BigQueryTableSchemaOutOfSyncError import BigQueryTableSchemaOutOfSyncError
-from .PubSubTopicSchemaOutOfSyncError import PubSubTopicSchemaOutOfSyncError
+class FactoryNotFoundError(Exception):
+    pass

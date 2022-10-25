@@ -17,5 +17,7 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from .AvroOutputManager import AvroOutputManager
 from .FastAvroOutputManager import FastAvroOutputManager

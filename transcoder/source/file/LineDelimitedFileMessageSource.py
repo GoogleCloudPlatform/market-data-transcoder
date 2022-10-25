@@ -23,6 +23,8 @@ from transcoder.source.file import FileMessageSource
 
 
 class LineDelimitedFileMessageSource(FileMessageSource):
+    """Reads line delimited files and yields individual records for message consumption"""
+
     @staticmethod
     def source_type_identifier():
         return 'line_delimited'
@@ -33,7 +35,7 @@ class LineDelimitedFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rt')
+        self.file_handle = open(self.path, 'rt')  # pylint: disable=consider-using-with
 
     def get_message_iterator(self):
         if self.file_size == 0:

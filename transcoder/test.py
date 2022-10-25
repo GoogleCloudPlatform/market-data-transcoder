@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 import unittest
 
 
