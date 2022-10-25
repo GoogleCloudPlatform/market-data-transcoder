@@ -29,6 +29,7 @@ ENCODED_TAG_SET = {str(tag) for tag in ENCODED_DATA_TAGS}
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-locals
 
 class Codec:
     """
