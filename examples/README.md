@@ -440,7 +440,7 @@ wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/4
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 bin/txcode \
   --source_file 42_order_single.txt \
-  --schema_file ../fix2json/dict/FIX42.xml \
+  --schema_file FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
   --destination_project_id $(gcloud config get-value project) \
@@ -477,9 +477,12 @@ gcloud pubsub topics list --format json | jq .[].name | grep NewOrderSingle |tr 
 ### Manufacture topic
 
 ```
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
+
 bin/txcode \
   --source_file /dev/null  \
-  --schema_file ../fix2json/dict/FIX42.xml \
+  --schema_file FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
   --destination_project_id $(gcloud config get-value project) \
@@ -499,8 +502,8 @@ pulltop NewOrderSingle
 ### Transcode and publish
 ```
 bin/txcode \
-  --source_file ../fix2json/testfiles/42_order_single.txt \
-  --schema_file ../fix2json/dict/FIX42.xml \
+  --source_file 42_order_single.txt \
+  --schema_file FIX42.xml \
   --factory fix \
   --source_file_format_type line_delimited \
   --destination_project_id $(gcloud config get-value project) \
