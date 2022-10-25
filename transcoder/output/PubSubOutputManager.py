@@ -260,6 +260,7 @@ class PubSubOutputManager(OutputManager):
     def __delete_topic(self, topic_path):
         try:
             self.publisher.delete_topic(request={"topic": topic_path})
+            return True
         except NotFound:
             logging.debug('%s not found.', topic_path)
             return False
