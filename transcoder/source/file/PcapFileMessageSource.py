@@ -26,6 +26,8 @@ from transcoder.source.file.FileMessageSource import FileMessageSource
 
 
 class PcapFileMessageSource(FileMessageSource):
+    """Reads pcap files and yields individual records for message consumption"""
+
     @staticmethod
     def source_type_identifier():
         return 'pcap'

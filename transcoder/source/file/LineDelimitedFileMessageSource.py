@@ -23,6 +23,8 @@ from transcoder.source.file import FileMessageSource
 
 
 class LineDelimitedFileMessageSource(FileMessageSource):
+    """Reads line delimited files and yields individual records for message consumption"""
+
     @staticmethod
     def source_type_identifier():
         return 'line_delimited'
