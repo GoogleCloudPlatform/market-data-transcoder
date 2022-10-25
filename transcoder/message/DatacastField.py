@@ -23,11 +23,15 @@ from transcoder.output.exception import OutputFunctionNotDefinedError
 
 
 class DatacastField:
+    """Represents a field in a message"""
     def create_avro_field(self, part=None):
+        """Abstract declaration of method for creating avro-specific field"""
         raise OutputFunctionNotDefinedError
 
     def create_bigquery_field(self, part=None):
+        """Abstract declaration of method for creating BigQuery-specific field"""
         raise OutputFunctionNotDefinedError
 
-    def cast_value_to_type(self, value, type, is_nullable: bool = True) -> Any:  # pylint: disable=unused-argument
+    def cast_value_to_type(self, value, field_type, is_nullable: bool = True) -> Any:  # pylint: disable=unused-argument
+        """Abstract declaration of method for casting a value to its appropriate type"""
         return str(value)
