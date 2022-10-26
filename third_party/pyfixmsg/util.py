@@ -16,10 +16,9 @@ def int_or_str(val, decode_as=None):
             if isinstance(val, (bytes, six.text_type)):
                 return val.strip()
             return str(val)
-        elif isinstance(val, bytes):
+        if isinstance(val, bytes):
             return val.decode(decode_as).strip()
-        else:
-            raise ValueError(f'Cannot decode type {type(val)}') from exc
+        raise ValueError(f'Cannot decode type {type(val)}') from exc
 
 
 def native_str(val, encoding='UTF-8'):

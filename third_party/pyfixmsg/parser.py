@@ -68,7 +68,7 @@ class FixParser(DatacastParser):
 
     def traverse_schema(self, message_name, composition):
         fields: [DatacastField] = []
-        for element, required in composition:
+        for element, _ in composition:
             if isinstance(element, FixTag) and element.tag:
                 self.unique_append(message_name, fields, [element])
             elif isinstance(element, Component):
