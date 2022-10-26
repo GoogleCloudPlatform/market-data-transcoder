@@ -126,7 +126,7 @@ class Codec:
             custom_r = re.compile(six.ensure_binary(FIX_REGEX_STRING.format(
                 d=re.escape(delimiter), s=re.escape(separator)), encoding='ascii'), re.DOTALL)
         else:
-            raise ValueError('Unsupported type of input: {}'.format(type(buff)))
+            raise ValueError(f'Unsupported type of input: {type(buff)}')
 
         tagvals = custom_r.findall(buff)
 
