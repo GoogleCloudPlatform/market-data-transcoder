@@ -22,8 +22,10 @@ from transcoder.message.exception import ParserFunctionNotDefinedError
 
 
 class DatacastParser:
+    """Class encapsulating message parsing and processing functionality """
     @staticmethod
     def supported_factory_types():
+        """Static method for retrieving list of provider-specific factory classes"""
         raise ParserFunctionNotDefinedError
 
     def __init__(self, sampling_count: int = None, message_type_inclusions: str = None,
@@ -42,17 +44,21 @@ class DatacastParser:
 
     @property
     def record_type_count(self):
+        """Method returning count of record types in a given source"""
         return self.summary_count
 
     @property
     def total_record_count(self):
+        """Method returning count of all records in a given source"""
         return self.record_count
 
     @property
     def error_record_type_count(self):
+        """Method returning count of all errored records by type"""
         return self.error_summary_count
 
     def process_schema(self) -> [DatacastSchema]:
+        """Gets message names from schema file, filters messages to include, sets count dict"""
         schema_list = self._process_schema()
         filtered_list = list(filter(lambda x: self.__include_message_type(x.name), schema_list))
         self.total_schema_count = len(filtered_list)
@@ -64,6 +70,7 @@ class DatacastParser:
         raise ParserFunctionNotDefinedError
 
     def process_message(self, raw_msg) -> ParsedMessage:
+        """Wraps _process_message with count and inclusion behavior"""
         message = self._process_message(raw_msg)
 
         if self.use_sampling is True and self.get_summary_count(message.name) >= self.sampling_count:
@@ -97,15 +104,18 @@ class DatacastParser:
         raise ParserFunctionNotDefinedError
 
     def increment_summary_count(self, message_name: str):
+        """Increments message count by type"""
         self.record_count += 1
         if message_name not in self.summary_count:
             self.summary_count[message_name] = 0
         self.summary_count[message_name] += 1
 
     def increment_error_summary_count(self, message_name: str = 'UNKNOWN'):
+        """Increments error count by message type"""
         if message_name not in self.error_summary_count:
             self.error_summary_count[message_name] = 0
         self.error_summary_count[message_name] += 1
 
     def get_summary_count(self, message_name: str):
+        """Returns summary count by message type"""
         return self.summary_count.get(message_name, 0)
