@@ -19,4 +19,3 @@
 
 class OutputManagerSchemaError(Exception):
     """Errors related to output manager schemas"""
-    pass

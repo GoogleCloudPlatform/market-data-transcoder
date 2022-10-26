@@ -591,7 +591,7 @@ module-naming-style=PascalCase
 
 # Regular expression matching correct module names. Overrides module-naming-
 # style. If left empty, module names will be checked with the set naming style.
-#module-rgx=
+module-rgx=(^[A-Z][a-z]+(?:[A-Z][a-z]+)*$)|([a-z_]+)
 
 # Colon-delimited sets of names that determine each other's naming style when
 # the name regexes allow several styles.

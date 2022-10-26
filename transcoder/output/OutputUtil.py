@@ -28,6 +28,7 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
                        destination_dataset_id: str = None,
                        lazy_create_resources: bool = False,
                        create_schema_enforcing_topics: bool = True):
+    """Returns OutputManager instance based on the supplied name"""
     output: OutputManager = None
     if output_name == 'avro':
         output = AvroOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
@@ -46,4 +47,4 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
 
 
 class UnsupportedOutputTypeError(Exception):
-    pass
+    """Exception that is raised when an output name cannot resolve to a child OutputManager class"""

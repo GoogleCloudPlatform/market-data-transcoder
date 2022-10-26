@@ -17,9 +17,11 @@
 # limitations under the License.
 #
 
+# pylint: disable=too-few-public-methods
+
 class ParsedMessage:
-    def __init__(self, type, name, raw_message, dictionary=None, exception: Exception = None):
-        self.type = type
+    def __init__(self, data_type, name, raw_message, dictionary=None, exception: Exception = None):
+        self.type = data_type
         self.name = name
         self.raw_message = raw_message
         self.dictionary = dictionary

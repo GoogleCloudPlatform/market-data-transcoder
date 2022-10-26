@@ -1,6 +1,9 @@
 '''
 TODO Write doc
 '''
+
+# pylint: disable=invalid-name
+
 import itertools
 
 import six

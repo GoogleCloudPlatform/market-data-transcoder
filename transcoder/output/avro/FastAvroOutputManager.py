@@ -25,6 +25,9 @@ from transcoder.output.avro.BaseAvroOutputManager import BaseAvroOutputManager
 
 
 class FastAvroOutputManager(BaseAvroOutputManager):
+    """Output manager implementation that uses the FastAvro library to create and write to avro schema and data
+    files. """
+
     def _add_schema(self, schema: DatacastSchema):
         super()._add_schema(schema)
         output_file = open(self._get_file_name(schema.name, 'avro'), 'a+b')  # pylint: disable=consider-using-with

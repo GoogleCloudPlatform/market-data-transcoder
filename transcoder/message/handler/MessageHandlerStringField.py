@@ -23,6 +23,8 @@ from transcoder.message.DatacastField import DatacastField
 
 
 class MessageHandlerStringField(DatacastField):
+    """Message handler string type field"""
+
     def __init__(self, name):
         self.name = name
 

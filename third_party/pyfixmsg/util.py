@@ -1,5 +1,7 @@
 """Small utility-type functions"""
 
+# pylint: disable=invalid-name
+
 import datetime
 
 import six
@@ -11,15 +13,14 @@ def int_or_str(val, decode_as=None):
     """ simple format to int or string if not possible """
     try:
         return int(val)
-    except ValueError:
+    except ValueError as exc:
         if decode_as is None:
             if isinstance(val, (bytes, six.text_type)):
                 return val.strip()
             return str(val)
-        elif isinstance(val, bytes):
+        if isinstance(val, bytes):
             return val.decode(decode_as).strip()
-        else:
-            raise ValueError('Cannot decode type {}'.format(type(val)))
+        raise ValueError(f'Cannot decode type {type(val)}') from exc
 
 
 def native_str(val, encoding='UTF-8'):

@@ -18,4 +18,4 @@
 #
 
 class OutputNotAvailableError(Exception):
-    pass
+    """Error raised when configured options are not compatible with the selected output type"""
