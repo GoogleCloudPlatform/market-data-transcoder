@@ -11,6 +11,9 @@ Note::
    this module doesn't (yet) support hops as part of a message header (in FIX4.4 onwards)
 
 """
+
+# pylint: skip-file
+
 from google.cloud import bigquery
 
 from transcoder.message.DatacastField import DatacastField

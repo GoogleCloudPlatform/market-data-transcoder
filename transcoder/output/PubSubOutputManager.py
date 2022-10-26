@@ -99,7 +99,7 @@ class PubSubOutputManager(OutputManager):
     def _create_field(self, field: DatacastField):
         return field.create_avro_field()
 
-    def _add_schema(self, schema: DatacastSchema):
+    def _add_schema(self, schema: DatacastSchema):  # pylint: disable=too-many-locals
         schema_id = schema.name
         topic_id = schema.name
 

@@ -58,7 +58,7 @@ class FixParser(DatacastParser):
                 _header_tags.append(t)
 
         schemas: [DatacastSchema] = []
-        for key, value in self.spec.msg_types.items():
+        for _, value in self.spec.msg_types.items():
             message_id = value.msgtype
             message_name = value.name
             field_composition = value.composition
@@ -116,7 +116,7 @@ class FixParser(DatacastParser):
         try:
             fix_msg = message.raw_message
             message.dictionary = self.process_field(fix_msg, fix_msg.items())
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             message.exception = ex
         return message
 

@@ -43,7 +43,7 @@ class MessageParser:
                  message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
                  error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
                  sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
-                 fix_header_tags: str = None):
+                 fix_header_tags: str = None):  # pylint: disable=too-many-locals
         self.source_file_path = source_file_path
         self.source_file_format_type = source_file_format_type
         self.source_file_endian = source_file_endian
