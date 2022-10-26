@@ -35,6 +35,7 @@ class LineDelimitedFileMessageSource(FileMessageSource):
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
+        # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/26
         self.file_handle = open(self.path, 'rt')  # pylint: disable=consider-using-with
 
     def get_message_iterator(self):

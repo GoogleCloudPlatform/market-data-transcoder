@@ -76,6 +76,7 @@ class ErrorWriter:
                 os.makedirs(self.output_path)
 
             # Only create error file if errors exist
+            # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/26
             self.file = open(self.__get_file_name(self.prefix, 'out'), 'w')  # pylint: disable=consider-using-with
             self.file.write('time, message_type, message_name, failed_step, exception, data\n')
 

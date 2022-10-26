@@ -66,6 +66,7 @@ class BaseAvroOutputManager(OutputManager):
         raise OutputFunctionNotDefinedError
 
     def _save_schema(self, name, schema_json):
+        # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/26
         with open(self._get_file_name(name, 'avsc'), 'wt') as file:
             file.write(schema_json)
 

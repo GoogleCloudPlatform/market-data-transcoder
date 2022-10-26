@@ -97,12 +97,12 @@ class FixParser(DatacastParser):
             if is_duplicate is False:
                 fields.append(element)
             else:
-                logging.warning(f'Duplicate field found for message type {message_name}: {element}')
+                logging.warning('Duplicate field found for message type %s: %s', message_name, element)
 
     def _process_message(self, raw_msg) -> ParsedMessage:
         fix_msg = FixMessage()
         fix_msg.codec = self.codec
-        # TODO: Move separator to arg
+        # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/27
         separator = chr(1)  # SOH char
         msg = fix_msg.load_fix(raw_msg, separator=separator)
         msg_type_id = msg[35]

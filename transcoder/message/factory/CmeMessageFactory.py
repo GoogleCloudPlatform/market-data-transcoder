@@ -23,7 +23,7 @@ from third_party.sbedecoder import SBEMessageFactory
 from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
-class CmeMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
+class CmeMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods,duplicate-code
     def build(self, msg_buffer, offset):
         template_id = unpack_from('<H', msg_buffer, 2)[0]
 
