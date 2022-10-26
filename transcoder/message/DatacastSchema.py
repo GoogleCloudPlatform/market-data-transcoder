@@ -21,6 +21,7 @@ from transcoder.message import DatacastField
 
 
 class DatacastSchema:  # pylint: disable=too-few-public-methods)
+    """Encapsulates a message's id, name and fields"""
     def __init__(self, message_id, name: str, fields: [DatacastField]):
         self.message_id = message_id
         self.name = name
