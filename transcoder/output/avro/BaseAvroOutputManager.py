@@ -51,9 +51,9 @@ class BaseAvroOutputManager(OutputManager):
 
     def _add_schema(self, schema: DatacastSchema):
         _fields = self._get_field_list(schema.fields)
-        if schema.name in self.schemas.keys():
+        if schema.name in self.schemas:
             del self.schemas[schema.name]
-        if schema.name in self.writers.keys():
+        if schema.name in self.writers:
             self.writers[schema.name].close()
             del self.writers[schema.name]
 
@@ -74,5 +74,5 @@ class BaseAvroOutputManager(OutputManager):
 
     def wait_for_completion(self):
         super().wait_for_completion()
-        for writer_name in self.writers.keys():
-            self.writers[writer_name].close()
+        for _, writer in self.writers.items():
+            writer.close()
