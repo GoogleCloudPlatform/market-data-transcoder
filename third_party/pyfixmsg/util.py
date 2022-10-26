@@ -1,5 +1,7 @@
 """Small utility-type functions"""
 
+# pylint: disable=invalid-name
+
 import datetime
 
 import six
