@@ -37,9 +37,9 @@ from google.pubsub_v1.types import Schema
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
-    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSchemaOutOfSyncError
+from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 
 
 class PubSubOutputManager(OutputManager):

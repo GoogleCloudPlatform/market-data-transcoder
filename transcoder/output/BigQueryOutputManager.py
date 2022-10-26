@@ -24,9 +24,9 @@ from google.cloud.exceptions import NotFound, Conflict
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
-    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import BigQueryTableSchemaOutOfSyncError
+from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_KEY, GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 
 
 class BigQueryOutputManager(OutputManager):
