@@ -1,5 +1,5 @@
 avro==1.11.1
-dpkt==1.9.7.2
+dpkt==1.9.8
 lxml==4.9.1
 numpy==1.23.4
 fastavro==1.7.0
