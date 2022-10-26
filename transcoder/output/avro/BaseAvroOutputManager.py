@@ -27,6 +27,8 @@ from transcoder.output.exception import OutputFunctionNotDefinedError
 
 
 class BaseAvroOutputManager(OutputManager):
+    """Base avro output manager implementation. Used by both avro.io and fastavro implementations."""
+
     def __init__(self, prefix: str, output_path: str, lazy_create_resources: bool = False):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.prefix = prefix
@@ -49,9 +51,9 @@ class BaseAvroOutputManager(OutputManager):
 
     def _add_schema(self, schema: DatacastSchema):
         _fields = self._get_field_list(schema.fields)
-        if schema.name in self.schemas.keys():
+        if schema.name in self.schemas:
             del self.schemas[schema.name]
-        if schema.name in self.writers.keys():
+        if schema.name in self.writers:
             self.writers[schema.name].close()
             del self.writers[schema.name]
 
@@ -72,5 +74,5 @@ class BaseAvroOutputManager(OutputManager):
 
     def wait_for_completion(self):
         super().wait_for_completion()
-        for writer_name in self.writers.keys():
-            self.writers[writer_name].close()
+        for _, writer in self.writers.items():
+            writer.close()

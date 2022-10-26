@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+# pylint: disable=invalid-name
+
 import logging
 
 from third_party.pyfixmsg import RepeatingGroup
@@ -54,11 +57,10 @@ class FixParser(DatacastParser):
         _header_tags = []
         if self.fix_header_tags is not None:
             for tag in self.fix_header_tags.split(','):
-                t = self.spec.tags.by_tag(int(tag))
-                _header_tags.append(t)
+                _header_tags.append(self.spec.tags.by_tag(int(tag)))
 
         schemas: [DatacastSchema] = []
-        for key, value in self.spec.msg_types.items():
+        for _, value in self.spec.msg_types.items():
             message_id = value.msgtype
             message_name = value.name
             field_composition = value.composition
@@ -69,7 +71,7 @@ class FixParser(DatacastParser):
 
     def traverse_schema(self, message_name, composition):
         fields: [DatacastField] = []
-        for element, required in composition:
+        for element, _ in composition:
             if isinstance(element, FixTag) and element.tag:
                 self.unique_append(message_name, fields, [element])
             elif isinstance(element, Component):
@@ -81,7 +83,7 @@ class FixParser(DatacastParser):
                 _group.fields.extend(_group_fields)
                 fields.append(_group)
             else:
-                raise Exception(f'Composition field type not handled')
+                raise Exception('Composition field type not handled')
         return fields
 
     @staticmethod
@@ -116,12 +118,12 @@ class FixParser(DatacastParser):
         try:
             fix_msg = message.raw_message
             message.dictionary = self.process_field(fix_msg, fix_msg.items())
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             message.exception = ex
         return message
 
     def process_field(self, msg, items):
-        if not isinstance(items, list):
+        if not isinstance(items, list):  # pylint: disable=no-else-return
             dictionary = {}
             for key, value in items:
                 if key in self.header_tags:

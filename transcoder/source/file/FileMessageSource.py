@@ -23,6 +23,8 @@ from transcoder.source.Source import Source, SourceFunctionNotDefinedError
 
 
 class FileMessageSource(Source):
+    """Abstract file message source class"""
+
     @staticmethod
     def source_type_identifier():
         raise SourceFunctionNotDefinedError

@@ -23,6 +23,7 @@ from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMes
 
 
 def all_source_identifiers():
+    """List of all available source identifiers"""
     return [
         PcapFileMessageSource.source_type_identifier(),
         LengthDelimitedFileMessageSource.source_type_identifier(),
@@ -34,6 +35,7 @@ def all_source_identifiers():
 def get_message_source(source_name: str, source_file_format_type: str, endian: str,
                        skip_bytes: int = 0, skip_lines: int = 0,
                        message_skip_bytes: int = 0, message_length_byte_length: int = 2, ) -> Source:
+    """Returns a Source implementation instance based on the supplied source name"""
     source: Source = None
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
         source = PcapFileMessageSource(source_name, message_skip_bytes=message_skip_bytes)
@@ -53,4 +55,4 @@ def get_message_source(source_name: str, source_file_format_type: str, endian: s
 
 
 class UnsupportedFileTypeError(Exception):
-    pass
+    """Exception that is raised when a file source type name cannot resolve to a child Source class"""

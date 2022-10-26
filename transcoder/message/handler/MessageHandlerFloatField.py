@@ -24,6 +24,8 @@ from transcoder.message.DatacastField import DatacastField
 
 
 class MessageHandlerFloatField(DatacastField):
+    """Message handler float type field"""
+
     def __init__(self, name):
         self.name = name
 

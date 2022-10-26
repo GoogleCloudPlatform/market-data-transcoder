@@ -27,6 +27,7 @@ from transcoder.message.factory.MessageFactory import get_message_factory
 def get_message_parser(factory: str, schema_file_path: str, sampling_count: int = None,
                        message_type_inclusions: str = None, message_type_exclusions: str = None,
                        fix_header_tags: str = None) -> DatacastParser:
+    """Returns a DatacastParser instance based on the supplied factory name"""
     message_parser: DatacastParser = None
     if factory in SBEParser.supported_factory_types():
         message_factory = get_message_factory(factory, schema_file_path)

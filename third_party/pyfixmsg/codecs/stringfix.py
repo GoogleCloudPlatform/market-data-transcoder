@@ -1,7 +1,7 @@
 """This codec implements a simpler repeating group logic where the first tag is seen as a marker
 for repetition in a repeating group (rather than relying on the order of the tags) """
+import logging
 import re
-import warnings
 from collections import deque
 
 import six
@@ -29,6 +29,7 @@ ENCODED_TAG_SET = {str(tag) for tag in ENCODED_DATA_TAGS}
 
 # pylint: disable=too-many-branches
 # pylint: disable=too-many-statements
+# pylint: disable=too-many-locals
 
 class Codec:
     """
@@ -116,16 +117,16 @@ class Codec:
                 d=re.escape(delimiter), s=re.escape(separator)), encoding='ascii'), re.DOTALL)
             if self.encoding is not None:
                 encoding = None  # No need to decode
-                warnings.warn(
-                    'Processing a unicode message and ignore the argument "decode_as={}"'.format(self.encoding))
+                logging.warning(
+                    'Processing a unicode message and ignore the argument "decode_as=%s"', self.encoding)
             if self.decode_all_as_347:
-                warnings.warn('Processing a unicode message and ignore the argument "decode_all_as_347={}"'.format(
-                    self.decode_all_as_347))
+                logging.warning('Processing a unicode message and ignore the argument "decode_all_as_347=%s"',
+                                self.decode_all_as_347)
         elif isinstance(buff, bytes):
             custom_r = re.compile(six.ensure_binary(FIX_REGEX_STRING.format(
                 d=re.escape(delimiter), s=re.escape(separator)), encoding='ascii'), re.DOTALL)
         else:
-            raise ValueError('Unsupported type of input: {}'.format(type(buff)))
+            raise ValueError(f'Unsupported type of input: {type(buff)}')
 
         tagvals = custom_r.findall(buff)
 

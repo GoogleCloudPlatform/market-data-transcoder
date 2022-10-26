@@ -18,4 +18,4 @@
 #
 
 class OutputFunctionNotDefinedError(Exception):
-    pass
+    """Error raised when required function is not implemented by child class"""

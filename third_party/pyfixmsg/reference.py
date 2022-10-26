@@ -11,6 +11,9 @@ Note::
    this module doesn't (yet) support hops as part of a message header (in FIX4.4 onwards)
 
 """
+
+# pylint: skip-file
+
 from google.cloud import bigquery
 
 from transcoder.message.DatacastField import DatacastField
@@ -146,16 +149,16 @@ class FixTag(DatacastField):
 
     def get_bigquery_field_type(self):
         _type = self.type.lower()
+        bq_type = 'STRING'
         if self._is_enum is True or _type in STRING_TYPES:
-            return 'STRING'
+            bq_type = 'STRING'
         elif _type in INTEGER_TYPES:
-            return 'NUMERIC'
+            bq_type = 'NUMERIC'
         elif _type in FLOAT_TYPES:
-            return 'FLOAT'
+            bq_type = 'FLOAT'
         elif _type in BOOLEAN_TYPES:
-            return 'BOOLEAN'
-        else:
-            return 'STRING'
+            bq_type = 'BOOLEAN'
+        return bq_type
 
     def create_bigquery_field(self, part: DatacastField = None):
         return bigquery.SchemaField(self.name, self.get_bigquery_field_type(), mode="NULLABLE")

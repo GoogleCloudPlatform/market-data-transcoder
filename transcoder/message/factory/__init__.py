@@ -28,4 +28,5 @@ from .MemxMessageFactory import MemxMessageFactory
 
 
 def all_supported_factory_types():
+    """Returns the names of all available factories"""
     return SBEParser.supported_factory_types() + FixParser.supported_factory_types()

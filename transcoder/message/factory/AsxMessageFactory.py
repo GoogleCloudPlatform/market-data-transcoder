@@ -23,10 +23,7 @@ from third_party.sbedecoder import SBEMessageFactory
 from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
-class AsxMessageFactory(SBEMessageFactory):
-    def __init__(self, schema):
-        super().__init__(schema)
-
+class AsxMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
     def build(self, msg_buffer, offset):
         message_type_str = struct.unpack_from('>c', msg_buffer, offset)[0]
         template_id = ord(message_type_str)

@@ -17,4 +17,6 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from .TemplateSchemaNotDefinedError import TemplateSchemaNotDefinedError

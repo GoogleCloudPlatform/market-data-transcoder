@@ -21,6 +21,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+
+# pylint: skip-file
+
 from third_party.sbedecoder.message import TypeMessageField
 from transcoder.message import DatacastField
 from transcoder.message.DatacastGroup import DatacastGroup
