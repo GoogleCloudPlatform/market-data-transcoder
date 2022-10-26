@@ -123,7 +123,7 @@ class FixParser(DatacastParser):
         return message
 
     def process_field(self, msg, items):
-        if not isinstance(items, list):
+        if not isinstance(items, list):  # pylint: disable=no-else-return
             dictionary = {}
             for key, value in items:
                 if key in self.header_tags:
