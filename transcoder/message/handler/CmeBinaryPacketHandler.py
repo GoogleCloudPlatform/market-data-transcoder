@@ -25,6 +25,8 @@ from transcoder.message.handler.MessageHandlerFloatField import MessageHandlerFl
 
 
 class CmeBinaryPacketHandler(MessageHandler):
+    """CME binary package message handler which appends and computes a new field md_entry_calculated_px"""
+
     def __init__(self, parser: MessageParser):
         super().__init__(parser=parser)
 
@@ -33,7 +35,7 @@ class CmeBinaryPacketHandler(MessageHandler):
             schema.fields.append(MessageHandlerFloatField('timestamp_seconds'))
 
     def handle(self, message: ParsedMessage):
-        if message.name == 'MDIncrementalRefreshOrderBook47':
+        if message.name == 'MDIncrementalRefreshOrderBook47':  # pylint: disable=too-many-nested-blocks
             md_entries = message.dictionary.get('no_md_entries', None)
             if md_entries is not None:
                 if len(md_entries) > 0:
