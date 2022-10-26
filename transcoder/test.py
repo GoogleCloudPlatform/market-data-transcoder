@@ -23,15 +23,19 @@ import unittest
 
 
 class TestStringMethods(unittest.TestCase):
+    """TestCase implementation testing string methods"""
 
     def test_upper(self):
+        """Tests ability to uppercase string"""
         self.assertEqual('foo'.upper(), 'FOO')
 
     def test_isupper(self):
+        """Tests uppercase-ness of string"""
         self.assertTrue('FOO'.isupper())
         self.assertFalse('Foo'.isupper())
 
     def test_split(self):
+        """Tests strings split method and expected exception case"""
         s = 'hello world'
         self.assertEqual(s.split(), ['hello', 'world'])
         # check that s.split fails when the separator is not a string
