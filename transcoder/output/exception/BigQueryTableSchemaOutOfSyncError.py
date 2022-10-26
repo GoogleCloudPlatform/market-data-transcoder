@@ -18,4 +18,4 @@
 #
 
 class BigQueryTableSchemaOutOfSyncError(Exception):
-    pass
+    """Exception for conditions where message schemas are out of sync with corresponding BigQuery table schemas."""
