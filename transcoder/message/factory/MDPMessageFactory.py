@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=invalid-name
+
 from struct import unpack_from
 
 from third_party.sbedecoder import SBEMessageFactory
