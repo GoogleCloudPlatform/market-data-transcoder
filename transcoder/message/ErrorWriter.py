@@ -92,11 +92,11 @@ class ErrorWriter:
     def __encode_source_message(self, record):
         if record is None:
             return ''
-        elif self.is_base_64_encoded is True:
+        if self.is_base_64_encoded is True:
             return record
-        elif isinstance(record, bytes):
+        if isinstance(record, bytes):
             return base64.b64encode(record).decode('utf-8')
-        elif isinstance(record, str):
+        if isinstance(record, str):
             return base64.b64encode(record.encode('utf-8')).decode('utf-8')
         return base64.b64encode(record)
 

@@ -32,7 +32,7 @@ class DatacastGroup(DatacastField):
     def append_field(self, field):
         self.fields.append(field)
 
-    def cast_value_to_type(self, value, type, is_nullable: bool = True) -> Any:
+    def cast_value_to_type(self, value, field_type, is_nullable: bool = True) -> Any:
         return str(value)
 
     def create_avro_field(self, part: DatacastField = None):

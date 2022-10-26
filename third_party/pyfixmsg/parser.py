@@ -54,8 +54,7 @@ class FixParser(DatacastParser):
         _header_tags = []
         if self.fix_header_tags is not None:
             for tag in self.fix_header_tags.split(','):
-                t = self.spec.tags.by_tag(int(tag))
-                _header_tags.append(t)
+                _header_tags.append(self.spec.tags.by_tag(int(tag)))
 
         schemas: [DatacastSchema] = []
         for _, value in self.spec.msg_types.items():
@@ -81,7 +80,7 @@ class FixParser(DatacastParser):
                 _group.fields.extend(_group_fields)
                 fields.append(_group)
             else:
-                raise Exception(f'Composition field type not handled')
+                raise Exception('Composition field type not handled')
         return fields
 
     @staticmethod

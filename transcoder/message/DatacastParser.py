@@ -56,8 +56,8 @@ class DatacastParser:
         schema_list = self._process_schema()
         filtered_list = list(filter(lambda x: self.__include_message_type(x.name), schema_list))
         self.total_schema_count = len(filtered_list)
-        for s in list(map(lambda x: x.name, filtered_list)):
-            self.summary_count[s] = 0
+        for name in list(map(lambda x: x.name, filtered_list)):
+            self.summary_count[name] = 0
         return filtered_list
 
     def _process_schema(self) -> [DatacastSchema]:
@@ -98,12 +98,12 @@ class DatacastParser:
 
     def increment_summary_count(self, message_name: str):
         self.record_count += 1
-        if message_name not in self.summary_count.keys():
+        if message_name not in self.summary_count:
             self.summary_count[message_name] = 0
         self.summary_count[message_name] += 1
 
     def increment_error_summary_count(self, message_name: str = 'UNKNOWN'):
-        if message_name not in self.error_summary_count.keys():
+        if message_name not in self.error_summary_count:
             self.error_summary_count[message_name] = 0
         self.error_summary_count[message_name] += 1
 

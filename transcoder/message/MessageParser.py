@@ -35,15 +35,16 @@ from transcoder.source import Source
 from transcoder.source.SourceUtil import get_message_source
 
 
-class MessageParser:
-    def __init__(self, factory, schema_file_path: str, source_file_path: str, source_file_format_type: str,
+class MessageParser:  # pylint: disable=too-many-instance-attributes
+    def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
+                 factory, schema_file_path: str, source_file_path: str, source_file_format_type: str,
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
                  is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
                  message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
                  error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
                  sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
-                 fix_header_tags: str = None):  # pylint: disable=too-many-locals
+                 fix_header_tags: str = None):
         self.source_file_path = source_file_path
         self.source_file_format_type = source_file_format_type
         self.source_file_endian = source_file_endian
