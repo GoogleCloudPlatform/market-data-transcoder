@@ -18,4 +18,4 @@
 #
 
 class FactoryNotFoundError(Exception):
-    pass
+    """Exception thrown when a factory could not be found"""

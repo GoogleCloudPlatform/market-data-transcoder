@@ -43,6 +43,8 @@ from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSche
 
 
 class PubSubOutputManager(OutputManager):
+    """Manages creation of Pub/Sub topic and schema objects"""
+
     def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
                  lazy_create_resources: bool = False, create_schema_enforcing_topics: bool = True):
         super().__init__(lazy_create_resources=lazy_create_resources)
@@ -97,7 +99,7 @@ class PubSubOutputManager(OutputManager):
     def _create_field(self, field: DatacastField):
         return field.create_avro_field()
 
-    def _add_schema(self, schema: DatacastSchema):
+    def _add_schema(self, schema: DatacastSchema):  # pylint: disable=too-many-locals
         schema_id = schema.name
         topic_id = schema.name
 
@@ -126,9 +128,9 @@ class PubSubOutputManager(OutputManager):
                     result = self.schema_client.create_schema(
                         request={"parent": self.project_path, "schema": topic_schema, "schema_id": schema_id}
                     )
-                    logging.debug(f"Created a schema using an Avro schema:\n{result}")
+                    logging.debug('Created a schema using an Avro schema:\n%s', result)
                 except AlreadyExists:
-                    logging.debug(f"{schema_id} already exists.")
+                    logging.debug('Schema %s already exists.', schema_id)
 
         _existing_topic = self._get_topic(topic_path)
         if _existing_topic is not None:
@@ -158,9 +160,9 @@ class PubSubOutputManager(OutputManager):
 
             try:
                 response = self.publisher.create_topic(request=request_dict)
-                logging.debug(f"Created a topic:\n{response}")
+                logging.debug('Created a topic:\n%s', response)
             except AlreadyExists:
-                logging.debug(f"{topic_id} already exists.")
+                logging.debug('Topic %s already exists.', topic_id)
             except InvalidArgument as ex:
                 logging.error(ex)
                 raise
@@ -170,25 +172,26 @@ class PubSubOutputManager(OutputManager):
                 or _existing_topic.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
             topic = Topic()
             topic.name = _existing_topic.name
-            topic.labels[GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE
+            topic.labels[GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE  # pylint: disable=unsupported-assignment-operation
             request = UpdateTopicRequest(
                 topic=topic,
                 update_mask={"paths": ["labels"]}
             )
             try:
                 self.publisher.update_topic(request=request)
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 logging.warning("Failed to update topic labels: %s", err)
 
     @staticmethod
-    def get_callback(publish_future: Future, data: str) -> Callable[[pubsub_v1.publisher.futures.Future], None]:
+    def get_callback(publish_future: Future, data: str) -> Callable[[pubsub_v1.publisher.futures.Future], None]:  # pylint: disable=unused-argument
+        """PubSub future callback function used to log publishing errors"""
         def callback(_publish_future: pubsub_v1.publisher.futures.Future) -> None:
             try:
                 logging.debug(_publish_future.result())
             except InvalidArgument as error:
                 logging.error(error)
             except futures.TimeoutError:
-                logging.error(f"Publishing {data} timed out.")
+                logging.error('Publishing %s timed out.', data)
 
         return callback
 
@@ -248,15 +251,16 @@ class PubSubOutputManager(OutputManager):
     def __delete_schema(self, schema_path):
         try:
             self.schema_client.delete_schema(request={"name": schema_path})
-            logging.debug(f"Deleted a schema:\n{schema_path}")
+            logging.debug('Deleted a schema:\n%s', schema_path)
             return True
         except NotFound:
-            logging.debug(f"{schema_path} not found.")
+            logging.debug('%s not found.', schema_path)
             return False
 
     def __delete_topic(self, topic_path):
         try:
             self.publisher.delete_topic(request={"topic": topic_path})
+            return True
         except NotFound:
-            logging.debug(f"{topic_path} not found.")
+            logging.debug('%s not found.', topic_path)
             return False
