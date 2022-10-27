@@ -101,9 +101,9 @@ class SBEMessageField(DatacastField):
         self.field_offset = 0
         self.relative_offset = 0
 
-    def wrap(self, msg_buffer, base_offset, relative_offset=0):
+    def wrap(self, msg_buffer, msg_offset, relative_offset=0):
         self.msg_buffer = msg_buffer
-        self.msg_offset = base_offset
+        self.msg_offset = msg_offset
         self.relative_offset = relative_offset
 
     @property

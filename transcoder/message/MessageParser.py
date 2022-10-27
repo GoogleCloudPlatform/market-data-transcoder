@@ -163,7 +163,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
             self.output_manager.enqueue_schema(schema)
 
-        # Only need to wait if lazy create is off and you want to force creation before data is read
+        # Only need to wait if lazy create is off, and you want to force creation before data is read
         if self.lazy_create_resources is False:
             self.output_manager.wait_for_schema_creation()
 
