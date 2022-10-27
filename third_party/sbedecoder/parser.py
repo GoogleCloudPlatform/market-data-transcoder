@@ -59,7 +59,6 @@ class SBEParser(DatacastParser):
             schemas.append(DatacastSchema(message_id, message_name, fields))
         return schemas
 
-    # TODO: Should probably take fields and groups as args similiar to process_field
     def traverse_schema(self, message_name, message_schema):
         fields: [DatacastField] = []
         for field in message_schema.fields:
