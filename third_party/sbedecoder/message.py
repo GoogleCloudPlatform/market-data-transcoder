@@ -147,7 +147,7 @@ class SBEMessageField(DatacastField):
         field = self
         if part is not None:
             field = part
-        if type(field) is CompositeMessageField:
+        if isinstance(field, CompositeMessageField):
             children: [DatacastField] = []
             for _, _part in enumerate(field.parts):
                 children.append({'name': _part.name, 'type': SBEMessageField.get_avro_field_type(_part)})
@@ -185,7 +185,7 @@ class SBEMessageField(DatacastField):
         field = self
         if part is not None:
             field = part
-        if type(field) is CompositeMessageField:
+        if isinstance(field, CompositeMessageField):
             children: [bigquery.SchemaField] = []
             for _, _part in enumerate(field.parts):
                 children.append(bigquery.SchemaField(_part.name, SBEMessageField.get_bigquery_field_type(_part)))
