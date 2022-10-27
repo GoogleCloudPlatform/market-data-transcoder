@@ -357,7 +357,7 @@ class Group:
             # Will sort by tag number after the sorted tags otherwise
 
 
-class Component:
+class Component:  # pylint: disable=too-few-public-methods
     """Representation of the specification of a Component"""
 
     def __init__(self, element, spec):
@@ -368,7 +368,7 @@ class Component:
           and tags
         """
         self.name = element.get('name')
-        elem = spec.tree.findall("components/component[@name='{}']".format(self.name))[0]
+        elem = spec.tree.findall(f"components/component[@name='{self.name}']")[0]
         self.composition = _extract_composition(elem, spec)
         self._sorting_key = None
         self._spec = spec
@@ -417,7 +417,7 @@ class MessageType:
             # Will sort by tag number after the sorted tags otherwise
 
     def __repr__(self):
-        return 'MessageType(name: %s)' % self.name
+        return f'MessageType(name: {self.name})'
 
 
 def _extract_sorting_key(definition, spec, sorting_key=None, index=0):

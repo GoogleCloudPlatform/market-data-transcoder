@@ -178,13 +178,13 @@ class SBESchema:
             if field_length is not None:
                 field_length = int(field_length)
                 if is_string_type:
-                    unpack_fmt = '%ds' % field_length  # unpack as string (which may be null-terminated if shorter)
+                    unpack_fmt = f'{field_length}s'  # unpack as string (which may be null-terminated if shorter)
                 else:
-                    unpack_fmt = '%s%s%s' % (endian, str(field_length), primitive_type_fmt)
+                    unpack_fmt = f'{endian}{field_length}{primitive_type_fmt}'
             else:
                 # Field length is just the primitive type length
                 field_length = primitive_type_size
-                unpack_fmt = '%s%s' % (endian, primitive_type_fmt)
+                unpack_fmt = f'{endian}{primitive_type_fmt}'
 
             constant = None
             optional = False
@@ -418,7 +418,7 @@ class SBESchema:
             # make it an attribute too
             setattr(entity_type, field.name, field)
 
-    def _add_groups(self, entity, entity_type, endian):
+    def _add_groups(self, entity, entity_type, endian):  # pylint: disable=too-many-locals
         # Now figure out the message groups
         repeating_groups = []
         for group_type in entity.get('groups', []):
