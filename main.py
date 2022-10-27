@@ -46,6 +46,8 @@ def main():
                                       help='Message factory for decoding')
     source_options_group.add_argument('--schema_file', required=True, type=str, help='Path to the schema file')
     source_options_group.add_argument('--source_file', required=True, type=str, help='Path to the source file')
+    source_options_group.add_argument('--source_file_encoding', type=str, default='utf-8', help='The source file '
+                                                                                                'character encoding')
     source_options_group.add_argument('--source_file_format_type', required=True, choices=all_source_identifiers(),
                                       help='The source file format')
     source_options_group.add_argument('--base64', action='store_true',
@@ -128,6 +130,7 @@ def main():
     factory = args.factory
     schema_file_path = os.path.expanduser(args.schema_file)
     source_file_path = os.path.expanduser(args.source_file)
+    source_file_encoding = args.source_file_encoding
     source_file_format_type = args.source_file_format_type
     source_file_endian = args.source_file_endian
     skip_lines = args.skip_lines
@@ -150,7 +153,8 @@ def main():
     message_type_exclusions = args.message_type_exclusions
     fix_header_tags = args.fix_header_tags
 
-    message_parser = MessageParser(factory, schema_file_path, source_file_path, source_file_format_type,
+    message_parser = MessageParser(factory, schema_file_path,
+                                   source_file_path, source_file_encoding, source_file_format_type,
                                    source_file_endian, skip_lines=skip_lines, skip_bytes=skip_bytes,
                                    message_skip_bytes=message_skip_bytes, is_base_64_encoded=base64,
                                    output_type=output_type, output_path=output_path, output_encoding=output_encoding,

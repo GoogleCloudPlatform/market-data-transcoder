@@ -29,14 +29,14 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'line_delimited'
 
-    def __init__(self, file_path: str, skip_lines: int = 0):
+    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0):
         super().__init__(file_path)
+        self.encoding = encoding
         self.skip_lines = skip_lines
 
     def open(self):
         self.file_size = os.path.getsize(self.path)
-        # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/26
-        self.file_handle = open(self.path, 'rt')  # pylint: disable=consider-using-with
+        self.file_handle = open(self.path, mode='rt', encoding=self.encoding)  # pylint: disable=consider-using-with
 
     def get_message_iterator(self):
         if self.file_size == 0:

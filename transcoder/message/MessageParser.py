@@ -37,7 +37,8 @@ from transcoder.source.SourceUtil import get_message_source
 
 class MessageParser:  # pylint: disable=too-many-instance-attributes
     def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
-                 factory, schema_file_path: str, source_file_path: str, source_file_format_type: str,
+                 factory, schema_file_path: str,
+                 source_file_path: str, source_file_encoding: str, source_file_format_type: str,
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
                  is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
@@ -46,6 +47,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
                  fix_header_tags: str = None):
         self.source_file_path = source_file_path
+        self.source_file_encoding = source_file_encoding
         self.source_file_format_type = source_file_format_type
         self.source_file_endian = source_file_endian
         self.skip_lines = skip_lines
@@ -114,9 +116,10 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         start_time = datetime.now()
         self.process_schemas()
 
-        source: Source = get_message_source(self.source_file_path, self.source_file_format_type,
-                                            self.source_file_endian, skip_lines=self.skip_lines,
-                                            skip_bytes=self.skip_bytes, message_skip_bytes=self.message_skip_bytes)
+        source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
+                                            self.source_file_format_type, self.source_file_endian,
+                                            skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
+                                            message_skip_bytes=self.message_skip_bytes)
 
         self.process_data(source)
 
