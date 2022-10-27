@@ -128,16 +128,16 @@ class SBEMessageField(DatacastField):
     def get_avro_field_type(part: DatacastField = None):
         field = part
         avro_type = ['null', 'string']
-        if type(field) is TypeMessageField:
+        if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
                 avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
             mapped_type = avro_type_map[field.primitive_type]
             avro_type = ['null', mapped_type]
-        elif type(field) is EnumMessageField:
+        elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
                 avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
             avro_type = ['null', 'string']
-        elif type(field) is SetMessageField:
+        elif isinstance(field, SetMessageField):
             avro_type = ['null', 'string']
         else:
             logging.warning('Unknown type for field: %s', field.name)
