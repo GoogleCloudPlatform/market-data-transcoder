@@ -68,7 +68,7 @@ class SBEParser(DatacastParser):
         # Iterate groups which is an aray of SBERepeatingGroupContainer
         for group in message_schema.groups:
             # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/35 - Handle nested groups
-            nested_groups = group.groups
+            nested_groups = group.groups  # pylint: disable=unused-variable
 
             _group = DatacastGroup(group.name)
             _group_fields = self.traverse_schema(message_name, group)
@@ -86,7 +86,7 @@ class SBEParser(DatacastParser):
         sbe_msg = message.raw_message
         try:
             message.dictionary = self.process_field(sbe_msg.fields, sbe_msg.groups)
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             message.exception = ex
         return message
 
