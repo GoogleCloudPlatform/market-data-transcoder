@@ -18,4 +18,4 @@
 #
 
 class FixSchemaNotDefinedError(Exception):
-    pass
+    """Error for when the supplied message type is not found in the provided schema"""

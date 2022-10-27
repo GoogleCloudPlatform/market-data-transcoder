@@ -32,6 +32,8 @@ from transcoder.message.ParsedMessage import ParsedMessage
 
 
 class SBEParser(DatacastParser):
+    """SBE message parser"""
+
     @staticmethod
     def supported_factory_types():
         return ['asx', 'cme', 'memx']
@@ -43,6 +45,7 @@ class SBEParser(DatacastParser):
         self.factory = msg_factory
 
     def parse(self, message_buffer, offset=0):
+        """Passes a message buffer to the factory for processing"""
         msg_offset = offset
         while msg_offset < len(message_buffer):
             message, message_size = self.factory.build(message_buffer, msg_offset)
@@ -60,6 +63,7 @@ class SBEParser(DatacastParser):
         return schemas
 
     def traverse_schema(self, message_name, message_schema):
+        """Traverses message schema and builds the schema to a Datacast representation"""
         fields: [DatacastField] = []
         for field in message_schema.fields:
             if field.id is not None:
