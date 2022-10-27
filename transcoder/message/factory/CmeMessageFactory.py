@@ -25,6 +25,7 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 class CmeMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods,duplicate-code
     """CME-specific logic to unpack message from buffer & decode according to message template"""
+
     def build(self, msg_buffer, offset):
         template_id = unpack_from('<H', msg_buffer, 2)[0]
 

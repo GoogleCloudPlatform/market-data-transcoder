@@ -48,6 +48,7 @@ class TranscodeStep(Enum):
 
 class ErrorWriter:
     """Persist data about errors to file"""
+
     def __init__(self, prefix: str, is_base_64_encoded: bool = False, output_path: str = None):
         self.prefix: str = prefix
         self.is_base_64_encoded = is_base_64_encoded

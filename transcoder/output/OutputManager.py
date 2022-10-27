@@ -27,6 +27,7 @@ from transcoder.output.exception import OutputFunctionNotDefinedError, OutputMan
 
 class OutputManager:
     """Abstract output manager class"""
+
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
         self.schema_thread_pool_executor: ThreadPoolExecutor = concurrent.futures.ThreadPoolExecutor(
             max_workers=schema_max_workers)

@@ -25,6 +25,7 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 class AsxMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
     """ASX-specific logic to unpack message from buffer & decode according to message template"""
+
     def build(self, msg_buffer, offset):
         message_type_str = struct.unpack_from('>c', msg_buffer, offset)[0]
         template_id = ord(message_type_str)

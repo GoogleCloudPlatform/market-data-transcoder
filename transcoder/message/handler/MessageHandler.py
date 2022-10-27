@@ -22,6 +22,7 @@ from transcoder.message import MessageParser, ParsedMessage
 
 class MessageHandler:
     """Base class for handlers of specific message types"""
+
     def __init__(self, parser: MessageParser):
         self.parser = parser
         self.all_value: str = '__ALL__'

@@ -23,6 +23,7 @@ from transcoder.message.exception import ParserFunctionNotDefinedError
 
 class DatacastParser:
     """Class encapsulating message parsing and processing functionality """
+
     @staticmethod
     def supported_factory_types():
         """Static method for retrieving list of provider-specific factory classes"""

@@ -37,6 +37,7 @@ from transcoder.source.SourceUtil import get_message_source
 
 class MessageParser:  # pylint: disable=too-many-instance-attributes
     """Main entry point for message transcoding"""
+
     def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
                  factory, schema_file_path: str,
                  source_file_path: str, source_file_encoding: str, source_file_format_type: str,

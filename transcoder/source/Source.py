@@ -19,6 +19,7 @@
 
 class Source:
     """Class representing sources of market data"""
+
     @staticmethod
     def source_type_identifier():
         """Returns identifier of source type"""

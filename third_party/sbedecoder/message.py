@@ -259,7 +259,8 @@ class TypeMessageField(SBEMessageField):
 
 
 class SetMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,  # pylint: disable=too-many-arguments
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 unpack_fmt=None, field_offset=None,
                  choices=None, field_length=None, semantic_type=None, since_version=0):
         super(SBEMessageField, self).__init__()
         self.name = name
@@ -439,9 +440,9 @@ class SBERepeatingGroup:
 
 
 class SBERepeatingGroupContainer:
-    def __init__(self, name=None, original_name=None, id=None, block_length_field=None,  # pylint: disable=too-many-arguments
-                 num_in_group_field=None, dimension_size=None, fields=None, groups=None,
-                 since_version=0):
+    def __init__(self, name=None, original_name=None, id=None,  # pylint: disable=too-many-arguments
+                 block_length_field=None, num_in_group_field=None, dimension_size=None, fields=None,
+                 groups=None, since_version=0):
         self.msg_buffer = None
         self.msg_offset = 0
         self.group_start_offset = 0

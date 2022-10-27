@@ -143,7 +143,8 @@ class SBESchema:
         definition['fields'] = fields
         definition['groups'] = groups
 
-    def _build_message_field(self, message_type, field_definition, offset, endian, add_header_size=True):  # pylint: disable=too-many-locals,(too-many-branches,too-many-statements
+    def _build_message_field(self,  # pylint: disable=too-many-locals,(too-many-branches,too-many-statements
+                             message_type, field_definition, offset, endian, add_header_size=True):
         field_original_name = field_definition['name']
         field_name = convert_to_underscore(field_original_name)
         field_id = field_definition['id']
