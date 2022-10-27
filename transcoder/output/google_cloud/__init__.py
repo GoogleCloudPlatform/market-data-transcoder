@@ -19,4 +19,5 @@
 
 # pylint: disable=invalid-name
 
-from .OutputManager import OutputManager
+from .BigQueryOutputManager import BigQueryOutputManager
+from. PubSubOutputManager import PubSubOutputManager
