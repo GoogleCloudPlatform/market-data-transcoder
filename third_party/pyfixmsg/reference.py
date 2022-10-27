@@ -165,10 +165,9 @@ class FixTag(DatacastField):
         is_fix_tag = isinstance(other, self.__class__)
         if not is_fix_tag:
             return False
-        if self.name == other.name and self.tag == other.tag and self.type == other.type:
-            return True
-        else:
-            return False
+        return self.name == other.name and \
+            self.tag == other.tag and \
+            self.type == other.type
 
     def __repr__(self):
         return 'FixTag(name: %s, tag: %s, type: %s)' % (self.name, self.tag, self.type)
