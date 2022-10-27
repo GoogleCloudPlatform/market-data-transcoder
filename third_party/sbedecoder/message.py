@@ -218,7 +218,7 @@ class TypeMessageField(SBEMessageField):
         self.primitive_type = primitive_type
 
     @property
-    def value(self):
+    def value(self):  # pylint: disable=too-many-return-statements
         _raw_value = self.raw_value
 
         # Handle nullValues
@@ -240,9 +240,8 @@ class TypeMessageField(SBEMessageField):
         if self.is_string_type:
             parts = _raw_value.split(b'\0', 1)
             return parts[0].decode('UTF-8')
-        elif self.primitive_type == 'char' and not isinstance(_raw_value, str):
+        if self.primitive_type == 'char' and not isinstance(_raw_value, str):
             return _raw_value.decode('UTF-8')
-
         if self.is_bool_type:
             return get_bool_value(_raw_value)
 
@@ -260,7 +259,7 @@ class TypeMessageField(SBEMessageField):
 
 
 class SetMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,  # pylint: disable=too-many-arguments
                  choices=None, field_length=None, semantic_type=None, since_version=0):
         super(SBEMessageField, self).__init__()
         self.name = name
@@ -301,7 +300,8 @@ class SetMessageField(SBEMessageField):
 
 
 class EnumMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 unpack_fmt=None, field_offset=None,
                  enum_values=None, field_length=None, semantic_type=None, since_version=0, enum_fallback_to_name=False,
                  primitive_type=None):
         super(SBEMessageField, self).__init__()
@@ -360,7 +360,8 @@ class EnumMessageField(SBEMessageField):
 
 
 class CompositeMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, field_offset=None, field_length=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 field_offset=None, field_length=None,
                  parts=None, float_value=False, semantic_type=None, since_version=0):
         super(SBEMessageField, self).__init__()
         self.name = name
