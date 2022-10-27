@@ -68,7 +68,7 @@ class SBEParser(DatacastParser):
 
         # Iterate groups which is an aray of SBERepeatingGroupContainer
         for group in message_schema.groups:
-            # TODO: Handle nested groups
+            # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/35 - Handle nested groups
             nested_groups = group.groups
 
             _group = DatacastGroup(group.name)

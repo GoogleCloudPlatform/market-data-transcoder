@@ -94,7 +94,7 @@ class FixTag(DatacastField):
             self._values = tuple(pair for pair in self._values if pair[1] != name)
         else:
             if value not in set(v[0] for v in self._values):
-                raise KeyError("{} is not known as a value for tag {}".format(value, self.tag))
+                raise KeyError(f'{value} is not known as a value for tag {self.tag}')
             self._values = tuple(pair for pair in self._values if pair[0] != value)
 
         self._val_by_name = {}

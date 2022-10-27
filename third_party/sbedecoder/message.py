@@ -148,7 +148,7 @@ class SBEMessageField(DatacastField):
             field = part
         if type(field) is CompositeMessageField:
             children: [DatacastField] = []
-            for index, part in enumerate(field.parts):
+            for _, part in enumerate(field.parts):
                 children.append({'name': part.name, 'type': SBEMessageField.get_avro_field_type(part)})
             return {
                 'name': field.name,
@@ -221,8 +221,6 @@ class TypeMessageField(SBEMessageField):
         _raw_value = self.raw_value
 
         # Handle nullValues
-        # TODO: This should potentially read in a nullValue option set in the schema
-        # https://www.fixtrading.org/standards/sbe-online/
         if self.primitive_type in null_value:
             n_val = null_value[self.primitive_type]
             if _raw_value == n_val:
@@ -326,8 +324,6 @@ class EnumMessageField(SBEMessageField):
         _raw_value = self.raw_value
 
         # Handle nullValues
-        # TODO: This should potentially read in a nullValue option set in the schema
-        # https://www.fixtrading.org/standards/sbe-online/
         if self.primitive_type in null_value:
             n_val = null_value[self.primitive_type]
             if _raw_value == n_val:
@@ -440,7 +436,7 @@ class SBERepeatingGroup:
             yield group
 
 
-class SBERepeatingGroupContainer(object):
+class SBERepeatingGroupContainer:
     def __init__(self, name=None, original_name=None, id=None, block_length_field=None,
                  num_in_group_field=None, dimension_size=None, fields=None, groups=None,
                  since_version=0):
@@ -483,7 +479,7 @@ class SBERepeatingGroupContainer(object):
         # for each group, add the group length which can vary due to nested groups
         repeated_group_offset = group_start_offset + self.dimension_size
         nested_groups_length = 0
-        for i in range(num_instances):
+        for _ in range(num_instances):
             repeated_group = SBERepeatingGroup(msg_buffer,
                                                msg_offset,
                                                repeated_group_offset + nested_groups_length,
@@ -518,7 +514,7 @@ class SBERepeatingGroupContainer(object):
         return group
 
 
-class SBEMessage(object):
+class SBEMessage:
     def __init__(self):
         self.name = self.__class__.__name__
         self.msg_buffer = None
@@ -559,7 +555,7 @@ class SBEMessage(object):
         return '%s' % (self.__class__.__name__,)
 
 
-class SBEMessageFactory(object):
+class SBEMessageFactory:
     def __init__(self, schema):
         self.schema = schema
 
