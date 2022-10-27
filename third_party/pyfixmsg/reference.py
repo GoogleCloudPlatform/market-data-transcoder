@@ -431,19 +431,19 @@ def _extract_sorting_key(definition, spec, sorting_key=None, index=0):
     if sorting_key is None:
         sorting_key = {35: 0, 10: int(10e9)}
         trailer_tags = [item.tag for item in spec.trailer_tags] or TRAILER_TAGS
-        for index, item in enumerate(trailer_tags[::-1]):
-            sorting_key[item] = 10e9 - index
+        for i, item in enumerate(trailer_tags[::-1]):
+            sorting_key[item] = 10e9 - i
         header_tags = [item.tag for item in spec.header_tags] or HEADER_TAGS
-        for index, item in enumerate(header_tags):
-            sorting_key[item] = index
+        for i, item in enumerate(header_tags):
+            sorting_key[item] = i
 
     start_index = index + 1
-    for index, (item, _) in enumerate(definition):
+    for i, (item, _) in enumerate(definition):
         if isinstance(item, FixTag):
-            sorting_key[item.tag] = index + start_index
+            sorting_key[item.tag] = i + start_index
         elif isinstance(item, Component):
-            _extract_sorting_key(item.composition, spec, sorting_key, index=index + start_index)
+            _extract_sorting_key(item.composition, spec, sorting_key, index=i + start_index)
         elif isinstance(item, Group):
-            sorting_key[item.count_tag.tag] = index + start_index
+            sorting_key[item.count_tag.tag] = i + start_index
 
     return sorting_key
