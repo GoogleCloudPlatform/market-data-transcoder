@@ -98,7 +98,7 @@ class SBEParser(DatacastParser):
                 continue
 
             if field.id is not None:
-                if type(field) is TypeMessageField and field.is_string_type is True and field.value is not None:
+                if isinstance(field, TypeMessageField) and field.is_string_type is True and field.value is not None:
                     output_result[field.name] = field.value.strip()
                 else:
                     output_result[field.name] = field.value
