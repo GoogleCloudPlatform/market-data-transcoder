@@ -60,7 +60,7 @@ class OutputManager:
         raise OutputFunctionNotDefinedError
 
     def write_record(self, record_type_name, record):
-        """For record of given type optinally lazily creation resources and write record"""
+        """For record of given type optionally lazily creation resources and write record"""
         if self.lazy_create_resources is True and record_type_name not in self.existing_schemas:
             schema = self.schema_definitions[record_type_name]
             self.add_schema(schema)
@@ -70,7 +70,7 @@ class OutputManager:
         raise OutputFunctionNotDefinedError
 
     def wait_for_schema_creation(self):
-        """Wait for enqueued schema to be created and throw schema error if necessary"""
+        """Wait for enqueued schema resources. Nothing to wait for if lazy_create_resources is enabled."""
         self.schema_thread_pool_executor.shutdown(wait=True)
         result = futures.wait(self.schema_futures)
         exceptions = []
@@ -82,5 +82,5 @@ class OutputManager:
             raise OutputManagerSchemaError(exceptions)
 
     def wait_for_completion(self):
-        """Wait for completion of schema creation"""
+        """Extend or override to wait until output manager has fully completed writing and other work"""
         self.wait_for_schema_creation()
