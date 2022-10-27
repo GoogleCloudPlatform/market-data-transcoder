@@ -164,18 +164,18 @@ class SBEMessageField(DatacastField):
     @staticmethod
     def get_bigquery_field_type(field: DatacastField = None):
         bq_type = 'STRING'
-        if type(field) is TypeMessageField:
+        if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
                 bq_type = 'BOOLEAN'
             else:
                 mapped_type = bigquery_type_map[field.primitive_type]
                 bq_type = mapped_type
-        elif type(field) is EnumMessageField:
+        elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
                 bq_type = 'BOOLEAN'
             else:
                 bq_type = 'STRING'
-        elif type(field) is SetMessageField:
+        elif isinstance(field, SetMessageField):
             bq_type = 'STRING'
         else:
             logging.warning('Unknown type for field: %s', field.name)
