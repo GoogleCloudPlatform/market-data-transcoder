@@ -24,6 +24,8 @@ from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
 class MemxMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
+    """Memx-specific logic to unpack message from buffer & decode according to message template"""
+
     def build(self, msg_buffer, offset):
         template_id = unpack_from('>B', msg_buffer, 2)[0]
         message_type = self.schema.get_message_type(template_id)

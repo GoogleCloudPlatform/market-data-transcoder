@@ -8,11 +8,6 @@ import itertools
 
 import six
 
-if six.PY2:
-    STRSUM = lambda x: sum(bytearray(x))
-else:
-    STRSUM = sum
-
 
 # pylint: disable=invalid-name
 
@@ -135,8 +130,8 @@ def len_and_chsum(msg, group=False):
             else:
                 value = str(value).encode('UTF-8')
         if tag == b'8':
-            chsum_count += STRSUM(tag)
-            chsum_count += STRSUM(value)
+            chsum_count += sum(tag)
+            chsum_count += sum(value)
             chsum_count += 1
             chsum_count += 61
             continue
@@ -148,12 +143,12 @@ def len_and_chsum(msg, group=False):
             # repeating groups
             g_tag = str(value.entry_tag[0]).encode('ascii')
             g_val = str(value.entry_tag[1]).encode('UTF-8')
-            chsum_count += STRSUM(g_tag)
+            chsum_count += sum(g_tag)
             count += len(g_tag)
             count += 1  # separator
             chsum_count += 1  # separator
             count += len(g_val)
-            chsum_count += STRSUM(g_val)
+            chsum_count += sum(g_val)
             count += 1  # delimiter
             chsum_count += 61  # delimiter
             for member in value:
@@ -162,16 +157,16 @@ def len_and_chsum(msg, group=False):
                 chsum_count += member_chsum
         else:
             # normal tags
-            chsum_count += STRSUM(tag)
+            chsum_count += sum(tag)
             count += len(tag)
             count += 1  # separator
             chsum_count += 1  # separator
             count += len(value)
-            chsum_count += STRSUM(value)
+            chsum_count += sum(value)
             count += 1  # delimiter
             chsum_count += 61  # delimiter
             # no need to add delimiter here as it is counted in the fragment
     if not group:
         chsum_count += 119  # <SOH>9=
-        chsum_count += STRSUM(str(count).encode('ascii'))
+        chsum_count += sum(str(count).encode('ascii'))
     return count, chsum_count

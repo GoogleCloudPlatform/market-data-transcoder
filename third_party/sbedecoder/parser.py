@@ -22,7 +22,6 @@
 # SOFTWARE.
 #
 
-# pylint: skip-file
 
 from third_party.sbedecoder.message import TypeMessageField
 from transcoder.message import DatacastField
@@ -60,7 +59,6 @@ class SBEParser(DatacastParser):
             schemas.append(DatacastSchema(message_id, message_name, fields))
         return schemas
 
-    # TODO: Should probably take fields and groups as args similiar to process_field
     def traverse_schema(self, message_name, message_schema):
         fields: [DatacastField] = []
         for field in message_schema.fields:
@@ -69,8 +67,8 @@ class SBEParser(DatacastParser):
 
         # Iterate groups which is an aray of SBERepeatingGroupContainer
         for group in message_schema.groups:
-            # TODO: Handle nested groups
-            nested_groups = group.groups
+            # TODO: https://github.com/GoogleCloudPlatform/market-data-transcoder/issues/35 - Handle nested groups
+            nested_groups = group.groups  # pylint: disable=unused-variable
 
             _group = DatacastGroup(group.name)
             _group_fields = self.traverse_schema(message_name, group)
@@ -88,7 +86,7 @@ class SBEParser(DatacastParser):
         sbe_msg = message.raw_message
         try:
             message.dictionary = self.process_field(sbe_msg.fields, sbe_msg.groups)
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             message.exception = ex
         return message
 
@@ -100,7 +98,7 @@ class SBEParser(DatacastParser):
                 continue
 
             if field.id is not None:
-                if type(field) is TypeMessageField and field.is_string_type is True and field.value is not None:
+                if isinstance(field, TypeMessageField) and field.is_string_type is True and field.value is not None:
                     output_result[field.name] = field.value.strip()
                 else:
                     output_result[field.name] = field.value

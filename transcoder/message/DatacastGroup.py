@@ -26,6 +26,7 @@ from transcoder.message.DatacastField import DatacastField
 
 class DatacastGroup(DatacastField):
     """Implementation class encapsulating grouped fields"""
+
     def __init__(self, name):
         self.name = name
         self.fields: [] = []

@@ -37,9 +37,9 @@ from google.pubsub_v1.types import Schema
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.OutputManager import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
-    GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.exception import OutputNotAvailableError, PubSubTopicSchemaOutOfSyncError
+from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_LABEL_DICT, GOOGLE_PACKAGED_SOLUTION_KEY, \
+    GOOGLE_PACKAGED_SOLUTION_VALUE
 
 
 class PubSubOutputManager(OutputManager):
@@ -172,7 +172,8 @@ class PubSubOutputManager(OutputManager):
                 or _existing_topic.labels.get(GOOGLE_PACKAGED_SOLUTION_KEY, None) != GOOGLE_PACKAGED_SOLUTION_VALUE:
             topic = Topic()
             topic.name = _existing_topic.name
-            topic.labels[GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE  # pylint: disable=unsupported-assignment-operation
+            topic.labels[  # pylint: disable=unsupported-assignment-operation
+                GOOGLE_PACKAGED_SOLUTION_KEY] = GOOGLE_PACKAGED_SOLUTION_VALUE
             request = UpdateTopicRequest(
                 topic=topic,
                 update_mask={"paths": ["labels"]}
@@ -185,6 +186,7 @@ class PubSubOutputManager(OutputManager):
     @staticmethod
     def get_callback(publish_future: Future, data: str) -> Callable[[pubsub_v1.publisher.futures.Future], None]:  # pylint: disable=unused-argument
         """PubSub future callback function used to log publishing errors"""
+
         def callback(_publish_future: pubsub_v1.publisher.futures.Future) -> None:
             try:
                 logging.debug(_publish_future.result())

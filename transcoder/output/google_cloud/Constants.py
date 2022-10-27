@@ -17,5 +17,6 @@
 # limitations under the License.
 #
 
-class MessageParserNotDefinedError(Exception):
-    """Error to be thrown when type of message parser cannot be determined based on user's specified factory"""
+GOOGLE_PACKAGED_SOLUTION_KEY = "goog-packaged-solution"
+GOOGLE_PACKAGED_SOLUTION_VALUE = "datacast"
+GOOGLE_PACKAGED_SOLUTION_LABEL_DICT = {GOOGLE_PACKAGED_SOLUTION_KEY: GOOGLE_PACKAGED_SOLUTION_VALUE}

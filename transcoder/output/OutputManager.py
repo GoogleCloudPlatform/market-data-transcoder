@@ -24,13 +24,10 @@ from concurrent.futures import ThreadPoolExecutor
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output.exception import OutputFunctionNotDefinedError, OutputManagerSchemaError
 
-GOOGLE_PACKAGED_SOLUTION_KEY = "goog-packaged-solution"
-GOOGLE_PACKAGED_SOLUTION_VALUE = "datacast"
-GOOGLE_PACKAGED_SOLUTION_LABEL_DICT = {GOOGLE_PACKAGED_SOLUTION_KEY: GOOGLE_PACKAGED_SOLUTION_VALUE}
-
 
 class OutputManager:
     """Abstract output manager class"""
+
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
         self.schema_thread_pool_executor: ThreadPoolExecutor = concurrent.futures.ThreadPoolExecutor(
             max_workers=schema_max_workers)
@@ -55,6 +52,7 @@ class OutputManager:
         self.schema_definitions[schema.name] = schema
 
     def add_schema(self, schema: DatacastSchema):
+        """Adds a DatacastSchema instance to list of known message schemas"""
         self._add_schema(schema)
         if schema.name not in self.existing_schemas:
             self.existing_schemas[schema.name] = True
@@ -63,6 +61,7 @@ class OutputManager:
         raise OutputFunctionNotDefinedError
 
     def write_record(self, record_type_name, record):
+        """For record of given type optionally lazily creation resources and write record"""
         if self.lazy_create_resources is True and record_type_name not in self.existing_schemas:
             schema = self.schema_definitions[record_type_name]
             self.add_schema(schema)
@@ -72,6 +71,7 @@ class OutputManager:
         raise OutputFunctionNotDefinedError
 
     def wait_for_schema_creation(self):
+        """Wait for enqueued schema resources. Nothing to wait for if lazy_create_resources is enabled."""
         self.schema_thread_pool_executor.shutdown(wait=True)
         result = futures.wait(self.schema_futures)
         exceptions = []
@@ -83,4 +83,5 @@ class OutputManager:
             raise OutputManagerSchemaError(exceptions)
 
     def wait_for_completion(self):
+        """Extend or override to wait until output manager has fully completed writing and other work"""
         self.wait_for_schema_creation()

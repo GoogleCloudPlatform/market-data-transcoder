@@ -21,20 +21,26 @@ from transcoder.message import MessageParser, ParsedMessage
 
 
 class MessageHandler:
+    """Base class for handlers of specific message types"""
+
     def __init__(self, parser: MessageParser):
         self.parser = parser
         self.all_value: str = '__ALL__'
 
     @property
     def supports_all_message_types(self):
+        """Returns whether handler class supports all message types within a given source"""
         return True
 
     @property
     def supported_message_types(self):
+        """Returns handler's supported message types"""
         return []
 
     def append_manufactured_fields(self, schema):  # pylint: disable=unused-argument
+        """Extend for handler-specific logic for appending manufactured field to message"""
         return None
 
     def handle(self, message: ParsedMessage):
+        """Extend for handler-specific logic for message processing"""
         raise Exception

@@ -26,7 +26,9 @@ from third_party.sbedecoder import SBEMessageFactory
 from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
-class MDPMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
+class MDPMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods,duplicate-code
+    """MDP-specific logic to unpack message from buffer & decode according to message template"""
+
     def build(self, msg_buffer, offset):
         # Peek at the template id to figure out what class to build.
         # This looks past the starting 2 byte MsgSize header that is CME specific

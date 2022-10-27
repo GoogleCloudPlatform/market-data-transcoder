@@ -69,7 +69,7 @@ class FixTag(DatacastField):
     def add_enum_value(self, name, value):
         """Add a value to the tag's enum values."""
         if name in set(v[1] for v in self._values):
-            raise KeyError("Name {} is already known in tag {}'s enum".format(name, self.tag))
+            raise KeyError(f'Name {name} is already known in tag {self.tag}\'s enum')
         self._values = self._values + ((value, name),)
         if self._val_by_name:
             self._val_by_name[name] = value
@@ -85,18 +85,16 @@ class FixTag(DatacastField):
             raise TypeError("either name or value is required")
         if name and value:
             if self._val_by_name[name] != value:
-                raise ValueError("The known value {} for enum name "
-                                 "{} is different to you gave: {} for tag {}".format(self._val_by_name[name],
-                                                                                     name,
-                                                                                     value, self.tag))
+                raise ValueError(f'The known value {self._val_by_name[name]} for enum name {name} is different to you '
+                                 f'gave: {value} for tag {self.tag}')
         if name:
             if name not in set(v[1] for v in self._values):
                 # can't use the maps here because when deleting multiple tags they are empty come the second
-                raise KeyError("{} is not known as a name for tag {}".format(name, self.tag))
+                raise KeyError(f'{name} is not known as a name for tag {self.tag}')
             self._values = tuple(pair for pair in self._values if pair[1] != name)
         else:
             if value not in set(v[0] for v in self._values):
-                raise KeyError("{} is not known as a value for tag {}".format(value, self.tag))
+                raise KeyError(f'{value} is not known as a value for tag {self.tag}')
             self._values = tuple(pair for pair in self._values if pair[0] != value)
 
         self._val_by_name = {}
@@ -111,28 +109,28 @@ class FixTag(DatacastField):
     def enum_by_value(self, value):
         """ Retrieve an enum value by value"""
         if not self._val_by_val:
-            self._val_by_val = {val: name for val, name in self._values}
+            self._val_by_val = dict(self._values)
         return self._val_by_val[value]
 
     def get_avro_field_type(self):
         _type = self.type.lower()
+        avro_type = ['null', 'string']
         if self._is_enum is True or _type in STRING_TYPES:
-            return ['null', 'string']
+            avro_type = ['null', 'string']
         elif _type in INTEGER_TYPES:
-            return ['null', 'int']
+            avro_type = ['null', 'int']
         elif _type in FLOAT_TYPES:
-            return ['null', 'float']
+            avro_type = ['null', 'float']
         elif _type in BOOLEAN_TYPES:
-            return ['null', 'boolean']
-        else:
-            return ['null', 'string']
+            avro_type = ['null', 'boolean']
+        return avro_type
 
     def create_avro_field(self, part: DatacastField = None):
         return {'name': self.name, 'type': self.get_avro_field_type()}
 
-    def cast_value_to_type(self, value, type_name: str, is_nullable: bool = True):
+    def cast_value_to_type(self, value, field_type: str, is_nullable: bool = True):
         result = value
-        _type = type_name.lower()
+        _type = field_type.lower()
         if self._is_enum is True:
             result = self.enum_by_value(value)
         elif _type in STRING_TYPES:
@@ -167,13 +165,12 @@ class FixTag(DatacastField):
         is_fix_tag = isinstance(other, self.__class__)
         if not is_fix_tag:
             return False
-        if self.name == other.name and self.tag == other.tag and self.type == other.type:
-            return True
-        else:
-            return False
+        return self.name == other.name and \
+               self.tag == other.tag and \
+               self.type == other.type
 
     def __repr__(self):
-        return 'FixTag(name: %s, tag: %s, type: %s)' % (self.name, self.tag, self.type)
+        return f'FixTag(name: {self.name}, tag: {self.tag}, type: {self.type})'
 
 
 class TagsReference:
@@ -222,7 +219,7 @@ class TagsReference:
         return self._by_tag[tag]
 
 
-class FixSpec:
+class FixSpec:  # pylint: disable=too-few-public-methods
     """
     A python-friendly representation of a FIX spec.
     This class is built from an XML file sourced from Quickfix (http://www.quickfixengine.org/).
@@ -243,7 +240,7 @@ class FixSpec:
         self.tree = parse(xml_file).getroot()
         major = self.tree.get('major')
         minor = self.tree.get('minor')
-        self.version = "FIX{}.{}".format(major, minor)
+        self.version = f'FIX{major}.{minor}'
         self._eager = eager
         self.tags = None
         self._populate_tags()
@@ -283,10 +280,10 @@ def _extract_composition(element, spec):
             returned.append((Component(elem, spec), elem.get('required') == "Y"))
         elif elem.tag == 'group':
             returned.append((Group.from_element(elem, spec), elem.get('required') == "Y"))
-        elif (parse.__module__ == 'lxml.etree') and (elem.tag == Comment):
+        elif parse.__module__ == 'lxml.etree' and elem.tag == Comment():
             pass
         else:
-            raise ValueError("Could not process element '{}'".format(elem.tag))
+            raise ValueError(f'Could not process element \'{elem.tag}\'')
     return returned
 
 
@@ -327,7 +324,7 @@ class Group:
 
     def parse_child_tags(self, composition):
         tags = set()
-        for element, required in composition:
+        for element, _ in composition:
             if isinstance(element, FixTag):
                 if element.tag not in tags:
                     tags.add(element.tag)
@@ -362,7 +359,7 @@ class Group:
             # Will sort by tag number after the sorted tags otherwise
 
 
-class Component:
+class Component:  # pylint: disable=too-few-public-methods
     """Representation of the specification of a Component"""
 
     def __init__(self, element, spec):
@@ -373,7 +370,7 @@ class Component:
           and tags
         """
         self.name = element.get('name')
-        elem = spec.tree.findall("components/component[@name='{}']".format(self.name))[0]
+        elem = spec.tree.findall(f"components/component[@name='{self.name}']")[0]
         self.composition = _extract_composition(elem, spec)
         self._sorting_key = None
         self._spec = spec
@@ -422,7 +419,7 @@ class MessageType:
             # Will sort by tag number after the sorted tags otherwise
 
     def __repr__(self):
-        return 'MessageType(name: %s)' % self.name
+        return f'MessageType(name: {self.name})'
 
 
 def _extract_sorting_key(definition, spec, sorting_key=None, index=0):
@@ -436,19 +433,19 @@ def _extract_sorting_key(definition, spec, sorting_key=None, index=0):
     if sorting_key is None:
         sorting_key = {35: 0, 10: int(10e9)}
         trailer_tags = [item.tag for item in spec.trailer_tags] or TRAILER_TAGS
-        for index, item in enumerate(trailer_tags[::-1]):
-            sorting_key[item] = 10e9 - index
+        for i, item in enumerate(trailer_tags[::-1]):
+            sorting_key[item] = 10e9 - i
         header_tags = [item.tag for item in spec.header_tags] or HEADER_TAGS
-        for index, item in enumerate(header_tags):
-            sorting_key[item] = index
+        for i, item in enumerate(header_tags):
+            sorting_key[item] = i
 
     start_index = index + 1
-    for index, (item, _) in enumerate(definition):
+    for i, (item, _) in enumerate(definition):
         if isinstance(item, FixTag):
-            sorting_key[item.tag] = index + start_index
+            sorting_key[item.tag] = i + start_index
         elif isinstance(item, Component):
-            _extract_sorting_key(item.composition, spec, sorting_key, index=index + start_index)
+            _extract_sorting_key(item.composition, spec, sorting_key, index=i + start_index)
         elif isinstance(item, Group):
-            sorting_key[item.count_tag.tag] = index + start_index
+            sorting_key[item.count_tag.tag] = i + start_index
 
     return sorting_key

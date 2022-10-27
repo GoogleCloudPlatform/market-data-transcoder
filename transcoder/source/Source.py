@@ -18,23 +18,30 @@
 #
 
 class Source:
+    """Class representing sources of market data"""
+
     @staticmethod
     def source_type_identifier():
+        """Returns identifier of source type"""
         raise SourceFunctionNotDefinedError
 
     def __init__(self):
         self.record_count = 0
 
     def open(self) -> bool:
+        """Opens source of market data"""
         raise SourceFunctionNotDefinedError
 
     def close(self) -> bool:
+        """Closes source of market data"""
         raise SourceFunctionNotDefinedError
 
     def get_message_iterator(self):
+        """Returns message iterator specific to source"""
         raise SourceFunctionNotDefinedError
 
     def increment_count(self):
+        """Increments count of messages"""
         self.record_count += 1
 
     def __enter__(self):
@@ -45,4 +52,4 @@ class Source:
 
 
 class SourceFunctionNotDefinedError(Exception):
-    pass
+    """Exception thrown by subclasses not overriding base class methods"""

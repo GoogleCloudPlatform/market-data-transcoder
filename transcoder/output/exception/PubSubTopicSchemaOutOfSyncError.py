@@ -18,4 +18,4 @@
 #
 
 class PubSubTopicSchemaOutOfSyncError(Exception):
-    pass
+    """Exception for conditions where message schemas are out of sync with corresponding PubSub topic schemas."""

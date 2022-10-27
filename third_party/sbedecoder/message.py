@@ -102,10 +102,11 @@ class SBEMessageField(DatacastField):
         self.unpack_fmt = None
         self.field_offset = 0
         self.relative_offset = 0
+        self.semantic_type = None
 
-    def wrap(self, msg_buffer, base_offset, relative_offset=0):
+    def wrap(self, msg_buffer, msg_offset, relative_offset=0):
         self.msg_buffer = msg_buffer
-        self.msg_offset = base_offset
+        self.msg_offset = msg_offset
         self.relative_offset = relative_offset
 
     @property
@@ -122,36 +123,36 @@ class SBEMessageField(DatacastField):
 
     def __str__(self, raw=False):
         if raw and self.value != self.raw_value:
-            return "%s: %s (%s)" % (self.name, str(self.value), str(self.raw_value),)
-        return "%s: %s" % (self.name, str(self.value),)
+            return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
+        return f'{self.name}: {str(self.value)}'
 
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):
         field = part
-
-        if type(field) is TypeMessageField:
+        avro_type = ['null', 'string']
+        if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
-                return ['null', 'boolean']  # BQ converts to BOOLEAN
+                avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
             mapped_type = avro_type_map[field.primitive_type]
-            return ['null', mapped_type]
-        elif type(field) is EnumMessageField:
+            avro_type = ['null', mapped_type]
+        elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
-                return ['null', 'boolean']  # BQ converts to BOOLEAN
-            return ['null', 'string']
-        elif type(field) is SetMessageField:
-            return ['null', 'string']
+                avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
+            avro_type = ['null', 'string']
+        elif isinstance(field, SetMessageField):
+            avro_type = ['null', 'string']
         else:
-            logging.warning(f'Unknown type for field: {field.name}')
-            return ['null', 'string']
+            logging.warning('Unknown type for field: %s', field.name)
+        return avro_type
 
     def create_avro_field(self, part: DatacastField = None):
         field = self
         if part is not None:
             field = part
-        if type(field) is CompositeMessageField:
+        if isinstance(field, CompositeMessageField):
             children: [DatacastField] = []
-            for index, part in enumerate(field.parts):
-                children.append({'name': part.name, 'type': SBEMessageField.get_avro_field_type(part)})
+            for _, _part in enumerate(field.parts):
+                children.append({'name': _part.name, 'type': SBEMessageField.get_avro_field_type(_part)})
             return {
                 'name': field.name,
                 'type': {
@@ -160,42 +161,42 @@ class SBEMessageField(DatacastField):
                     'fields': children
                 }
             }
-        else:
-            return {'name': field.name, 'type': SBEMessageField.get_avro_field_type(field)}
+        return {'name': field.name, 'type': SBEMessageField.get_avro_field_type(field)}
 
     @staticmethod
     def get_bigquery_field_type(field: DatacastField = None):
-        if type(field) is TypeMessageField:
+        bq_type = 'STRING'
+        if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
-                return 'BOOLEAN'
+                bq_type = 'BOOLEAN'
             else:
                 mapped_type = bigquery_type_map[field.primitive_type]
-                return mapped_type
-        elif type(field) is EnumMessageField:
+                bq_type = mapped_type
+        elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
-                return 'BOOLEAN'
+                bq_type = 'BOOLEAN'
             else:
-                return 'STRING'
-        elif type(field) is SetMessageField:
-            return 'STRING'
+                bq_type = 'STRING'
+        elif isinstance(field, SetMessageField):
+            bq_type = 'STRING'
         else:
-            logging.warning(f'Unknown type for field: {field.name}')
-            return 'STRING'
+            logging.warning('Unknown type for field: %s', field.name)
+        return bq_type
 
     def create_bigquery_field(self, part: DatacastField = None):
         field = self
         if part is not None:
             field = part
-        if type(field) is CompositeMessageField:
+        if isinstance(field, CompositeMessageField):
             children: [bigquery.SchemaField] = []
-            for index, part in enumerate(field.parts):
-                children.append(bigquery.SchemaField(part.name, SBEMessageField.get_bigquery_field_type(part)))
+            for _, _part in enumerate(field.parts):
+                children.append(bigquery.SchemaField(_part.name, SBEMessageField.get_bigquery_field_type(_part)))
             return bigquery.SchemaField(field.name, 'RECORD', mode="NULLABLE", fields=children)
         return bigquery.SchemaField(field.name, SBEMessageField.get_bigquery_field_type(field), mode="NULLABLE")
 
 
 class TypeMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None,
+    def __init__(self, name=None, original_name=None,  # pylint: disable=too-many-arguments
                  id=None, description=None,
                  unpack_fmt=None, field_offset=None,
                  field_length=None, optional=False,
@@ -219,12 +220,10 @@ class TypeMessageField(SBEMessageField):
         self.primitive_type = primitive_type
 
     @property
-    def value(self):
+    def value(self):  # pylint: disable=too-many-return-statements
         _raw_value = self.raw_value
 
         # Handle nullValues
-        # TODO: This should potentially read in a nullValue option set in the schema
-        # https://www.fixtrading.org/standards/sbe-online/
         if self.primitive_type in null_value:
             n_val = null_value[self.primitive_type]
             if _raw_value == n_val:
@@ -243,9 +242,8 @@ class TypeMessageField(SBEMessageField):
         if self.is_string_type:
             parts = _raw_value.split(b'\0', 1)
             return parts[0].decode('UTF-8')
-        elif self.primitive_type == 'char' and not isinstance(_raw_value, str):
+        if self.primitive_type == 'char' and not isinstance(_raw_value, str):
             return _raw_value.decode('UTF-8')
-
         if self.is_bool_type:
             return get_bool_value(_raw_value)
 
@@ -263,7 +261,8 @@ class TypeMessageField(SBEMessageField):
 
 
 class SetMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 unpack_fmt=None, field_offset=None,
                  choices=None, field_length=None, semantic_type=None, since_version=0):
         super(SBEMessageField, self).__init__()
         self.name = name
@@ -304,7 +303,8 @@ class SetMessageField(SBEMessageField):
 
 
 class EnumMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, unpack_fmt=None, field_offset=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 unpack_fmt=None, field_offset=None,
                  enum_values=None, field_length=None, semantic_type=None, since_version=0, enum_fallback_to_name=False,
                  primitive_type=None):
         super(SBEMessageField, self).__init__()
@@ -328,8 +328,6 @@ class EnumMessageField(SBEMessageField):
         _raw_value = self.raw_value
 
         # Handle nullValues
-        # TODO: This should potentially read in a nullValue option set in the schema
-        # https://www.fixtrading.org/standards/sbe-online/
         if self.primitive_type in null_value:
             n_val = null_value[self.primitive_type]
             if _raw_value == n_val:
@@ -359,13 +357,14 @@ class EnumMessageField(SBEMessageField):
     def raw_value(self):
         _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer,
                                  self.msg_offset + self.relative_offset + self.field_offset)[0]
-        if type(_raw_value) is bytes:
+        if isinstance(_raw_value, bytes):
             _raw_value = _raw_value.decode('UTF-8')
         return _raw_value
 
 
 class CompositeMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None, id=None, description=None, field_offset=None, field_length=None,
+    def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments
+                 field_offset=None, field_length=None,
                  parts=None, float_value=False, semantic_type=None, since_version=0):
         super(SBEMessageField, self).__init__()
         self.name = name
@@ -442,10 +441,10 @@ class SBERepeatingGroup:
             yield group
 
 
-class SBERepeatingGroupContainer(object):
-    def __init__(self, name=None, original_name=None, id=None, block_length_field=None,
-                 num_in_group_field=None, dimension_size=None, fields=None, groups=None,
-                 since_version=0):
+class SBERepeatingGroupContainer:
+    def __init__(self, name=None, original_name=None, id=None,  # pylint: disable=too-many-arguments
+                 block_length_field=None, num_in_group_field=None, dimension_size=None, fields=None,
+                 groups=None, since_version=0):
         self.msg_buffer = None
         self.msg_offset = 0
         self.group_start_offset = 0
@@ -480,12 +479,14 @@ class SBERepeatingGroupContainer(object):
         num_instances = self.num_in_group_field.value
 
         self._repeating_groups = []
+
+        # TODO: Can this be removed?
         self.group_offset = group_start_offset + self.dimension_size
 
         # for each group, add the group length which can vary due to nested groups
         repeated_group_offset = group_start_offset + self.dimension_size
         nested_groups_length = 0
-        for i in range(num_instances):
+        for _ in range(num_instances):
             repeated_group = SBERepeatingGroup(msg_buffer,
                                                msg_offset,
                                                repeated_group_offset + nested_groups_length,
@@ -498,7 +499,7 @@ class SBERepeatingGroupContainer(object):
             for nested_group in self.groups:
                 nested_groups_length += nested_group.wrap(
                     msg_buffer, msg_offset, repeated_group_offset + nested_groups_length)
-                for nested_repeating_group in nested_group._repeating_groups:
+                for nested_repeating_group in nested_group._repeating_groups:  # pylint: disable=protected-access
                     repeated_group.add_subgroup(nested_repeating_group)
 
         size = self.dimension_size + (num_instances * block_length) + nested_groups_length
@@ -520,7 +521,7 @@ class SBERepeatingGroupContainer(object):
         return group
 
 
-class SBEMessage(object):
+class SBEMessage:
     def __init__(self):
         self.name = self.__class__.__name__
         self.msg_buffer = None
@@ -558,10 +559,10 @@ class SBEMessage(object):
                 group_offset += group.wrap(msg_buffer, msg_offset, group_offset)
 
     def __str__(self):
-        return '%s' % (self.__class__.__name__,)
+        return self.__class__.__name__
 
 
-class SBEMessageFactory(object):
+class SBEMessageFactory:  # pylint: disable=too-few-public-methods
     def __init__(self, schema):
         self.schema = schema
 

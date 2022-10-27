@@ -250,7 +250,10 @@ class Codec:
         def sort_values(msg, spec):
             """ Sort {tag:value} map into an iterable  """
             tvals = list(msg.items())
-            get_sorting_key = lambda x: spec.sorting_key.get(x[0], int(1e9 + x[0]))
+
+            def get_sorting_key(ele):
+                return spec.sorting_key.get(ele[0], int(1e9 + ele[0]))
+
             tvals.sort(key=get_sorting_key)
             #  using a deque for this already-sorted data structure yields a ~10% speed improvement on serialisation
             expanded = deque()

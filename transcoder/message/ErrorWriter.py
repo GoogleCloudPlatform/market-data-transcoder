@@ -27,6 +27,7 @@ from transcoder.message import ParsedMessage
 
 
 class TranscodeStep(Enum):
+    "Enum of steps at which an error may be encountered "
     UNKNOWN = 'UNKNOWN'
     DECODE_MESSAGE = 'decode_message'
     PARSE_MESSAGE = 'parse_message'
@@ -46,6 +47,8 @@ class TranscodeStep(Enum):
 
 
 class ErrorWriter:
+    """Persist data about errors to file"""
+
     def __init__(self, prefix: str, is_base_64_encoded: bool = False, output_path: str = None):
         self.prefix: str = prefix
         self.is_base_64_encoded = is_base_64_encoded
@@ -66,17 +69,20 @@ class ErrorWriter:
         return self.output_path + '/' + name + '-' + epoch_time + '.' + extension
 
     def set_step(self, step: TranscodeStep, note: str = ''):
+        """Sets step during which error is encountered"""
         self.step = step
         self.note = note
 
     def write_error(self, raw_record, message: ParsedMessage, exception: Exception):
+        """Write data about error to file"""
         if self.file is None:
             exists = os.path.exists(self.output_path)
             if not exists:
                 os.makedirs(self.output_path)
 
             # Only create error file if errors exist
-            self.file = open(self.__get_file_name(self.prefix, 'out'), 'w')  # pylint: disable=consider-using-with
+            self.file = open(self.__get_file_name(self.prefix, 'out'),  # pylint: disable=consider-using-with
+                             mode='w', encoding='utf-8')
             self.file.write('time, message_type, message_name, failed_step, exception, data\n')
 
         encoded = self.__encode_source_message(raw_record)

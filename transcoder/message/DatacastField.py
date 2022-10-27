@@ -24,6 +24,7 @@ from transcoder.output.exception import OutputFunctionNotDefinedError
 
 class DatacastField:
     """Represents a field in a message"""
+
     def create_avro_field(self, part=None):
         """Abstract declaration of method for creating avro-specific field"""
         raise OutputFunctionNotDefinedError

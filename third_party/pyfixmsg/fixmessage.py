@@ -377,7 +377,7 @@ class FixMessage(FixFragment):  # pylint: disable=R0904
         """
         if value is None:
             value = len_and_chsum(self)[1] % 256
-        return '{0:03d}'.format(value % 256)
+        return f'{value % 256:03d}'
 
     def set_len_and_chksum(self):
         """

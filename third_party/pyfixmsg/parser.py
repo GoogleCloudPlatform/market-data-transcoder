@@ -39,19 +39,19 @@ class FixParser(DatacastParser):
         return ['fix']
 
     def __init__(self, schema_file_path: str, sampling_count: int = None, message_type_inclusions: str = None,
-                 message_type_exclusions: str = None, fix_header_tags: str = None):
+                 message_type_exclusions: str = None, fix_header_tags: str = None, fix_separator: int = 1):
         super().__init__(sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
                          message_type_exclusions=message_type_exclusions)
         self.schema_file_path = schema_file_path
         self.fix_header_tags = fix_header_tags
+        self.fix_separator = fix_separator
         self.spec = FixSpec(schema_file_path)
-        self.codec = Codec(spec=self.spec,  # The codec will use the given spec to find repeating groups
-                           fragment_class=FixFragment)  # The codec will produce FixFragment objects inside repeating groups
+
+        # The codec will use the given spec to find repeating groups
+        # The codec will produce FixFragment objects inside repeating groups
+        self.codec = Codec(spec=self.spec, fragment_class=FixFragment)
+
         self.header_tags = []
-        # [8, 1128, 9, 35, 49, 34, 52, 10, 56, 535, 'Q35', 'R35', 'A35', '>35', 98, 1137, 108, 1408, 7,
-        #                     16, 112, 'S35', 735, 114, '@35', 'P35', '?35', '<35', 'B35', 'V35', '\\35', 'F35', 'H35',
-        #                     'I35', 'C35',
-        #                     435, 8011, 8201]
 
     def _process_schema(self):
         _header_tags = []
@@ -97,13 +97,12 @@ class FixParser(DatacastParser):
             if is_duplicate is False:
                 fields.append(element)
             else:
-                logging.warning(f'Duplicate field found for message type {message_name}: {element}')
+                logging.warning('Duplicate field found for message type %s: %s', message_name, element)
 
     def _process_message(self, raw_msg) -> ParsedMessage:
         fix_msg = FixMessage()
         fix_msg.codec = self.codec
-        # TODO: Move separator to arg
-        separator = chr(1)  # SOH char
+        separator = chr(self.fix_separator)
         msg = fix_msg.load_fix(raw_msg, separator=separator)
         msg_type_id = msg[35]
         message_type = self.spec.msg_types.get(msg_type_id, None)

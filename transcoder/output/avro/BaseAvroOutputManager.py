@@ -66,7 +66,7 @@ class BaseAvroOutputManager(OutputManager):
         raise OutputFunctionNotDefinedError
 
     def _save_schema(self, name, schema_json):
-        with open(self._get_file_name(name, 'avsc'), 'wt') as file:
+        with open(self._get_file_name(name, 'avsc'), mode='wt', encoding='utf-8') as file:
             file.write(schema_json)
 
     def _get_file_name(self, name, extension):

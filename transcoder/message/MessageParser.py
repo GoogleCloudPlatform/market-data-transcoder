@@ -36,16 +36,20 @@ from transcoder.source.SourceUtil import get_message_source
 
 
 class MessageParser:  # pylint: disable=too-many-instance-attributes
+    """Main entry point for message transcoding"""
+
     def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
-                 factory, schema_file_path: str, source_file_path: str, source_file_format_type: str,
+                 factory, schema_file_path: str,
+                 source_file_path: str, source_file_encoding: str, source_file_format_type: str,
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
                  is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
                  message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
                  error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
                  sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
-                 fix_header_tags: str = None):
+                 fix_header_tags: str = None, fix_separator: int = 1):
         self.source_file_path = source_file_path
+        self.source_file_encoding = source_file_encoding
         self.source_file_format_type = source_file_format_type
         self.source_file_endian = source_file_endian
         self.skip_lines = skip_lines
@@ -83,9 +87,12 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                                  sampling_count=sampling_count,
                                                                  message_type_inclusions=message_type_inclusions,
                                                                  message_type_exclusions=message_type_exclusions,
-                                                                 fix_header_tags=fix_header_tags)
+                                                                 fix_header_tags=fix_header_tags,
+                                                                 fix_separator=fix_separator)
 
     def setup_handlers(self, message_handlers: str):
+        """Initialize MessageHandler instances to employ at runtime"""
+
         if message_handlers is None or message_handlers == "":
             return
 
@@ -111,12 +118,14 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                     self.message_handlers[supported_type] = [instance]
 
     def process(self):
+        """Entry point for individual message processing"""
         start_time = datetime.now()
         self.process_schemas()
 
-        source: Source = get_message_source(self.source_file_path, self.source_file_format_type,
-                                            self.source_file_endian, skip_lines=self.skip_lines,
-                                            skip_bytes=self.skip_bytes, message_skip_bytes=self.message_skip_bytes)
+        source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
+                                            self.source_file_format_type, self.source_file_endian,
+                                            skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
+                                            message_skip_bytes=self.message_skip_bytes)
 
         self.process_data(source)
 
@@ -146,6 +155,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
     def process_schemas(self):
+        """Process the schema specified at runtime"""
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
             if len(schema.fields) == 0:
@@ -159,11 +169,12 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
             self.output_manager.enqueue_schema(schema)
 
-        # Only need to wait if lazy create is off and you want to force creation before data is read
+        # Only need to wait if lazy create is off, and you want to force creation before data is read
         if self.lazy_create_resources is False:
             self.output_manager.wait_for_schema_creation()
 
     def process_data(self, source):
+        """Entry point for individual message processing"""
         with source:
             for raw_record in source.get_message_iterator():
                 message: ParsedMessage = None
@@ -203,6 +214,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                     self.handle_exception(raw_record, message, ex)
 
     def handle_exception(self, raw_record, message, exception):
+        """Process exceptions encountered in the message processing runtime"""
         if message is not None:
             self.message_parser.increment_error_summary_count(message.name)
         else:
@@ -214,6 +226,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             raise exception
 
     def decode_source_message(self, record):
+        """Wrapper to enable base64 processing of inbound messages"""
         if self.is_base_64_encoded is True:
             return base64.b64decode(record)
         return record

@@ -18,4 +18,4 @@
 #
 
 class TemplateSchemaNotDefinedError(Exception):
-    pass
+    """Error to raise when factory can't map a message's ID to a message schema"""
