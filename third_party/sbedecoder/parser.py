@@ -95,6 +95,7 @@ class SBEParser(DatacastParser):
         return message
 
     def process_field(self, fields, groups):
+        """Processes the SBE message fields and puts the values into a readable dictionary"""
         output_result = {}
         field_exclusions = []
         for field in fields:
