@@ -18,4 +18,4 @@
 #
 
 class ParserFunctionNotDefinedError(Exception):
-    pass
+    """Error thrown when base class functions not overridden"""
