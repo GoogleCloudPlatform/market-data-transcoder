@@ -217,7 +217,7 @@ class TagsReference:
         return self._by_tag[tag]
 
 
-class FixSpec:
+class FixSpec:  # pylint: disable=too-few-public-methods
     """
     A python-friendly representation of a FIX spec.
     This class is built from an XML file sourced from Quickfix (http://www.quickfixengine.org/).
@@ -278,10 +278,10 @@ def _extract_composition(element, spec):
             returned.append((Component(elem, spec), elem.get('required') == "Y"))
         elif elem.tag == 'group':
             returned.append((Group.from_element(elem, spec), elem.get('required') == "Y"))
-        elif (parse.__module__ == 'lxml.etree') and (elem.tag == Comment):
+        elif parse.__module__ == 'lxml.etree' and elem.tag == Comment():
             pass
         else:
-            raise ValueError("Could not process element '{}'".format(elem.tag))
+            raise ValueError(f'Could not process element \'{elem.tag}\'')
     return returned
 
 
