@@ -54,9 +54,12 @@ A message factory takes a message payload read from the input source, determines
 ```
 # List available cli arguments
 usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
-               --source_file SOURCE_FILE --source_file_format_type
+               --source_file SOURCE_FILE
+               [--source_file_encoding SOURCE_FILE_ENCODING]
+               --source_file_format_type
                {pcap,length_delimited,line_delimited,cme_binary_packet}
                [--base64] [--fix_header_tags FIX_HEADER_TAGS]
+               [--fix_separator FIX_SEPARATOR]
                [--message_handlers MESSAGE_HANDLERS]
                [--message_skip_bytes MESSAGE_SKIP_BYTES]
                [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
@@ -92,12 +95,16 @@ Input source arguments:
                         Path to the schema file
   --source_file SOURCE_FILE
                         Path to the source file
+  --source_file_encoding SOURCE_FILE_ENCODING
+                        The source file character encoding
   --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
                         The source file format
   --base64              Indicates if each individual message extracted from
                         the source is base 64 encoded
   --fix_header_tags FIX_HEADER_TAGS
                         Comma delimited list of fix header tags
+  --fix_separator FIX_SEPARATOR
+                        The unicode int representing the fix message separator
   --message_handlers MESSAGE_HANDLERS
                         Comma delimited list of message handlers in priority
                         order
