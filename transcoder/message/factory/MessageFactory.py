@@ -23,6 +23,7 @@ from transcoder.message.factory.exception.FactoryNotFoundError import FactoryNot
 
 
 def get_message_factory(name: str, schema_file_path: str) -> SBEMessageFactory:
+    """Gets a user-specified factory with the parsed schema"""
     schema = SBESchema(enum_fallback_to_name=True, include_constants_in_offset=False)
     schema.parse(schema_file_path)
     factory: SBEMessageFactory = None
