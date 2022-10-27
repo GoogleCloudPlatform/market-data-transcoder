@@ -86,7 +86,7 @@ def is_empty_byte_array(_raw_value: bytes) -> bool:
 
 
 def get_bool_value(_raw_value) -> bool:
-    if _raw_value == 1 or _raw_value == 'True':
+    if _raw_value in (1, 'True'):
         return True
     return False
 
