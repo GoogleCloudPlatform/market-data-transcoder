@@ -19,8 +19,12 @@
 
 # pylint: disable=too-few-public-methods
 
+
 class ParsedMessage:
+    """Represents a message that has been parsed by the transcoder"""
+
     def __init__(self, data_type, name, raw_message, dictionary=None, exception: Exception = None):
+        """ParsedMessage constructor"""
         self.type = data_type
         self.name = name
         self.raw_message = raw_message
@@ -29,4 +33,5 @@ class ParsedMessage:
         self.ignored: bool = False
 
     def is_empty(self):
+        """Is this parsed message empty?"""
         return self.ignored is True or self.dictionary is None or len(self.dictionary) == 0
