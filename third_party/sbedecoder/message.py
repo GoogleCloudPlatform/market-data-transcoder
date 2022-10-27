@@ -133,8 +133,9 @@ class SBEMessageField(DatacastField):
         if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
                 avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
-            mapped_type = avro_type_map[field.primitive_type]
-            avro_type = ['null', mapped_type]
+            else:
+                mapped_type = avro_type_map[field.primitive_type]
+                avro_type = ['null', mapped_type]
         elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
                 avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
