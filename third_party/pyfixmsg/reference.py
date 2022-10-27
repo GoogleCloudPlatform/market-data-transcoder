@@ -67,7 +67,7 @@ class FixTag(DatacastField):
     def add_enum_value(self, name, value):
         """Add a value to the tag's enum values."""
         if name in set(v[1] for v in self._values):
-            raise KeyError("Name {} is already known in tag {}'s enum".format(name, self.tag))
+            raise KeyError(f'Name {name} is already known in tag {self.tag}\'s enum')
         self._values = self._values + ((value, name),)
         if self._val_by_name:
             self._val_by_name[name] = value
@@ -83,14 +83,12 @@ class FixTag(DatacastField):
             raise TypeError("either name or value is required")
         if name and value:
             if self._val_by_name[name] != value:
-                raise ValueError("The known value {} for enum name "
-                                 "{} is different to you gave: {} for tag {}".format(self._val_by_name[name],
-                                                                                     name,
-                                                                                     value, self.tag))
+                raise ValueError(f'The known value {self._val_by_name[name]} for enum name {name} is different to you '
+                                 f'gave: {value} for tag {self.tag}')
         if name:
             if name not in set(v[1] for v in self._values):
                 # can't use the maps here because when deleting multiple tags they are empty come the second
-                raise KeyError("{} is not known as a name for tag {}".format(name, self.tag))
+                raise KeyError(f'{name} is not known as a name for tag {self.tag}')
             self._values = tuple(pair for pair in self._values if pair[1] != name)
         else:
             if value not in set(v[0] for v in self._values):
@@ -114,16 +112,16 @@ class FixTag(DatacastField):
 
     def get_avro_field_type(self):
         _type = self.type.lower()
+        avro_type = ['null', 'string']
         if self._is_enum is True or _type in STRING_TYPES:
-            return ['null', 'string']
+            avro_type = ['null', 'string']
         elif _type in INTEGER_TYPES:
-            return ['null', 'int']
+            avro_type = ['null', 'int']
         elif _type in FLOAT_TYPES:
-            return ['null', 'float']
+            avro_type = ['null', 'float']
         elif _type in BOOLEAN_TYPES:
-            return ['null', 'boolean']
-        else:
-            return ['null', 'string']
+            avro_type = ['null', 'boolean']
+        return avro_type
 
     def create_avro_field(self, part: DatacastField = None):
         return {'name': self.name, 'type': self.get_avro_field_type()}
@@ -170,7 +168,7 @@ class FixTag(DatacastField):
                self.type == other.type
 
     def __repr__(self):
-        return 'FixTag(name: %s, tag: %s, type: %s)' % (self.name, self.tag, self.type)
+        return f'FixTag(name: {self.name}, tag: {self.tag}, type: {self.type})'
 
 
 class TagsReference:
@@ -240,7 +238,7 @@ class FixSpec:
         self.tree = parse(xml_file).getroot()
         major = self.tree.get('major')
         minor = self.tree.get('minor')
-        self.version = "FIX{}.{}".format(major, minor)
+        self.version = f'FIX{major}.{minor}'
         self._eager = eager
         self.tags = None
         self._populate_tags()
