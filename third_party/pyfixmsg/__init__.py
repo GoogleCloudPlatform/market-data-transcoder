@@ -8,6 +8,7 @@ import itertools
 
 import six
 
+
 # pylint: disable=invalid-name
 
 class RepeatingGroup(list):

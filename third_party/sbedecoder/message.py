@@ -22,8 +22,6 @@
 # SOFTWARE.
 #
 
-# pylint: skip-file
-
 import logging
 from struct import unpack_from
 

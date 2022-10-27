@@ -22,8 +22,6 @@
 # SOFTWARE.
 #
 
-# pylint: skip-file
-
 import re
 
 from lxml import etree

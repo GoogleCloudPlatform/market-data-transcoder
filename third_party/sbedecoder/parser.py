@@ -22,7 +22,6 @@
 # SOFTWARE.
 #
 
-# pylint: skip-file
 
 from third_party.sbedecoder.message import TypeMessageField
 from transcoder.message import DatacastField

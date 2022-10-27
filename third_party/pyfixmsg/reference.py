@@ -12,8 +12,6 @@ Note::
 
 """
 
-# pylint: skip-file
-
 from google.cloud import bigquery
 
 from transcoder.message.DatacastField import DatacastField
@@ -111,7 +109,7 @@ class FixTag(DatacastField):
     def enum_by_value(self, value):
         """ Retrieve an enum value by value"""
         if not self._val_by_val:
-            self._val_by_val = {val: name for val, name in self._values}
+            self._val_by_val = dict(self._values)
         return self._val_by_val[value]
 
     def get_avro_field_type(self):
@@ -130,9 +128,9 @@ class FixTag(DatacastField):
     def create_avro_field(self, part: DatacastField = None):
         return {'name': self.name, 'type': self.get_avro_field_type()}
 
-    def cast_value_to_type(self, value, type_name: str, is_nullable: bool = True):
+    def cast_value_to_type(self, value, field_type: str, is_nullable: bool = True):
         result = value
-        _type = type_name.lower()
+        _type = field_type.lower()
         if self._is_enum is True:
             result = self.enum_by_value(value)
         elif _type in STRING_TYPES:
@@ -327,7 +325,7 @@ class Group:
 
     def parse_child_tags(self, composition):
         tags = set()
-        for element, required in composition:
+        for element, _ in composition:
             if isinstance(element, FixTag):
                 if element.tag not in tags:
                     tags.add(element.tag)
