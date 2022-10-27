@@ -341,16 +341,16 @@ class SBESchema:
         field_type = field.get('primitive_type', field['type'])
         if field_type in self.primitive_type_map:
             return self.primitive_type_map[field_type][1]  # second value is byte size
-        else:
-            field_def = self.type_map[field['type']]
-            if 'encoding_type' in field_def and field_def['encoding_type'] in self.primitive_type_map:
-                return self.primitive_type_map[field_def['encoding_type']][1]
 
-            # otherwise it's a regular composite field
-            block_length = 0
-            for child_field in field_def['children']:
-                block_length += self._determine_field_length(child_field)
-            return block_length
+        field_def = self.type_map[field['type']]
+        if 'encoding_type' in field_def and field_def['encoding_type'] in self.primitive_type_map:
+            return self.primitive_type_map[field_def['encoding_type']][1]
+
+        # otherwise it's a regular composite field
+        block_length = 0
+        for child_field in field_def['children']:
+            block_length += self._determine_field_length(child_field)
+        return block_length
 
     def _determine_block_length(self, message):
         if 'block_length' in message:
@@ -370,13 +370,13 @@ class SBESchema:
         message_id = int(message['id'])
         schema_block_length = self._determine_block_length(message)
         type_name = ''
-        #        logging.debug(message.items())
+
         if self.use_description_as_message_name:
             if 'description' in message.keys():
                 type_name = message['description']
         else:
             type_name = message['name']
-        #        logging.debug(type_name)
+
         message_type = type(type_name, (SBEMessage,), {'message_id': message_id,
                                                        'schema_block_length': schema_block_length})
         self.message_map[message_id] = message_type

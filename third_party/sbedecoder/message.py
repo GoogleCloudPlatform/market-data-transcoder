@@ -127,21 +127,21 @@ class SBEMessageField(DatacastField):
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):
         field = part
-
+        avro_type = ['null', 'string']
         if type(field) is TypeMessageField:
             if field.is_bool_type is True:
-                return ['null', 'boolean']  # BQ converts to BOOLEAN
+                avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
             mapped_type = avro_type_map[field.primitive_type]
-            return ['null', mapped_type]
+            avro_type = ['null', mapped_type]
         elif type(field) is EnumMessageField:
             if field.is_bool_type is True:
-                return ['null', 'boolean']  # BQ converts to BOOLEAN
-            return ['null', 'string']
+                avro_type = ['null', 'boolean']  # BQ converts to BOOLEAN
+            avro_type = ['null', 'string']
         elif type(field) is SetMessageField:
-            return ['null', 'string']
+            avro_type = ['null', 'string']
         else:
-            logging.warning(f'Unknown type for field: {field.name}')
-            return ['null', 'string']
+            logging.warning('Unknown type for field: %s', field.name)
+        return avro_type
 
     def create_avro_field(self, part: DatacastField = None):
         field = self
@@ -159,27 +159,27 @@ class SBEMessageField(DatacastField):
                     'fields': children
                 }
             }
-        else:
-            return {'name': field.name, 'type': SBEMessageField.get_avro_field_type(field)}
+        return {'name': field.name, 'type': SBEMessageField.get_avro_field_type(field)}
 
     @staticmethod
     def get_bigquery_field_type(field: DatacastField = None):
+        bq_type = 'STRING'
         if type(field) is TypeMessageField:
             if field.is_bool_type is True:
-                return 'BOOLEAN'
+                bq_type = 'BOOLEAN'
             else:
                 mapped_type = bigquery_type_map[field.primitive_type]
-                return mapped_type
+                bq_type = mapped_type
         elif type(field) is EnumMessageField:
             if field.is_bool_type is True:
-                return 'BOOLEAN'
+                bq_type = 'BOOLEAN'
             else:
-                return 'STRING'
+                bq_type = 'STRING'
         elif type(field) is SetMessageField:
-            return 'STRING'
+            bq_type = 'STRING'
         else:
-            logging.warning(f'Unknown type for field: {field.name}')
-            return 'STRING'
+            logging.warning('Unknown type for field: %s', field.name)
+        return bq_type
 
     def create_bigquery_field(self, part: DatacastField = None):
         field = self
@@ -553,7 +553,7 @@ class SBEMessage:
                 group_offset += group.wrap(msg_buffer, msg_offset, group_offset)
 
     def __str__(self):
-        return '%s' % (self.__class__.__name__,)
+        return self.__class__.__name__
 
 
 class SBEMessageFactory:
