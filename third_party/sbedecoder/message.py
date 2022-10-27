@@ -354,7 +354,7 @@ class EnumMessageField(SBEMessageField):
     def raw_value(self):
         _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer,
                                  self.msg_offset + self.relative_offset + self.field_offset)[0]
-        if type(_raw_value) is bytes:
+        if isinstance(_raw_value, bytes):
             _raw_value = _raw_value.decode('UTF-8')
         return _raw_value
 
