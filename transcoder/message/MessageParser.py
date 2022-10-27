@@ -173,7 +173,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             self.output_manager.wait_for_schema_creation()
 
     def process_data(self, source):
-        """Entry point for individual nessage processing"""
+        """Entry point for individual message processing"""
         with source:
             for raw_record in source.get_message_iterator():
                 message: ParsedMessage = None

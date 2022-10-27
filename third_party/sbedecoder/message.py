@@ -149,8 +149,8 @@ class SBEMessageField(DatacastField):
             field = part
         if type(field) is CompositeMessageField:
             children: [DatacastField] = []
-            for _, part in enumerate(field.parts):
-                children.append({'name': part.name, 'type': SBEMessageField.get_avro_field_type(part)})
+            for _, _part in enumerate(field.parts):
+                children.append({'name': _part.name, 'type': SBEMessageField.get_avro_field_type(_part)})
             return {
                 'name': field.name,
                 'type': {
@@ -187,14 +187,14 @@ class SBEMessageField(DatacastField):
             field = part
         if type(field) is CompositeMessageField:
             children: [bigquery.SchemaField] = []
-            for _, part in enumerate(field.parts):
-                children.append(bigquery.SchemaField(part.name, SBEMessageField.get_bigquery_field_type(part)))
+            for _, _part in enumerate(field.parts):
+                children.append(bigquery.SchemaField(_part.name, SBEMessageField.get_bigquery_field_type(_part)))
             return bigquery.SchemaField(field.name, 'RECORD', mode="NULLABLE", fields=children)
         return bigquery.SchemaField(field.name, SBEMessageField.get_bigquery_field_type(field), mode="NULLABLE")
 
 
 class TypeMessageField(SBEMessageField):
-    def __init__(self, name=None, original_name=None,
+    def __init__(self, name=None, original_name=None,  # pylint: disable=too-many-arguments
                  id=None, description=None,
                  unpack_fmt=None, field_offset=None,
                  field_length=None, optional=False,
@@ -475,6 +475,8 @@ class SBERepeatingGroupContainer:
         num_instances = self.num_in_group_field.value
 
         self._repeating_groups = []
+
+        # TODO: Can this be removed?
         self.group_offset = group_start_offset + self.dimension_size
 
         # for each group, add the group length which can vary due to nested groups
@@ -556,7 +558,7 @@ class SBEMessage:
         return self.__class__.__name__
 
 
-class SBEMessageFactory:
+class SBEMessageFactory:  # pylint: disable=too-few-public-methods
     def __init__(self, schema):
         self.schema = schema
 

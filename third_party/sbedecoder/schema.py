@@ -106,7 +106,7 @@ class SBESchema:
         type_map = self.initial_types
         with open(xml_file, 'rb') as input_schema_file:
             xml_context = etree.iterparse(input_schema_file, tag=types_tag, remove_comments=True)
-            for action, elem in xml_context:
+            for _, elem in xml_context:
                 # Now parse all the children under the types tag
                 for type_def in elem.getchildren():
                     new_type = self._build_type_definition(type_def)
@@ -118,7 +118,7 @@ class SBESchema:
         messages = []
         with open(xml_file, 'rb') as input_schema_file:
             xml_context = etree.iterparse(input_schema_file)
-            for action, elem in xml_context:
+            for _, elem in xml_context:
                 local_name = etree.QName(elem.tag).localname
                 if local_name == message_tag:
                     message_definition = dict((convert_to_underscore(x[0]), x[1]) for x in elem.items())
@@ -143,7 +143,7 @@ class SBESchema:
         definition['fields'] = fields
         definition['groups'] = groups
 
-    def _build_message_field(self, message_type, field_definition, offset, endian, add_header_size=True):
+    def _build_message_field(self, message_type, field_definition, offset, endian, add_header_size=True):  # pylint: disable=too-many-locals,(too-many-branches,too-many-statements
         field_original_name = field_definition['name']
         field_name = convert_to_underscore(field_original_name)
         field_id = field_definition['id']
