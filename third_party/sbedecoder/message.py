@@ -100,6 +100,7 @@ class SBEMessageField(DatacastField):
         self.unpack_fmt = None
         self.field_offset = 0
         self.relative_offset = 0
+        self.semantic_type = None
 
     def wrap(self, msg_buffer, msg_offset, relative_offset=0):
         self.msg_buffer = msg_buffer
@@ -120,8 +121,8 @@ class SBEMessageField(DatacastField):
 
     def __str__(self, raw=False):
         if raw and self.value != self.raw_value:
-            return "%s: %s (%s)" % (self.name, str(self.value), str(self.raw_value),)
-        return "%s: %s" % (self.name, str(self.value),)
+            return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
+        return f'{self.name}: {str(self.value)}'
 
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):
@@ -186,7 +187,7 @@ class SBEMessageField(DatacastField):
             field = part
         if type(field) is CompositeMessageField:
             children: [bigquery.SchemaField] = []
-            for index, part in enumerate(field.parts):
+            for _, part in enumerate(field.parts):
                 children.append(bigquery.SchemaField(part.name, SBEMessageField.get_bigquery_field_type(part)))
             return bigquery.SchemaField(field.name, 'RECORD', mode="NULLABLE", fields=children)
         return bigquery.SchemaField(field.name, SBEMessageField.get_bigquery_field_type(field), mode="NULLABLE")
