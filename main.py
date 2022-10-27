@@ -54,6 +54,8 @@ def main():
                                       help='Indicates if each individual message extracted from '
                                            'the source is base 64 encoded')
     source_options_group.add_argument('--fix_header_tags', type=str, help='Comma delimited list of fix header tags')
+    source_options_group.add_argument('--fix_separator', type=int, default=1, help='The unicode int representing the '
+                                                                                   'fix message separator')
     source_options_group.add_argument('--message_handlers', type=str, help='Comma delimited list of message '
                                                                            'handlers in priority order')
     source_options_group.add_argument('--message_skip_bytes', type=int, default=0,
@@ -152,6 +154,7 @@ def main():
     message_type_inclusions = args.message_type_inclusions
     message_type_exclusions = args.message_type_exclusions
     fix_header_tags = args.fix_header_tags
+    fix_separator = args.fix_separator
 
     message_parser = MessageParser(factory, schema_file_path,
                                    source_file_path, source_file_encoding, source_file_format_type,
@@ -164,7 +167,8 @@ def main():
                                    continue_on_error=continue_on_error, error_output_path=error_output_path,
                                    quiet=quiet, create_schema_enforcing_topics=create_schema_enforcing_topics,
                                    sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
-                                   message_type_exclusions=message_type_exclusions, fix_header_tags=fix_header_tags)
+                                   message_type_exclusions=message_type_exclusions,
+                                   fix_header_tags=fix_header_tags, fix_separator=fix_separator)
 
     message_parser.process()
 

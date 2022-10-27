@@ -45,7 +45,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
                  error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
                  sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
-                 fix_header_tags: str = None):
+                 fix_header_tags: str = None, fix_separator: int = 1):
         self.source_file_path = source_file_path
         self.source_file_encoding = source_file_encoding
         self.source_file_format_type = source_file_format_type
@@ -85,7 +85,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                                  sampling_count=sampling_count,
                                                                  message_type_inclusions=message_type_inclusions,
                                                                  message_type_exclusions=message_type_exclusions,
-                                                                 fix_header_tags=fix_header_tags)
+                                                                 fix_header_tags=fix_header_tags,
+                                                                 fix_separator=fix_separator)
 
     def setup_handlers(self, message_handlers: str):
         if message_handlers is None or message_handlers == "":
