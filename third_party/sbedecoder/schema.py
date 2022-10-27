@@ -32,8 +32,8 @@ from third_party.sbedecoder.message import TypeMessageField, EnumMessageField, S
 
 def convert_to_underscore(name):
     name = name.strip('@').strip('#')
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    sub_str = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', sub_str).lower()
 
 
 class SBESchema:
