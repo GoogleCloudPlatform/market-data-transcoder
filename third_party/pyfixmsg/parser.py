@@ -34,6 +34,8 @@ from transcoder.message.ParsedMessage import ParsedMessage
 
 
 class FixParser(DatacastParser):
+    """Fix message parser"""
+
     @staticmethod
     def supported_factory_types():
         return ['fix']
@@ -70,6 +72,7 @@ class FixParser(DatacastParser):
         return schemas
 
     def traverse_schema(self, message_name, composition):
+        """Traverses message composition and builds the schema to a Datacast representation"""
         fields: [DatacastField] = []
         for element, _ in composition:
             if isinstance(element, FixTag) and element.tag:
@@ -88,6 +91,7 @@ class FixParser(DatacastParser):
 
     @staticmethod
     def unique_append(message_name, fields, elements):
+        """Uniquely adds message fields, if a field was already included it will be ignored"""
         for element in elements:
             is_duplicate = False
             for field in fields:
@@ -122,6 +126,7 @@ class FixParser(DatacastParser):
         return message
 
     def process_field(self, msg, items):
+        """Processes the Fix message fields and puts the values into a readable dictionary"""
         if not isinstance(items, list):  # pylint: disable=no-else-return
             dictionary = {}
             for key, value in items:
