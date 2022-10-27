@@ -18,4 +18,4 @@
 #
 
 class MessageParserNotDefinedError(Exception):
-    pass
+    """Error to be thrown when type of message parser cannot be determined based on user's specified factory"""
