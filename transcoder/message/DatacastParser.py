@@ -74,6 +74,9 @@ class DatacastParser:
         """Wraps _process_message with count and inclusion behavior"""
         message = self._process_message(raw_msg)
 
+        if message is None:
+            return None
+
         if self.use_sampling is True and self.get_summary_count(message.name) >= self.sampling_count:
             message.ignored = True
             return message
