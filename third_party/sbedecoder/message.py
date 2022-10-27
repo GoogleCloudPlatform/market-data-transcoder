@@ -439,7 +439,7 @@ class SBERepeatingGroup:
 
 
 class SBERepeatingGroupContainer:
-    def __init__(self, name=None, original_name=None, id=None, block_length_field=None,
+    def __init__(self, name=None, original_name=None, id=None, block_length_field=None,  # pylint: disable=too-many-arguments
                  num_in_group_field=None, dimension_size=None, fields=None, groups=None,
                  since_version=0):
         self.msg_buffer = None
@@ -496,7 +496,7 @@ class SBERepeatingGroupContainer:
             for nested_group in self.groups:
                 nested_groups_length += nested_group.wrap(
                     msg_buffer, msg_offset, repeated_group_offset + nested_groups_length)
-                for nested_repeating_group in nested_group._repeating_groups:
+                for nested_repeating_group in nested_group._repeating_groups:  # pylint: disable=protected-access
                     repeated_group.add_subgroup(nested_repeating_group)
 
         size = self.dimension_size + (num_instances * block_length) + nested_groups_length
