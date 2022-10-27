@@ -36,6 +36,7 @@ from transcoder.source.SourceUtil import get_message_source
 
 
 class MessageParser:  # pylint: disable=too-many-instance-attributes
+    """Main entry point for message transcoding"""
     def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
                  factory, schema_file_path: str,
                  source_file_path: str, source_file_encoding: str, source_file_format_type: str,
@@ -89,6 +90,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                                  fix_separator=fix_separator)
 
     def setup_handlers(self, message_handlers: str):
+        """Initialize MessageHandler instances to employ at runtime"""
+
         if message_handlers is None or message_handlers == "":
             return
 
@@ -114,6 +117,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                     self.message_handlers[supported_type] = [instance]
 
     def process(self):
+        """Entry point for individual message processing"""
         start_time = datetime.now()
         self.process_schemas()
 
@@ -150,6 +154,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
     def process_schemas(self):
+        """Process the schema specified at runtime"""
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
             if len(schema.fields) == 0:
@@ -168,6 +173,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             self.output_manager.wait_for_schema_creation()
 
     def process_data(self, source):
+        """Entry point for individual nessage processing"""
         with source:
             for raw_record in source.get_message_iterator():
                 message: ParsedMessage = None
@@ -207,6 +213,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                     self.handle_exception(raw_record, message, ex)
 
     def handle_exception(self, raw_record, message, exception):
+        """Process exceptions encountered in the message processing runtime"""
         if message is not None:
             self.message_parser.increment_error_summary_count(message.name)
         else:
@@ -218,6 +225,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             raise exception
 
     def decode_source_message(self, record):
+        """Wrapper to enable base64 processing of inbound messages"""
         if self.is_base_64_encoded is True:
             return base64.b64decode(record)
         return record
