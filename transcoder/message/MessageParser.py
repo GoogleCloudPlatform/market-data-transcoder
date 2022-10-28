@@ -44,9 +44,10 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
                  is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
-                 message_handlers: str = None, lazy_create_resources: bool = False, continue_on_error: bool = False,
-                 error_output_path: str = None, quiet: bool = False, create_schema_enforcing_topics: bool = True,
-                 sampling_count: int = None, message_type_inclusions: str = None, message_type_exclusions: str = None,
+                 message_handlers: str = None, lazy_create_resources: bool = False, stats_only: bool = False,
+                 continue_on_error: bool = False, error_output_path: str = None, quiet: bool = False,
+                 create_schema_enforcing_topics: bool = True, sampling_count: int = None,
+                 message_type_inclusions: str = None, message_type_exclusions: str = None,
                  fix_header_tags: str = None, fix_separator: int = 1):
         self.source_file_path = source_file_path
         self.source_file_encoding = source_file_encoding
@@ -85,6 +86,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.setup_handlers(message_handlers)
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                  sampling_count=sampling_count,
+                                                                 stats_only=stats_only,
                                                                  message_type_inclusions=message_type_inclusions,
                                                                  message_type_exclusions=message_type_exclusions,
                                                                  fix_header_tags=fix_header_tags,
@@ -136,6 +138,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             end_time = datetime.now()
             time_diff = end_time - start_time
             total_seconds = time_diff.total_seconds()
+
+            if self.message_parser.stats_only is True:
+                logging.info('Run in stats_only mode')
 
             if self.message_parser.use_sampling is True:
                 logging.info('Sampling count: %s', self.message_parser.sampling_count)
