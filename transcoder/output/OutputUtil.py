@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-from transcoder.output import OutputManager, PubSubOutputManager, BigQueryOutputManager
+from transcoder.output import OutputManager
 from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
+from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
 
 
 def get_output_manager(output_name: str, output_prefix: str = None, output_file_path: str = None,
