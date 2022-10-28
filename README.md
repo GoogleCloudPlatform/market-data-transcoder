@@ -68,7 +68,7 @@ usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
                [--output_path OUTPUT_PATH]
                [--output_type {avro,fastavro,pubsub,bigquery}]
                [--error_output_path ERROR_OUTPUT_PATH]
-               [--lazy_create_resources]
+               [--lazy_create_resources] [--stats_only]
                [--destination_project_id DESTINATION_PROJECT_ID]
                [--destination_dataset_id DESTINATION_DATASET_ID]
                [--output_encoding {binary,json}]
@@ -146,6 +146,8 @@ Output arguments:
                         messages are processed. Particularly useful when
                         working with FIX but only processing a limited set of
                         message types in the source data
+  --stats_only          Flag indicating that transcoder should only report on
+                        message type counts without parsing messages further
 
 Google Cloud arguments:
   --destination_project_id DESTINATION_PROJECT_ID

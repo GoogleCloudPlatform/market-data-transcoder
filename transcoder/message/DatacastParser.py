@@ -29,9 +29,10 @@ class DatacastParser:
         """Static method for retrieving list of provider-specific factory classes"""
         raise ParserFunctionNotDefinedError
 
-    def __init__(self, sampling_count: int = None, message_type_inclusions: str = None,
-                 message_type_exclusions: str = None):
+    def __init__(self, sampling_count: int = None, stats_only: bool = False,
+                 message_type_inclusions: str = None, message_type_exclusions: str = None):
         self.sampling_count = sampling_count
+        self.stats_only = stats_only
         self.message_type_inclusions = message_type_inclusions.split(
             ',') if message_type_inclusions is not None else None
         self.message_type_exclusions = message_type_exclusions.split(
@@ -86,6 +87,11 @@ class DatacastParser:
             return message
 
         self.increment_summary_count(message.name)
+
+        if self.stats_only is True:
+            message.ignored = True
+            return message
+
         message = self._parse_message(message)
         return message
 
