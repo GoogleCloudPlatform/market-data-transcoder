@@ -26,6 +26,7 @@ import logging
 import os
 from datetime import datetime
 
+from transcoder import LineEncoding
 from transcoder.message import DatacastParser, ParsedMessage
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.message.MessageUtil import get_message_parser
@@ -42,7 +43,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  factory, schema_file_path: str,
                  source_file_path: str, source_file_encoding: str, source_file_format_type: str,
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
-                 is_base_64_encoded: bool = False, output_type: str = None, output_path: str = None,
+                 line_encoding: LineEncoding = None, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
                  message_handlers: str = None, lazy_create_resources: bool = False, stats_only: bool = False,
                  continue_on_error: bool = False, error_output_path: str = None, quiet: bool = False,
@@ -56,7 +57,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.skip_lines = skip_lines
         self.skip_bytes = skip_bytes
         self.message_skip_bytes = message_skip_bytes
-        self.is_base_64_encoded = is_base_64_encoded
+        self.line_encoding = line_encoding
         self.continue_on_error = continue_on_error
         self.error_output_path = error_output_path
         self.lazy_create_resources = lazy_create_resources
@@ -71,7 +72,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         self.error_writer = ErrorWriter(prefix=self.file_name_without_extension,
                                         output_path=self.error_output_path,
-                                        is_base_64_encoded=self.is_base_64_encoded)
+                                        line_encoding=self.line_encoding)
 
         if output_type is not None:
             self.output_manager = get_output_manager(output_type,
@@ -232,6 +233,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
     def decode_source_message(self, record):
         """Wrapper to enable base64 processing of inbound messages"""
-        if self.is_base_64_encoded is True:
+        if self.line_encoding is LineEncoding.BASE_64:
             return base64.b64decode(record)
+        if self.line_encoding is LineEncoding.BASE_64_URL_SAFE:
+            return base64.urlsafe_b64decode(record)
         return record

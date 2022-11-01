@@ -30,6 +30,7 @@ import argparse
 import logging
 import os
 
+from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.source import all_source_identifiers
@@ -50,9 +51,15 @@ def main():
                                                                                                 'character encoding')
     source_options_group.add_argument('--source_file_format_type', required=True, choices=all_source_identifiers(),
                                       help='The source file format')
-    source_options_group.add_argument('--base64', action='store_true',
-                                      help='Indicates if each individual message extracted from '
-                                           'the source is base 64 encoded')
+
+    base64_group = source_options_group.add_mutually_exclusive_group()
+    base64_group.add_argument('--base64', action='store_true',
+                              help='Indicates if each individual message extracted from '
+                                   'the source is base 64 encoded')
+    base64_group.add_argument('--base64_urlsafe', action='store_true',
+                              help='Indicates if each individual message extracted from '
+                                   'the source is base 64 url safe encoded')
+
     source_options_group.add_argument('--fix_header_tags', type=str, help='Comma delimited list of fix header tags')
     source_options_group.add_argument('--fix_separator', type=int, default=1, help='The unicode int representing the '
                                                                                    'fix message separator')
@@ -143,7 +150,6 @@ def main():
     skip_lines = args.skip_lines
     skip_bytes = args.skip_bytes
     message_skip_bytes = args.message_skip_bytes
-    base64 = args.base64
     quiet = args.quiet
     output_type = args.output_type
     output_encoding = args.output_encoding
@@ -162,10 +168,16 @@ def main():
     fix_header_tags = args.fix_header_tags
     fix_separator = args.fix_separator
 
+    line_encoding = None
+    if args.base64 is True:
+        line_encoding = LineEncoding.BASE_64
+    elif args.base64_urlsafe is True:
+        line_encoding = LineEncoding.BASE_64_URL_SAFE
+
     message_parser = MessageParser(factory, schema_file_path,
                                    source_file_path, source_file_encoding, source_file_format_type,
                                    source_file_endian, skip_lines=skip_lines, skip_bytes=skip_bytes,
-                                   message_skip_bytes=message_skip_bytes, is_base_64_encoded=base64,
+                                   message_skip_bytes=message_skip_bytes, line_encoding=line_encoding,
                                    output_type=output_type, output_path=output_path, output_encoding=output_encoding,
                                    destination_project_id=destination_project_id,
                                    destination_dataset_id=destination_dataset_id,
