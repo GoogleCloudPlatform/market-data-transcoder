@@ -16,7 +16,7 @@ The architecture of the transcoder relies on several principal abstractions, det
 
 #### Schema
 
-A schema (also known as a data dictionary) is similar to an API specification, but instead of describing API endpoint contracts, it describes the representative format of binary _messages_ that flow between systemsm. The closest comparison might be drawn with table definitions supported by SQL Data Definition Language, but these schemas are used for data in-motion as well as data at-rest.
+A schema (also known as a data dictionary) is similar to an API specification, but instead of describing API endpoint contracts, it describes the representative format of binary _messages_ that flow between systems. The closest comparison might be drawn with table definitions supported by SQL Data Definition Language, but these schemas are used for data in-motion as well as data at-rest.
 
 The transcoder's current input schema support is for Simple Binary Encoding (SBE) XML as well as QuickFIX-styled FIX protocol schema representations (also in XML).
 
