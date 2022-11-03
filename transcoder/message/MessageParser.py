@@ -19,7 +19,6 @@
 
 # pylint: disable=broad-except
 
-import base64
 import importlib
 import json
 import logging
@@ -71,8 +70,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.file_name_without_extension = os.path.basename(os.path.splitext(source_file_path)[0])
 
         self.error_writer = ErrorWriter(prefix=self.file_name_without_extension,
-                                        output_path=self.error_output_path,
-                                        line_encoding=self.line_encoding)
+                                        output_path=self.error_output_path)
 
         if output_type is not None:
             self.output_manager = get_output_manager(output_type,
@@ -128,7 +126,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
                                             self.source_file_format_type, self.source_file_endian,
                                             skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
-                                            message_skip_bytes=self.message_skip_bytes)
+                                            message_skip_bytes=self.message_skip_bytes,
+                                            line_encoding=self.line_encoding)
 
         self.process_data(source)
 
@@ -186,9 +185,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                 message: ParsedMessage = None
                 try:
                     self.error_writer.set_step(TranscodeStep.DECODE_MESSAGE)
-                    source_message = self.decode_source_message(raw_record)
                     self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
-                    message = self.message_parser.process_message(source_message)
+                    message = self.message_parser.process_message(raw_record)
 
                     if message is None:
                         continue
@@ -230,11 +228,3 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         if self.continue_on_error is False:
             raise exception
-
-    def decode_source_message(self, record):
-        """Wrapper to enable base64 processing of inbound messages"""
-        if self.line_encoding is LineEncoding.BASE_64:
-            return base64.b64decode(record)
-        if self.line_encoding is LineEncoding.BASE_64_URL_SAFE:
-            return base64.urlsafe_b64decode(record)
-        return record

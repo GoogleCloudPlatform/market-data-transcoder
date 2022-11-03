@@ -23,7 +23,6 @@ import sys
 import time
 from enum import Enum
 
-from transcoder import LineEncoding
 from transcoder.message import ParsedMessage
 
 
@@ -50,9 +49,8 @@ class TranscodeStep(Enum):
 class ErrorWriter:
     """Persist data about errors to file"""
 
-    def __init__(self, prefix: str, line_encoding: LineEncoding = None, output_path: str = None):
+    def __init__(self, prefix: str, output_path: str = None):
         self.prefix: str = prefix
-        self.line_encoding = line_encoding
         self.step: TranscodeStep = TranscodeStep.UNKNOWN
         self.note: str = ''
 
@@ -96,11 +94,10 @@ class ErrorWriter:
             out_str = f'{epoch_time},,, {self.step}, {ex_str}, '
         self.file.write(out_str + encoded + '\n')
 
-    def __encode_source_message(self, record):
+    @staticmethod
+    def __encode_source_message(record):
         if record is None:
             return ''
-        if self.line_encoding is LineEncoding.BASE_64 or self.line_encoding is LineEncoding.BASE_64_URL_SAFE:
-            return record
         if isinstance(record, bytes):
             return base64.b64encode(record).decode('utf-8')
         if isinstance(record, str):

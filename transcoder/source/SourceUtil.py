@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+from transcoder import LineEncoding
 from transcoder.source import Source
 from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMessageSource, \
     LineDelimitedFileMessageSource, CmeBinaryPacketFileMessageSource
@@ -32,9 +33,11 @@ def all_source_identifiers():
     ]
 
 
-def get_message_source(source_name: str, source_file_encoding: str, source_file_format_type: str,
+def get_message_source(source_name: str,  # pylint: disable=too-many-arguments
+                       source_file_encoding: str, source_file_format_type: str,
                        endian: str, skip_bytes: int = 0, skip_lines: int = 0,
-                       message_skip_bytes: int = 0, message_length_byte_length: int = 2, ) -> Source:
+                       message_skip_bytes: int = 0, message_length_byte_length: int = 2,
+                       line_encoding: LineEncoding = None) -> Source:
     """Returns a Source implementation instance based on the supplied source name"""
     source: Source = None
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
@@ -44,7 +47,9 @@ def get_message_source(source_name: str, source_file_encoding: str, source_file_
                                                   message_skip_bytes=message_skip_bytes,
                                                   message_length_byte_length=message_length_byte_length)
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
-        source = LineDelimitedFileMessageSource(source_name, encoding=source_file_encoding, skip_lines=skip_lines)
+        source = LineDelimitedFileMessageSource(source_name, encoding=source_file_encoding,
+                                                skip_lines=skip_lines,
+                                                line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == CmeBinaryPacketFileMessageSource.source_type_identifier():
         source = CmeBinaryPacketFileMessageSource(source_name, endian, skip_bytes=skip_bytes,
                                                   message_skip_bytes=message_skip_bytes,

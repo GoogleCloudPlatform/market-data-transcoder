@@ -19,6 +19,7 @@
 
 import os
 
+from transcoder import LineEncoding
 from transcoder.source.file import FileMessageSource
 
 
@@ -29,8 +30,9 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'line_delimited'
 
-    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0):
-        super().__init__(file_path)
+    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0,
+                 message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
+        super().__init__(file_path, line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
         self.encoding = encoding
         self.skip_lines = skip_lines
 
@@ -46,5 +48,5 @@ class LineDelimitedFileMessageSource(FileMessageSource):
                 self.file_handle.readline()
         while line := self.file_handle.readline():
             self.increment_count()
-            yield line
+            yield self.decode_message(line)
             self._log_percentage_read()
