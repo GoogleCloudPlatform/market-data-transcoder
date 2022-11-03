@@ -17,4 +17,23 @@
 # limitations under the License.
 #
 
+from enum import Enum
+
+
 # pylint: disable=invalid-name
+
+class LineEncoding(Enum):
+    """Line encoding types supported for individual message decoding before processing"""
+    NONE = 0
+    BASE_64 = 1
+    BASE_64_URL_SAFE = 2
+
+    @classmethod
+    def _missing_(cls, value):
+        return LineEncoding.NONE
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

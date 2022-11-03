@@ -58,7 +58,8 @@ usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
                [--source_file_encoding SOURCE_FILE_ENCODING]
                --source_file_format_type
                {pcap,length_delimited,line_delimited,cme_binary_packet}
-               [--base64] [--fix_header_tags FIX_HEADER_TAGS]
+               [--base64 | --base64_urlsafe]
+               [--fix_header_tags FIX_HEADER_TAGS]
                [--fix_separator FIX_SEPARATOR]
                [--message_handlers MESSAGE_HANDLERS]
                [--message_skip_bytes MESSAGE_SKIP_BYTES]
@@ -101,6 +102,8 @@ Input source arguments:
                         The source file format
   --base64              Indicates if each individual message extracted from
                         the source is base 64 encoded
+  --base64_urlsafe      Indicates if each individual message extracted from
+                        the source is base 64 url safe encoded
   --fix_header_tags FIX_HEADER_TAGS
                         Comma delimited list of fix header tags
   --fix_separator FIX_SEPARATOR
