@@ -18,6 +18,7 @@
 #
 
 from transcoder.output import OutputManager
+from transcoder.output.diag import DiagnosticOutputManager
 from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
 from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
@@ -42,6 +43,8 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
     elif output_name == 'bigquery':
         output = BigQueryOutputManager(destination_project_id, destination_dataset_id, output_prefix,
                                        lazy_create_resources=lazy_create_resources)
+    elif output_name == 'diag':
+        output = DiagnosticOutputManager()
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')
     return output
