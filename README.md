@@ -170,6 +170,8 @@ Pub/Sub arguments:
                         used to validate messages sent to a topic (default:
                         True)
 
+```
+
 # Install requirements
 ```
 pip install -r requirements.txt
