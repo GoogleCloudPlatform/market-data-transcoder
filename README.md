@@ -33,7 +33,7 @@ A message represents a discrete interaction between two systems sharing a schema
 
 Encodings describe how the contents of a message payload are physically represented to systems. Many familiar encodings, such as JSON, YAML or CSV, are self-describing and do not strictly require that applications use a separate schema definition. However, binary encodings such as SBE, Avro and Protocol Buffers require that applications employ the associated schema in order to properly interpret messages.
 
-The transcoder's supported inbound encodings are SBE binary and ASCII-encoded (tag=value) FIX. Outbound encodings for Pub/Sub message payloads can be Avro binary or Avro JSON. In addition, JSON representations of the inbound messages are written to the process's standard output channel as they are processed. This can be disabled with the `--quiet` parameter.
+The transcoder's supported inbound encodings are SBE binary and ASCII-encoded (tag=value) FIX. Outbound encodings for Pub/Sub message payloads can be Avro binary or Avro JSON. 
 
 The transcoder supports base64 decoding of messages using the `--base64` option.
 
@@ -43,7 +43,7 @@ A message transport describes the mechanism for transferring messages between sy
 
 The transcoder's currently supported inbound message source transports are PCAP files, length-delimited binary files, and newline-delimited ASCII files. Multicast UDP and Pub/Sub inbound transports are on the roadmap.
 
-Outbound transport options are locally stored Avro files, Pub/Sub topics or BigQuery tables. In parallel, the transcoder process outputs JSON message representations to the system's standard output channel.
+Outbound transport options are locally stored Avro files, Pub/Sub topics or BigQuery tables. If no `output_type` is specified, the transcoded messages are output to the console encoded in YAML.
 
 #### Message factory
 
@@ -53,33 +53,33 @@ A message factory takes a message payload read from the input source, determines
 
 ```
 # List available cli arguments
-usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
-               --source_file SOURCE_FILE
-               [--source_file_encoding SOURCE_FILE_ENCODING]
-               --source_file_format_type
-               {pcap,length_delimited,line_delimited,cme_binary_packet}
-               [--base64 | --base64_urlsafe]
-               [--fix_header_tags FIX_HEADER_TAGS]
-               [--fix_separator FIX_SEPARATOR]
-               [--message_handlers MESSAGE_HANDLERS]
-               [--message_skip_bytes MESSAGE_SKIP_BYTES]
-               [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
-               [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
-               [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
-               [--output_path OUTPUT_PATH]
-               [--output_type {avro,fastavro,pubsub,bigquery}]
-               [--error_output_path ERROR_OUTPUT_PATH]
-               [--lazy_create_resources] [--stats_only]
-               [--destination_project_id DESTINATION_PROJECT_ID]
-               [--destination_dataset_id DESTINATION_DATASET_ID]
-               [--output_encoding {binary,json}]
-               [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
-               [--continue_on_error]
-               [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
+usage: txcode [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
+              --source_file SOURCE_FILE
+              [--source_file_encoding SOURCE_FILE_ENCODING]
+              --source_file_format_type
+              {pcap,length_delimited,line_delimited,cme_binary_packet}
+              [--base64 | --base64_urlsafe]
+              [--fix_header_tags FIX_HEADER_TAGS]
+              [--fix_separator FIX_SEPARATOR]
+              [--message_handlers MESSAGE_HANDLERS]
+              [--message_skip_bytes MESSAGE_SKIP_BYTES]
+              [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
+              [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
+              [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
+              [--output_path OUTPUT_PATH]
+              [--output_type {diag,avro,fastavro,pubsub,bigquery}]
+              [--error_output_path ERROR_OUTPUT_PATH]
+              [--lazy_create_resources] [--stats_only]
+              [--destination_project_id DESTINATION_PROJECT_ID]
+              [--destination_dataset_id DESTINATION_DATASET_ID]
+              [--output_encoding {binary,json}]
+              [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
+              [--continue_on_error]
+              [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
 
 Datacast Transcoder process input arguments
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --continue_on_error   Indicates if an exception file should be created, and
                         records continued to be processed upon message level
@@ -136,7 +136,7 @@ Input source arguments:
 Output arguments:
   --output_path OUTPUT_PATH
                         Output file path. Defaults to avroOut
-  --output_type {avro,fastavro,pubsub,bigquery}
+  --output_type {diag,avro,fastavro,pubsub,bigquery}
                         Output format type
   --error_output_path ERROR_OUTPUT_PATH
                         Error output file path if --continue_on_error flag
@@ -169,7 +169,6 @@ Pub/Sub arguments:
                         Indicates if Pub/Sub schemas should be created and
                         used to validate messages sent to a topic (default:
                         True)
-```
 
 # Install requirements
 ```
