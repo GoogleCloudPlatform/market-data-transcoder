@@ -8,7 +8,7 @@ _This is not an official Google product or service_
 
 The Datacast `transcoder` is a schema-driven, message-oriented utility to simplify the lossless ingestion of common high-performance electronic trading data formats to Google Cloud.
 
-Electronic trading venues such as futures, crypto and securities exchanges have specialized data representation and distribution needs. In particular, efficient message representation is a high priority due to the massive volume of transactions a venue processes. Cloud-native APIs often use JSON for message payloads, but the extra bytes required to represent messages using high-context encodings impose real cost implications in metered computing environments. 
+Electronic trading venuess have specialized data representation and distribution needs. In particular, efficient message representation is a high priority due to the massive volume of transactions a venue processes. Cloud-native APIs often use JSON for message payloads, but the extra bytes required to represent messages using high-context encodings have cost implications in metered computing environments. 
 
 Unlike JSON, YAML, or even CSV, binary-encoded data is low-context and not self-describing -- the instructions for interpreting binary messages must be explicitly provided by producers separately and in advance, and followed by interpreters.
 
@@ -31,11 +31,11 @@ A message represents a discrete interaction between two systems sharing a schema
 
 #### Encoding
 
-Encodings describe how the contents of a message payload are physically represented to systems. Many familiar encodings, such as JSON, YAML or CSV, are self-describing and do not strictly require that applications use a separate schema definition. However, binary encodings such as SBE, Avro and Protocol Buffers require that applications employ the associated schema in order to properly interpret messages.
+Encodings describe how the contents of a message payload are represented to systems. Many familiar encodings, such as JSON, YAML or CSV, are self-describing and do not strictly require that applications use a separate schema definition. However, binary encodings such as SBE, Avro and Protocol Buffers require that applications employ the associated schema in order to properly interpret messages.
 
 The transcoder's supported inbound encodings are SBE binary and ASCII-encoded (tag=value) FIX. Outbound encodings for Pub/Sub message payloads can be Avro binary or Avro JSON. 
 
-The transcoder supports base64 decoding of messages using the `--base64` option.
+The transcoder supports base64 decoding of messages using the `--base64` and `--base64_urlsafe` options.
 
 #### Transport
 
@@ -43,7 +43,7 @@ A message transport describes the mechanism for transferring messages between sy
 
 The transcoder's currently supported inbound message source transports are PCAP files, length-delimited binary files, and newline-delimited ASCII files. Multicast UDP and Pub/Sub inbound transports are on the roadmap.
 
-Outbound transport options are locally stored Avro files, Pub/Sub topics or BigQuery tables. If no `output_type` is specified, the transcoded messages are output to the console encoded in YAML.
+Outbound transport options are locally stored Avro files, Pub/Sub topics or BigQuery tables. If no `output_type` is specified, the transcoded messages are output to the console encoded in YAML and not persisted automatically.
 
 #### Message factory
 
