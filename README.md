@@ -8,7 +8,7 @@ _This is not an official Google product or service_
 
 The Datacast `transcoder` is a schema-driven, message-oriented utility to simplify the lossless ingestion of common high-performance electronic trading data formats to Google Cloud.
 
-Electronic trading venuess have specialized data representation and distribution needs. In particular, efficient message representation is a high priority due to the massive volume of transactions a venue processes. Cloud-native APIs often use JSON for message payloads, but the extra bytes required to represent messages using high-context encodings have cost implications in metered computing environments. 
+Electronic trading venues have specialized data representation and distribution needs. In particular, efficient message representation is a high priority due to the massive volume of transactions a venue processes. Cloud-native APIs often use JSON for message payloads, but the extra bytes required to represent messages using high-context encodings have cost implications in metered computing environments. 
 
 Unlike JSON, YAML, or even CSV, binary-encoded data is low-context and not self-describing -- the instructions for interpreting binary messages must be explicitly provided by producers separately and in advance, and followed by interpreters.
 
