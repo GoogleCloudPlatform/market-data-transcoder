@@ -92,8 +92,8 @@ def main():
 
     output_options_group = arg_parser.add_argument_group('Output arguments')
     output_options_group.add_argument('--output_path', help='Output file path. Defaults to avroOut')
-    output_options_group.add_argument('--output_type', choices=['avro', 'fastavro', 'pubsub', 'bigquery'],
-                                      default='fastavro',
+    output_options_group.add_argument('--output_type', choices=['diag', 'avro', 'fastavro', 'pubsub', 'bigquery'],
+                                      default='diag',
                                       help='Output format type')
     output_options_group.add_argument('--error_output_path',
                                       help='Error output file path if --continue_on_error flag enabled. Defaults to '
