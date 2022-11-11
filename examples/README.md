@@ -364,71 +364,6 @@ java -jar avro-tools-1.11.1.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLo
 }
 ```
 
-## Ingest the contents of an ASX 24 Derivatives MDP Historical Binary file into BigQuery
-
-This example extracts and transcodes messages embedded within an ASX 24 Derivatives MDP Historical Binary file. An ASX MDP schema is used to decode the messages. Console output of decoded messages is suppressed. The schema and output files are written to BigQuery. Please note that usage of ASX Datasphere data is subject to your licensing agreement with ASX.
-
-### CLI
-
-```
-bin/txcode  \
-  --factory asx \
-  --schema_file asx-mdp.xml \
-  --source_file NTP_220306_1646551229.log \
-  --source_file_format_type length_delimited \
-  --continue_on_error \
-  --source_file_endian little \
-  --output_type bigquery \
-  --output_encoding binary \
-  --quiet \
-  --message_type_inclusions future_symbol_directory \
-  --destination_project_id $(gcloud config get-value project) \
-  --destination_dataset_id asx_datasphere \
-  --message_handlers TimestampPullForwardHandler
-```
-
-### Output
-```
-INFO:root:Message type inclusions: ['future_symbol_directory']
-INFO:root:Source record count: 37404855
-INFO:root:Processed record count: 2999
-INFO:root:Processed schema count: 1
-INFO:root:Summary of message counts: {'future_symbol_directory': 2999}
-INFO:root:Summary of error message counts: {'future_symbol_directory': 17}
-INFO:root:Message rate: 50223.824304 per second
-INFO:root:Total runtime in seconds: 744.763178
-INFO:root:Total runtime in minutes: 12.41272
-```
-
-### Show table in BigQuery
-
-```
-bq ls asx_datasphere
-```
-
-### Output
-```
-          tableId           Type    Labels   Time Partitioning   Clustered Fields  
- ------------------------- ------- -------- ------------------- ------------------ 
-  future_symbol_directory   TABLE
-```
-
-### Sample records from BigQuery
-```
-bq --format=json head asx_datasphere.future_symbol_directory | head -1| jq .[0]
-```
-
-### Output
-```
-{
-  "symbol_name": "APH2",
-  "timestamp": "278724000",
-  "timestamp_seconds": null,
-  "trade_date": "19058",
-  "tradeable_instrument_id": "196081"
-}
-```
-
 ## Publish FIX messages stored in a file to Pub/Sub as Avro binary
 
 This example reads a file containing a single FIX message per line and a FIX schema XML file, creates topics in Pub/Sub for a single message type, then publishes each message in the file to the corresponding topic. A JSON representation of the transcoded message is sent to the console.
@@ -470,7 +405,6 @@ INFO:root:Total runtime in minutes: 0.001976
 ```
 gcloud pubsub topics list --format json | jq .[].name | grep NewOrderSingle |tr -d \" | cut -f4 -d/
 ```
-
 
 ## Create a topic from a schema, subscribe to the topic, publish JSON-encoded Avro to the topic
 
