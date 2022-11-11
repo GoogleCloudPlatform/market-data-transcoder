@@ -210,11 +210,6 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                         self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                         self.output_manager.write_record(message.name, message.dictionary)
 
-             #       if self.quiet is False:
-             #           if isinstance(message.dictionary, bytes):
-             #               print(message.dictionary)
-             #           else:
-             #               print(yaml.dump(message.dictionary))
                 except Exception as ex:
                     self.handle_exception(raw_record, message, ex)
 
