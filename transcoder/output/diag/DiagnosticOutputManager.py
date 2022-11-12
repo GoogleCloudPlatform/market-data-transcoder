@@ -27,12 +27,8 @@ from transcoder.output.exception import OutputFunctionNotDefinedError, OutputMan
 class DiagnosticOutputManager(OutputManager):
     """Output manager for representing  messages in diagnostic notation"""
 
-    def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
-        self.lazy_create_resources = True
-        self.schema_definitions = {}
+    def __init__(self, schema_max_workers=5, lazy_create_resources: bool = True):
+        super().__init__(lazy_create_resources=lazy_create_resources)
 
     def write_record(self, record_type_name, record):
         print(yaml.dump(record))
-
-    def wait_for_schema_creation(self):
-        pass
