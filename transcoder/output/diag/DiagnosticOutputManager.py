@@ -25,5 +25,9 @@ from transcoder.output import OutputManager
 class DiagnosticOutputManager(OutputManager):
     """Output manager for representing  messages in diagnostic notation"""
 
+    @staticmethod
+    def output_type_identifier():
+        return 'diag'
+
     def write_record(self, record_type_name, record):
         print(yaml.dump(record))

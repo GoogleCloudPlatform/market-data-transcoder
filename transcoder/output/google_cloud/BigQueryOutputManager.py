@@ -32,6 +32,10 @@ from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_KE
 class BigQueryOutputManager(OutputManager):
     """Manages creation of BigQuery dataset and table objects"""
 
+    @staticmethod
+    def output_type_identifier():
+        return 'bigquery'
+
     def __init__(self, project_id: str, dataset_id, output_prefix: str = None, lazy_create_resources: bool = False):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.project_id = project_id

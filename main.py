@@ -33,6 +33,7 @@ import os
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
 from transcoder.message.factory import all_supported_factory_types
+from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
 
 script_dir = os.path.dirname(__file__)
@@ -92,7 +93,7 @@ def main():
 
     output_options_group = arg_parser.add_argument_group('Output arguments')
     output_options_group.add_argument('--output_path', help='Output file path. Defaults to avroOut')
-    output_options_group.add_argument('--output_type', choices=['diag', 'avro', 'fastavro', 'pubsub', 'bigquery'],
+    output_options_group.add_argument('--output_type', choices=all_output_identifiers(),
                                       default='diag',
                                       help='Output format type')
     output_options_group.add_argument('--error_output_path',
