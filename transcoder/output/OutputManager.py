@@ -29,7 +29,7 @@ class OutputManager:
     """Abstract output manager class"""
 
     @staticmethod
-    def source_type_identifier():
+    def output_type_identifier():
         """Returns identifier of output type"""
         raise OutputFunctionNotDefinedError
 
