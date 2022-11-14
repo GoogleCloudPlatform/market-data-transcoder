@@ -28,6 +28,11 @@ from transcoder.output.exception import OutputFunctionNotDefinedError, OutputMan
 class OutputManager:
     """Abstract output manager class"""
 
+    @staticmethod
+    def output_type_identifier():
+        """Returns identifier of output type"""
+        raise OutputFunctionNotDefinedError
+
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
         self.schema_thread_pool_executor: ThreadPoolExecutor = concurrent.futures.ThreadPoolExecutor(
             max_workers=schema_max_workers)
@@ -58,7 +63,7 @@ class OutputManager:
             self.existing_schemas[schema.name] = True
 
     def _add_schema(self, schema: DatacastSchema):
-        raise OutputFunctionNotDefinedError
+        pass
 
     def write_record(self, record_type_name, record):
         """For record of given type optionally lazily creation resources and write record"""

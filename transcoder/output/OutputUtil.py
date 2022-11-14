@@ -18,10 +18,21 @@
 #
 
 from transcoder.output import OutputManager
-from transcoder.output.diag import DiagnosticOutputManager
 from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
+from transcoder.output.diag import DiagnosticOutputManager
 from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
+
+
+def all_output_identifiers():
+    """List of all available source identifiers"""
+    return [
+        DiagnosticOutputManager.output_type_identifier(),
+        AvroOutputManager.output_type_identifier(),
+        FastAvroOutputManager.output_type_identifier(),
+        BigQueryOutputManager.output_type_identifier(),
+        PubSubOutputManager.output_type_identifier()
+    ]
 
 
 def get_output_manager(output_name: str, output_prefix: str = None, output_file_path: str = None,

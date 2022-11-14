@@ -30,6 +30,10 @@ from transcoder.output.avro.BaseAvroOutputManager import BaseAvroOutputManager
 class AvroOutputManager(BaseAvroOutputManager):
     """Uses Avro library to append transcoded messages to the Avro file for the specific message type"""
 
+    @staticmethod
+    def output_type_identifier():
+        return 'avro'
+
     def _add_schema(self, schema: DatacastSchema):
         super()._add_schema(schema)
         output_file = open(self._get_file_name(schema.name, 'avro'), 'wb')  # pylint: disable=consider-using-with

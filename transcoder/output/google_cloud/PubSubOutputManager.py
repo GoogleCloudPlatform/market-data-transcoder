@@ -45,6 +45,10 @@ from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_LA
 class PubSubOutputManager(OutputManager):
     """Manages creation of Pub/Sub topic and schema objects"""
 
+    @staticmethod
+    def output_type_identifier():
+        return 'pubsub'
+
     def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
                  lazy_create_resources: bool = False, create_schema_enforcing_topics: bool = True):
         super().__init__(lazy_create_resources=lazy_create_resources)
