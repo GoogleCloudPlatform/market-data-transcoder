@@ -20,8 +20,6 @@
 # pylint: disable=broad-except
 
 import importlib
-# import json
-import yaml
 import logging
 import os
 from datetime import datetime

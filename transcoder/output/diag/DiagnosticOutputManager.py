@@ -19,16 +19,11 @@
 
 import yaml
 
-from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
-from transcoder.output.exception import OutputFunctionNotDefinedError, OutputManagerSchemaError
 
 
 class DiagnosticOutputManager(OutputManager):
     """Output manager for representing  messages in diagnostic notation"""
-
-    def __init__(self, schema_max_workers=5, lazy_create_resources: bool = True):
-        super().__init__(lazy_create_resources=lazy_create_resources)
 
     def write_record(self, record_type_name, record):
         print(yaml.dump(record))
