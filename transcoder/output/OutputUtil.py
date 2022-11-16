@@ -43,18 +43,18 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
                        create_schema_enforcing_topics: bool = True):
     """Returns OutputManager instance based on the supplied name"""
     output: OutputManager = None
-    if output_name == 'avro':
+    if output_name == AvroOutputManager.output_type_identifier():
         output = AvroOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
-    elif output_name == 'fastavro':
+    elif output_name == FastAvroOutputManager.output_type_identifier():
         output = FastAvroOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
-    elif output_name == 'pubsub':
+    elif output_name == PubSubOutputManager.output_type_identifier():
         output = PubSubOutputManager(destination_project_id, output_encoding=output_encoding,
                                      output_prefix=output_prefix, lazy_create_resources=lazy_create_resources,
                                      create_schema_enforcing_topics=create_schema_enforcing_topics)
-    elif output_name == 'bigquery':
+    elif output_name == BigQueryOutputManager.output_type_identifier():
         output = BigQueryOutputManager(destination_project_id, destination_dataset_id, output_prefix,
                                        lazy_create_resources=lazy_create_resources)
-    elif output_name == 'diag':
+    elif output_name == DiagnosticOutputManager.output_type_identifier():
         output = DiagnosticOutputManager()
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')
