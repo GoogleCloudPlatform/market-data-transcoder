@@ -46,8 +46,6 @@ class GCPTerraformOutputManager(OutputManager):
     def _create_field(self, field: DatacastField):
         return field.create_bigquery_field()
 
-        # self._save_schema(schema.name, schema_json)
-
     def write_record(self, record_type_name, record):
         pass
 
