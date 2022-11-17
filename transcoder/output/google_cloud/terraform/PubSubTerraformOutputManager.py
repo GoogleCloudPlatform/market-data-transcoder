@@ -30,6 +30,3 @@ class PubSubTerraformOutputManager(GCPTerraformOutputManager):
     def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
                  create_schema_enforcing_topics: bool = True):
         super().__init__()
-
-    def write_record(self, record_type_name, record):
-        pass
