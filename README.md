@@ -53,33 +53,34 @@ A message factory takes a message payload read from the input source, determines
 
 ```
 # List available cli arguments
-usage: txcode [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
-              --source_file SOURCE_FILE
-              [--source_file_encoding SOURCE_FILE_ENCODING]
-              --source_file_format_type
-              {pcap,length_delimited,line_delimited,cme_binary_packet}
-              [--base64 | --base64_urlsafe]
-              [--fix_header_tags FIX_HEADER_TAGS]
-              [--fix_separator FIX_SEPARATOR]
-              [--message_handlers MESSAGE_HANDLERS]
-              [--message_skip_bytes MESSAGE_SKIP_BYTES]
-              [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
-              [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
-              [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
-              [--output_path OUTPUT_PATH]
-              [--output_type {diag,avro,fastavro,pubsub,bigquery}]
-              [--error_output_path ERROR_OUTPUT_PATH]
-              [--lazy_create_resources] [--stats_only]
-              [--destination_project_id DESTINATION_PROJECT_ID]
-              [--destination_dataset_id DESTINATION_DATASET_ID]
-              [--output_encoding {binary,json}]
-              [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
-              [--continue_on_error]
-              [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
+usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
+               --source_file SOURCE_FILE
+               [--source_file_encoding SOURCE_FILE_ENCODING]
+               --source_file_format_type
+               {pcap,length_delimited,line_delimited,cme_binary_packet}
+               [--base64 | --base64_urlsafe]
+               [--fix_header_tags FIX_HEADER_TAGS]
+               [--fix_separator FIX_SEPARATOR]
+               [--message_handlers MESSAGE_HANDLERS]
+               [--message_skip_bytes MESSAGE_SKIP_BYTES]
+               [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
+               [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
+               [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
+               [--output_path OUTPUT_PATH]
+               [--output_type {diag,avro,fastavro,bigquery,pubsub}]
+               [--error_output_path ERROR_OUTPUT_PATH]
+               [--lazy_create_resources] [--stats_only]
+               [--create_schemas_only]
+               [--destination_project_id DESTINATION_PROJECT_ID]
+               [--destination_dataset_id DESTINATION_DATASET_ID]
+               [--output_encoding {binary,json}]
+               [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
+               [--continue_on_error]
+               [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
 
 Datacast Transcoder process input arguments
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   --continue_on_error   Indicates if an exception file should be created, and
                         records continued to be processed upon message level
@@ -136,7 +137,7 @@ Input source arguments:
 Output arguments:
   --output_path OUTPUT_PATH
                         Output file path. Defaults to avroOut
-  --output_type {diag,avro,fastavro,pubsub,bigquery}
+  --output_type {diag,avro,fastavro,bigquery,pubsub}
                         Output format type
   --error_output_path ERROR_OUTPUT_PATH
                         Error output file path if --continue_on_error flag
@@ -151,6 +152,9 @@ Output arguments:
                         message types in the source data
   --stats_only          Flag indicating that transcoder should only report on
                         message type counts without parsing messages further
+  --create_schemas_only
+                        Flag indicating that transcoder should only create
+                        output resource schemas and not output message data
 
 Google Cloud arguments:
   --destination_project_id DESTINATION_PROJECT_ID
@@ -169,7 +173,6 @@ Pub/Sub arguments:
                         Indicates if Pub/Sub schemas should be created and
                         used to validate messages sent to a topic (default:
                         True)
-
 ```
 
 # Install requirements
