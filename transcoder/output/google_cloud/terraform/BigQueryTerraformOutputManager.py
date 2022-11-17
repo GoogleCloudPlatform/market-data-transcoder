@@ -69,6 +69,3 @@ class BigQueryTerraformOutputManager(GCPTerraformOutputManager):
                 _dict['fields'] = BigQueryTerraformOutputManager._generate_schema(field.fields)
             field_list.append(_dict)
         return field_list
-
-    def write_record(self, record_type_name, record):
-        pass

@@ -17,10 +17,9 @@
 # limitations under the License.
 #
 import os
-import string
 import sys
 
-from transcoder.message import DatacastSchema, DatacastField
+from transcoder.message import DatacastField
 from transcoder.output import OutputManager
 
 
