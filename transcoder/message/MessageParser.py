@@ -43,7 +43,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  source_file_endian: str, skip_lines: int = 0, skip_bytes: int = 0, message_skip_bytes: int = 0,
                  line_encoding: LineEncoding = None, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
-                 message_handlers: str = None, lazy_create_resources: bool = False, stats_only: bool = False,
+                 message_handlers: str = None, lazy_create_resources: bool = False,
+                 stats_only: bool = False, create_schemas_only: bool = False,
                  continue_on_error: bool = False, error_output_path: str = None, quiet: bool = False,
                  create_schema_enforcing_topics: bool = True, sampling_count: int = None,
                  message_type_inclusions: str = None, message_type_exclusions: str = None,
@@ -61,6 +62,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.lazy_create_resources = lazy_create_resources
         self.quiet = quiet
         self.create_schema_enforcing_topics = create_schema_enforcing_topics
+        self.create_schemas_only = create_schemas_only
         self.output_manager: OutputManager = None
         self.message_handlers = {}
         self.all_message_type_handlers = []
@@ -95,6 +97,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         if message_handlers is None or message_handlers == "":
             return
+        if self.create_schemas_only is True:
+            return
 
         self.handlers_enabled = True
         handler_strs = message_handlers.split()
@@ -122,13 +126,15 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         start_time = datetime.now()
         self.process_schemas()
 
-        source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
-                                            self.source_file_format_type, self.source_file_endian,
-                                            skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
-                                            message_skip_bytes=self.message_skip_bytes,
-                                            line_encoding=self.line_encoding)
+        source: Source = None
+        if self.create_schemas_only is False:
+            source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
+                                                self.source_file_format_type, self.source_file_endian,
+                                                skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
+                                                message_skip_bytes=self.message_skip_bytes,
+                                                line_encoding=self.line_encoding)
 
-        self.process_data(source)
+            self.process_data(source)
 
         if self.output_manager is not None:
             self.output_manager.wait_for_completion()
@@ -137,6 +143,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             end_time = datetime.now()
             time_diff = end_time - start_time
             total_seconds = time_diff.total_seconds()
+
+            if self.create_schemas_only is True:
+                logging.info('Run in create_schemas_only mode')
 
             if self.message_parser.stats_only is True:
                 logging.info('Run in stats_only mode')
@@ -149,12 +158,14 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             elif self.message_parser.message_type_exclusions is not None:
                 logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
-            logging.info('Source record count: %s', source.record_count)
-            logging.info('Processed record count: %s', self.message_parser.record_count)
-            logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
-            logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
-            logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
-            logging.info('Message rate: %s per second', round(source.record_count / total_seconds, 6))
+            if self.create_schemas_only is False:
+                logging.info('Source record count: %s', source.record_count)
+                logging.info('Processed record count: %s', self.message_parser.record_count)
+                logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
+                logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
+                logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
+                logging.info('Message rate: %s per second', round(source.record_count / total_seconds, 6))
+
             logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 

@@ -99,17 +99,18 @@ def main():
     output_options_group.add_argument('--error_output_path',
                                       help='Error output file path if --continue_on_error flag enabled. Defaults to '
                                            'errorOut')
-
     output_options_group.add_argument('--lazy_create_resources', action='store_true',
                                       help='Flag indicating that output resources for message types '
                                            'should be only created as messages of each type are encountered in the '
                                            'source data. Default behavior is to create resources for each message '
                                            'type before messages are processed. Particularly useful when working with '
                                            'FIX but only processing a limited set of message types in the source data')
-
     output_options_group.add_argument('--stats_only', action='store_true',
                                       help='Flag indicating that transcoder should only report on message type counts '
                                            'without parsing messages further')
+    output_options_group.add_argument('--create_schemas_only', action='store_true',
+                                      help='Flag indicating that transcoder should only create output resource '
+                                           'schemas and not output message data')
 
     gcp_options_group = arg_parser.add_argument_group('Google Cloud arguments')
     gcp_options_group.add_argument('--destination_project_id', help='The Google Cloud project ID for the destination '
@@ -161,6 +162,7 @@ def main():
     message_handlers = args.message_handlers
     lazy_create_resources = args.lazy_create_resources
     stats_only = args.stats_only
+    create_schemas_only = args.create_schemas_only
     continue_on_error = args.continue_on_error
     create_schema_enforcing_topics = args.create_schema_enforcing_topics
     sampling_count = args.sampling_count
@@ -183,7 +185,7 @@ def main():
                                    destination_project_id=destination_project_id,
                                    destination_dataset_id=destination_dataset_id,
                                    message_handlers=message_handlers, lazy_create_resources=lazy_create_resources,
-                                   stats_only=stats_only,
+                                   stats_only=stats_only, create_schemas_only=create_schemas_only,
                                    continue_on_error=continue_on_error, error_output_path=error_output_path,
                                    quiet=quiet, create_schema_enforcing_topics=create_schema_enforcing_topics,
                                    sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
