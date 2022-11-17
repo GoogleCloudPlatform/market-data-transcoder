@@ -41,7 +41,7 @@ class BigQueryTerraformOutputManager(GCPTerraformOutputManager):
         schema_str_json = json.dumps(schema_str, indent=2)
         schema_str_json_indented = GCPTerraformOutputManager.reindent(schema_str_json, 4)
 
-        content = f"""resource \"google_bigquery_table\" \"default\" {{
+        content = f"""resource \"google_bigquery_table\" \"{schema.name}\" {{
   dataset_id = \"{self.dataset_id}\"
   table_id   = \"{schema.name}\"
 
