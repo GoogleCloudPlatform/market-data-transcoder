@@ -49,8 +49,9 @@ class BigQueryTerraformOutputManager(GCPTerraformOutputManager):
     \"{GOOGLE_PACKAGED_SOLUTION_KEY}\" = \"{GOOGLE_PACKAGED_SOLUTION_VALUE}\"
   }}
   
-  schema = 
+  schema = <<EOF
 {schema_str_json_indented}
+  EOF
 }}
 """
         self._save_schema(schema.name, content)
