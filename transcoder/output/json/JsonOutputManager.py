@@ -53,7 +53,7 @@ class JsonOutputManager(OutputManager):
 
     @staticmethod
     def output_type_identifier():
-        return 'json'
+        return 'jsonl'
 
     def _create_field(self, field: DatacastField):
         return field.create_json_field()
