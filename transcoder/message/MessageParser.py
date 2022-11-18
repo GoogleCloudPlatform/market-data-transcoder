@@ -83,6 +83,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                      lazy_create_resources=lazy_create_resources,
                                                      create_schema_enforcing_topics=create_schema_enforcing_topics)
 
+            if self.output_manager.supports_data_writing() is False:
+                self.create_schemas_only = True
+
         self.setup_handlers(message_handlers)
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                  sampling_count=sampling_count,
