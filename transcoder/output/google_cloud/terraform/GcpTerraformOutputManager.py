@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 import os
 import sys
 
@@ -46,9 +47,6 @@ class GCPTerraformOutputManager(OutputManager):
         exists = os.path.exists(self.output_path)
         if not exists:
             os.makedirs(self.output_path)
-
-    def write_record(self, record_type_name, record):
-        pass
 
     def _save_schema(self, name, content):
         with open(self._get_file_name(name, 'tf'), mode='wt', encoding='utf-8') as file:
