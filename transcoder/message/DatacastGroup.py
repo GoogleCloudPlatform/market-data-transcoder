@@ -38,6 +38,27 @@ class DatacastGroup(DatacastField):
     def cast_value_to_type(self, value, field_type, is_nullable: bool = True) -> Any:
         return str(value)
 
+
+    def create_json_field(self, part: DatacastField = None):
+        field = self
+        if part is not None:
+            field = part
+
+        group = {}
+
+        group['name'] = field.name
+        group['definition'] = {}
+        group['definition']['type'] = 'array'
+        group['definition']['title'] = field.name
+        children = []
+        for child_field in self.fields:
+            children.append(child_field.create_json_field())
+
+        group['properties'] = children
+        return group
+
+
+
     def create_avro_field(self, part: DatacastField = None):
         field = self
         if part is not None:

@@ -35,10 +35,10 @@ HEADER_SORT_MAP = {t: i for i, t in enumerate(HEADER_TAGS)}
 HEADER_SORT_MAP.update({10: int(10e9), 89: int(10e9 - 1), 93: int(10e9 - 2)})
 
 BOOLEAN_TYPES = ['boolean']
-INTEGER_TYPES = ['int', 'dayofmonth', 'length']
-FLOAT_TYPES = ['float', 'qty', 'price', 'priceoffset', 'amt']
+INTEGER_TYPES = ['int', 'dayofmonth', 'length', 'seqnum']
+FLOAT_TYPES = ['float', 'qty', 'price', 'priceoffset', 'amt', 'percentage']
 STRING_TYPES = ['string', 'currency', 'exchange', 'multiplevaluestring', 'char', 'utctimestamp', 'utctimeonly',
-                'localmktdate', 'utcdate', 'monthyear', 'data']
+                'localmktdate', 'utcdate', 'monthyear', 'data', 'country', 'multiplevaluestring']
 
 
 class FixTag(DatacastField):
@@ -111,6 +111,29 @@ class FixTag(DatacastField):
         if not self._val_by_val:
             self._val_by_val = dict(self._values)
         return self._val_by_val[value]
+
+    def create_json_field(self):
+        obj = {}
+        obj['name'] = self.name
+        obj['definition'] = {
+            "type": self.get_json_field_type(),
+            "title": self.name
+        }
+        return obj
+
+    def get_json_field_type(self):
+        _type = self.type.lower()
+        json_type = None
+        if self._is_enum is True or _type in STRING_TYPES:
+            json_type = 'string'
+        elif _type in INTEGER_TYPES:
+            json_type = 'integer'
+        elif _type in FLOAT_TYPES:
+            json_type = 'number'
+        elif _type in BOOLEAN_TYPES:
+            json_type = 'boolean'
+
+        return json_type
 
     def get_avro_field_type(self):
         _type = self.type.lower()

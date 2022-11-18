@@ -43,6 +43,22 @@ null_value = {
     'uint64': np.iinfo(np.uint64).max
 }
 
+# https://json-schema.org/understanding-json-schema/reference/type.html
+json_type_map = {
+    'int8': 'integer',
+    'uint8': 'integer',
+    'int16': 'integer',
+    'uint16': 'integer',
+    'int32': 'integer',
+    'uint32': 'integer',
+    'int64': 'integer',
+    'uint64': 'integer',
+    'char': 'string',
+    'double': 'number',
+    'float': 'number'
+}
+
+
 # https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#avro_conversions
 avro_type_map = {
     'int8': 'int',  # BQ converts to INTEGER
@@ -125,6 +141,40 @@ class SBEMessageField(DatacastField):
         if raw and self.value != self.raw_value:
             return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
         return f'{self.name}: {str(self.value)}'
+
+
+    @staticmethod
+    def get_json_field_type(part: DatacastField = None):
+        field = part
+        json_type = {}
+        json_type[field.name] = {}
+
+        if isinstance(field, TypeMessageField):
+            if field.is_bool_type is True:
+                json_type[field.name]['type'] = 'boolean'
+            else:
+                mapped_type = json_type_map[field.primitive_type]
+                json_type[field.name]['type'] = mapped_type
+        elif isinstance(field, EnumMessageField):
+            if field.is_bool_type is True:
+                json_type[field.name]['type'] = 'boolean'
+            else:
+                json_type[field.name]['type']  = 'string'
+        elif isinstance(field, SetMessageField):
+            json_type[field.name]['type'] = 'string'
+        else:
+            logging.warning('Unknown type for field: %s', field.name)
+        return json_type
+
+    def create_json_field(self, part: DatacastField = None):
+        field = self
+        if part is not None:
+            field = part
+        if isinstance(field, CompositeMessageField):
+            children: [DatacastField] = []
+            for _, part in enumerate(field.parts):
+                children.append
+
 
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):
