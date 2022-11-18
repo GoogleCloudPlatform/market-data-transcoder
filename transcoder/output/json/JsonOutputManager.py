@@ -21,7 +21,6 @@ import json
 import os
 import sys
 
-#from genson import SchemaBuilder
 from transcoder.message import DatacastSchema, DatacastField
 from transcoder.output import OutputManager
 
@@ -67,7 +66,6 @@ class JsonOutputManager(OutputManager):
             del self.writers[schema.name]
 
         output_file = open(self._get_file_name(schema.name, 'json'), 'w')  # pylint: disable=consider-using-with
-        output_file.truncate()
 
         schema_json = JsonOutputManager.init_schema()
         schema_json['name'] = schema.name
