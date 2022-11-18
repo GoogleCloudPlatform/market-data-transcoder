@@ -30,9 +30,9 @@ class PubSubTerraformOutputManager(GCPTerraformOutputManager):
     def output_type_identifier():
         return 'pubsub_terraform'
 
-    def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
+    def __init__(self, project_id: str, output_encoding: str,
                  create_schema_enforcing_topics: bool = True, output_path: str = None):
-        super().__init__('pubsub-', output_path)
+        super().__init__('pubsub', output_path)
         self.project_id = project_id
         self.is_binary_encoded = output_encoding.lower() == "binary"
         self.create_schema_enforcing_topics = create_schema_enforcing_topics

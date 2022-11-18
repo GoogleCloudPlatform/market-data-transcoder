@@ -58,11 +58,9 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
         output = BigQueryOutputManager(destination_project_id, destination_dataset_id, output_prefix,
                                        lazy_create_resources=lazy_create_resources)
     elif output_name == BigQueryTerraformOutputManager.output_type_identifier():
-        output = BigQueryTerraformOutputManager(destination_project_id, destination_dataset_id, output_prefix,
-                                                output_file_path)
+        output = BigQueryTerraformOutputManager(destination_project_id, destination_dataset_id, output_file_path)
     elif output_name == PubSubTerraformOutputManager.output_type_identifier():
         output = PubSubTerraformOutputManager(destination_project_id, output_encoding=output_encoding,
-                                              output_prefix=output_prefix,
                                               create_schema_enforcing_topics=create_schema_enforcing_topics,
                                               output_path=output_file_path)
     elif output_name == DiagnosticOutputManager.output_type_identifier():

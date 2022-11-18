@@ -30,8 +30,8 @@ class BigQueryTerraformOutputManager(GCPTerraformOutputManager):
     def output_type_identifier():
         return 'bigquery_terraform'
 
-    def __init__(self, project_id: str, dataset_id, output_prefix: str = None, output_path: str = None):
-        super().__init__('bigquery-', output_path)
+    def __init__(self, project_id: str, dataset_id, output_path: str = None):
+        super().__init__('bigquery', output_path)
         self.project_id = project_id
         self.dataset_id = dataset_id
 
