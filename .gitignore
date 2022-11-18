@@ -7,5 +7,6 @@ __pycache__/
 venv/
 avroOut/
 errorOut/
+tfOut/
 .vscode/
 transcoder/.run
