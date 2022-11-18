@@ -16,7 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
 
+from transcoder.message import DatacastSchema, DatacastField
+from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_KEY, GOOGLE_PACKAGED_SOLUTION_VALUE
 from transcoder.output.google_cloud.terraform.GcpTerraformOutputManager import GCPTerraformOutputManager
 
 
@@ -28,5 +31,44 @@ class PubSubTerraformOutputManager(GCPTerraformOutputManager):
         return 'pubsub_terraform'
 
     def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
-                 create_schema_enforcing_topics: bool = True):
-        super().__init__()
+                 create_schema_enforcing_topics: bool = True, output_path: str = None):
+        super().__init__('pubsub-', output_path)
+        self.project_id = project_id
+        self.is_binary_encoded = output_encoding.lower() == "binary"
+        self.create_schema_enforcing_topics = create_schema_enforcing_topics
+
+    def _create_field(self, field: DatacastField):
+        return field.create_avro_field()
+
+    def _add_schema(self, schema: DatacastSchema):
+        _fields = self._get_field_list(schema.fields)
+        schema_dict = {'type': 'record', 'namespace': 'sbeMessage', 'name': schema.name, 'fields': _fields}
+        schema_json = json.dumps(schema_dict)
+
+        content = ""
+        if self.create_schema_enforcing_topics is True:
+            content += f"""resource \"google_pubsub_schema\" \"{schema.name}\" {{
+  name = \"{schema.name}\"
+  type = \"AVRO\"
+  definition = {schema_json}
+}}
+
+"""
+
+            content += f"""resource \"google_pubsub_topic\" \"{schema.name}\" {{
+  name = \"{schema.name}\"
+
+  schema_settings {{
+    schema = \"projects/{self.project_id}/schemas/{schema.name}\"
+    encoding = \"{'BINARY' if self.is_binary_encoded is True else 'JSON'}\"
+  }}
+  
+  labels = {{
+    \"{GOOGLE_PACKAGED_SOLUTION_KEY}\" = \"{GOOGLE_PACKAGED_SOLUTION_VALUE}\"
+  }}
+  
+  depends_on = [google_pubsub_schema.{schema.name}]
+}}
+"""
+
+        self._save_schema(schema.name, content)

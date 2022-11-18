@@ -19,7 +19,6 @@
 import os
 import sys
 
-from transcoder.message import DatacastField
 from transcoder.output import OutputManager
 
 
@@ -47,9 +46,6 @@ class GCPTerraformOutputManager(OutputManager):
         exists = os.path.exists(self.output_path)
         if not exists:
             os.makedirs(self.output_path)
-
-    def _create_field(self, field: DatacastField):
-        return field.create_bigquery_field()
 
     def write_record(self, record_type_name, record):
         pass

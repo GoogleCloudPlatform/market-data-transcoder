@@ -18,7 +18,7 @@
 #
 import json
 
-from transcoder.message import DatacastSchema
+from transcoder.message import DatacastSchema, DatacastField
 from transcoder.output.google_cloud.Constants import GOOGLE_PACKAGED_SOLUTION_VALUE, GOOGLE_PACKAGED_SOLUTION_KEY
 from transcoder.output.google_cloud.terraform.GcpTerraformOutputManager import GCPTerraformOutputManager
 
@@ -31,9 +31,12 @@ class BigQueryTerraformOutputManager(GCPTerraformOutputManager):
         return 'bigquery_terraform'
 
     def __init__(self, project_id: str, dataset_id, output_prefix: str = None, output_path: str = None):
-        super().__init__(output_prefix, output_path)
+        super().__init__('bigquery-', output_path)
         self.project_id = project_id
         self.dataset_id = dataset_id
+
+    def _create_field(self, field: DatacastField):
+        return field.create_bigquery_field()
 
     def _add_schema(self, schema: DatacastSchema):
         _fields = self._get_field_list(schema.fields)
