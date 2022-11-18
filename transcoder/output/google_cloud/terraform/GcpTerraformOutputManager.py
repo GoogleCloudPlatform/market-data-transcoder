@@ -26,6 +26,11 @@ from transcoder.output import OutputManager
 class GCPTerraformOutputManager(OutputManager):
     """Output manager for representing schemas as terraform resources"""
 
+    @staticmethod
+    def supports_data_writing():
+        """Returns flag indicating if data writes are supported"""
+        return False
+
     def __init__(self, prefix: str, output_path: str):
         super().__init__()
         self.prefix = prefix
