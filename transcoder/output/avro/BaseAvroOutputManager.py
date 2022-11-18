@@ -35,6 +35,7 @@ class BaseAvroOutputManager(OutputManager):
         self.schemas = {}
         self.writers = {}
 
+        # pylint: disable=duplicate-code
         if output_path is None:
             rel_path = "avroOut"
             main_script_dir = os.path.dirname(sys.argv[0])

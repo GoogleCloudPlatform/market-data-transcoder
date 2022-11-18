@@ -37,6 +37,7 @@ class GCPTerraformOutputManager(OutputManager):
         self.schemas = {}
         self.writers = {}
 
+        # pylint: disable=duplicate-code
         if output_path is None:
             rel_path = "tfOut"
             main_script_dir = os.path.dirname(sys.argv[0])
@@ -61,8 +62,9 @@ class GCPTerraformOutputManager(OutputManager):
             writer.close()
 
     @staticmethod
-    def reindent(s, num_spaces):
-        s = s.split('\n')
-        s = [(num_spaces * ' ') + line for line in s]
-        s = '\n'.join(s)
-        return s
+    def reindent(string_in, num_spaces):
+        """Indents the entire string using the number of spaces specified"""
+        string_in = string_in.split('\n')
+        string_in = [(num_spaces * ' ') + line for line in string_in]
+        string_in = '\n'.join(string_in)
+        return string_in
