@@ -43,7 +43,7 @@ class PubSubTerraformOutputManager(GCPTerraformOutputManager):
     def _add_schema(self, schema: DatacastSchema):
         _fields = self._get_field_list(schema.fields)
         schema_dict = {'type': 'record', 'namespace': 'sbeMessage', 'name': schema.name, 'fields': _fields}
-        schema_json = json.dumps(schema_dict)  #.replace('"', '\\"')
+        schema_json = json.dumps(schema_dict)  # .replace('"', '\\"')
         schema_json = json.dumps(schema_json)
 
         content = ""

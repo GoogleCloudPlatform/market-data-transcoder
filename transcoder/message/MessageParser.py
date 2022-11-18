@@ -151,7 +151,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                 logging.info('Run in create_schemas_only mode')
 
             if self.output_manager.supports_data_writing() is False:
-                logging.info('Output manager \'%s\' does not support message writes', self.output_manager.output_type_identifier())
+                logging.info('Output manager \'%s\' does not support message writes',
+                             self.output_manager.output_type_identifier())
 
             if self.message_parser.stats_only is True:
                 logging.info('Run in stats_only mode')
