@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import datetime
 import json
 import os
 import sys
@@ -53,6 +53,7 @@ class JsonOutputManager(OutputManager):
         return field.create_json_field()
 
     def _add_schema(self, schema: DatacastSchema):
+        _fields = self._get_field_list(schema.fields)
         if schema.name in self.schemas:
             del self.schemas[schema.name]
         if schema.name in self.writers:
@@ -78,7 +79,12 @@ class JsonOutputManager(OutputManager):
         self.writers[schema.name] = output_file
 
     def _write_record(self, record_type_name, record):
-        self.writers[record_type_name].write(json.dumps(record) + '\n')
+        self.writers[record_type_name].write(json.dumps(record, default=JsonOutputManager.default_formatter) + '\n')
+
+    @staticmethod
+    def default_formatter(self, obj):
+        if isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
 
     def _save_schema(self, name, schema_json):
         with open(self.get_schema_file_name(name, 'json'), mode='wt', encoding='utf-8') as file:
