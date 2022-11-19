@@ -43,6 +43,22 @@ null_value = {
     'uint64': np.iinfo(np.uint64).max
 }
 
+# https://json-schema.org/understanding-json-schema/reference/type.html
+json_type_map = {
+    'int8': 'integer',
+    'uint8': 'integer',
+    'int16': 'integer',
+    'uint16': 'integer',
+    'int32': 'integer',
+    'uint32': 'integer',
+    'int64': 'integer',
+    'uint64': 'integer',
+    'char': 'string',
+    'double': 'number',
+    'float': 'number'
+}
+
+
 # https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#avro_conversions
 avro_type_map = {
     'int8': 'int',  # BQ converts to INTEGER
@@ -125,6 +141,40 @@ class SBEMessageField(DatacastField):
         if raw and self.value != self.raw_value:
             return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
         return f'{self.name}: {str(self.value)}'
+
+
+    @staticmethod
+    def get_json_field_type(part: DatacastField = None):
+        field = part
+        if isinstance(field, TypeMessageField):
+            if field.is_bool_type is True:
+                return 'boolean'
+            else:
+                mapped_type = json_type_map[field.primitive_type]
+                return mapped_type
+        elif isinstance(field, EnumMessageField):
+            if field.is_bool_type is True:
+                return 'boolean'
+            else:
+                return 'string'
+        elif isinstance(field, SetMessageField):
+            return 'string'
+        else:
+            logging.warning('Unknown type for field: %s', field.name)
+            return 'string'
+
+    def create_json_field(self, part: DatacastField = None):
+        jsonfield = {}
+        jsonfield['title'] = part.name
+        if isinstance(part, CompositeMessageField):
+            jsonfield['type'] = 'object'
+            jsonfield['properties'] = {}
+            for _, fieldpart in enumerate(part.parts):
+                jsonfield['properties'][fieldpart.name] = fieldpart.create_json_field(fieldpart)
+        else:
+            jsonfield['type'] = part.get_json_field_type(part)
+
+        return jsonfield
 
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):

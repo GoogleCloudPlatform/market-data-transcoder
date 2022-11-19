@@ -33,6 +33,10 @@ class DatacastField:
         """Abstract declaration of method for creating BigQuery-specific field"""
         raise OutputFunctionNotDefinedError
 
+    def create_json_field(self):
+        """Abstract declaration of method for creating JSON-specific field"""
+        raise OutputFunctionNotDefinedError
+
     def cast_value_to_type(self, value, field_type, is_nullable: bool = True) -> Any:  # pylint: disable=unused-argument
         """Abstract declaration of method for casting a value to its appropriate type"""
         return str(value)
