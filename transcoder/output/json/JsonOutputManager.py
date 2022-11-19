@@ -53,7 +53,7 @@ class JsonOutputManager(OutputManager):
         return field.create_json_field(field)
 
     def _add_schema(self, schema: DatacastSchema):
-        _fields = self._get_field_list(schema.fields)
+        # _fields = self._get_field_list(schema.fields)
         if schema.name in self.schemas:
             del self.schemas[schema.name]
         if schema.name in self.writers:
@@ -70,6 +70,8 @@ class JsonOutputManager(OutputManager):
             'name': schema.name,
             'properties': {}}
 
+        # for field in _fields:
+        #     schema_json['properties'][key] = value
         for field in schema.fields:
             schema_json['properties'][field.name] = field.create_json_field(field)
 
