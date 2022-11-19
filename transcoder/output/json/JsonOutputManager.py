@@ -81,9 +81,11 @@ class JsonOutputManager(OutputManager):
         self.writers[record_type_name].write(json.dumps(record, default=JsonOutputManager.default_formatter) + '\n')
 
     @staticmethod
-    def default_formatter(self, obj):
+    def default_formatter(obj):
+        """Custom encoding to serialize additional types as needed"""
         if isinstance(obj, (datetime.date, datetime.datetime)):
             return obj.isoformat()
+        return ''
 
     def _save_schema(self, name, schema_json):
         with open(self.get_schema_file_name(name, 'json'), mode='wt', encoding='utf-8') as file:
