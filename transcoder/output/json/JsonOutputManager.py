@@ -59,7 +59,9 @@ class JsonOutputManager(OutputManager):
             self.writers[schema.name].close()
             del self.writers[schema.name]
 
-        output_file = open(self._get_file_name(schema.name, 'json'), 'w', encoding='utf-8')  # pylint: disable=consider-using-with
+        output_file = open(  # pylint: disable=consider-using-with
+            self._get_file_name(schema.name, 'json'), 'w',
+            encoding='utf-8')
 
         schema_json = {
             '$schema': 'https://json-schema.org/draft/2019-09/schema',
