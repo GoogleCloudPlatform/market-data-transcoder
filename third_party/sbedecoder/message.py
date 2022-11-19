@@ -146,35 +146,35 @@ class SBEMessageField(DatacastField):
     @staticmethod
     def get_json_field_type(part: DatacastField = None):
         field = part
-        json_type = {}
-        json_type[field.name] = {}
-
         if isinstance(field, TypeMessageField):
             if field.is_bool_type is True:
-                json_type[field.name]['type'] = 'boolean'
+                return 'boolean'
             else:
                 mapped_type = json_type_map[field.primitive_type]
-                json_type[field.name]['type'] = mapped_type
+                return mapped_type
         elif isinstance(field, EnumMessageField):
             if field.is_bool_type is True:
-                json_type[field.name]['type'] = 'boolean'
+                return 'boolean'
             else:
-                json_type[field.name]['type']  = 'string'
+                return 'string'
         elif isinstance(field, SetMessageField):
-            json_type[field.name]['type'] = 'string'
+            return 'string'
         else:
             logging.warning('Unknown type for field: %s', field.name)
-        return json_type
+            return 'string'
 
     def create_json_field(self, part: DatacastField = None):
-        field = self
-        if part is not None:
-            field = part
-        if isinstance(field, CompositeMessageField):
-            children: [DatacastField] = []
-            for _, part in enumerate(field.parts):
-                children.append
+        jsonfield = {}
+        jsonfield['title'] = part.name
+        if isinstance(part, CompositeMessageField):
+            jsonfield['type'] = 'object'
+            jsonfield['properties'] = {}
+            for _, fieldpart in enumerate(part.parts):
+                jsonfield['properties'][fieldpart.name] = fieldpart.create_json_field(fieldpart)
+        else:
+            jsonfield['type'] = part.get_json_field_type(part)
 
+        return jsonfield
 
     @staticmethod
     def get_avro_field_type(part: DatacastField = None):

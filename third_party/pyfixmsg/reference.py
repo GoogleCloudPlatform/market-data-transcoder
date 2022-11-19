@@ -114,11 +114,8 @@ class FixTag(DatacastField):
 
     def create_json_field(self):
         obj = {}
-        obj['name'] = self.name
-        obj['definition'] = {
-            "type": self.get_json_field_type(),
-            "title": self.name
-        }
+        obj[self.name]['type'] = self.get_json_field_type()
+        obj[self.name]['title'] = self.name
         return obj
 
     def get_json_field_type(self):

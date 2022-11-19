@@ -58,7 +58,6 @@ class JsonOutputManager(OutputManager):
         return field.create_json_field()
 
     def _add_schema(self, schema: DatacastSchema):
-
         if schema.name in self.schemas:
             del self.schemas[schema.name]
         if schema.name in self.writers:
@@ -72,11 +71,7 @@ class JsonOutputManager(OutputManager):
         schema_json['properties'] = {}
 
         for field in schema.fields:
-            json_field = field.create_json_field()
-            if json_field['definition']['type'] == 'array':
-                schema_json['properties'][field.name] = json_field['properties'][0]['definition']
-            else:
-                schema_json['properties'][field.name] = json_field['definition']
+            schema_json['properties'][field.name] = field.create_json_field(field)
 
         obj = json.dumps(schema_json)
         self._save_schema(schema.name, obj)

@@ -45,16 +45,13 @@ class DatacastGroup(DatacastField):
             field = part
 
         group = {}
-
-        group['name'] = field.name
-        group['definition'] = {}
-        group['definition']['type'] = 'array'
-        group['definition']['title'] = field.name
+        group['type'] = 'array'
+        group['title'] = field.name
+        group['properties'] = {}
         children = []
         for child_field in self.fields:
-            children.append(child_field.create_json_field())
+            group['properties'][child_field.name] = child_field.create_json_field(child_field)
 
-        group['properties'] = children
         return group
 
 
