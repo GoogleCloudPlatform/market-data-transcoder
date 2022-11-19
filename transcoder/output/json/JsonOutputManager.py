@@ -24,8 +24,10 @@ import sys
 from transcoder.message import DatacastSchema, DatacastField
 from transcoder.output import OutputManager
 
+
 class JsonOutputManager(OutputManager):
     """Transcode messages to JSON encoding persisted to a file"""
+
     def __init__(self, prefix: str, output_path: str, lazy_create_resources: bool = False):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.prefix = prefix
@@ -44,13 +46,6 @@ class JsonOutputManager(OutputManager):
             os.makedirs(self.output_path)
 
     @staticmethod
-    def init_schema():
-        schema = {}
-        schema['$schema'] = 'https://json-schema.org/draft/2019-09/schema'
-        schema['type'] = 'object'
-        return schema
-
-    @staticmethod
     def output_type_identifier():
         return 'jsonl'
 
@@ -64,11 +59,13 @@ class JsonOutputManager(OutputManager):
             self.writers[schema.name].close()
             del self.writers[schema.name]
 
-        output_file = open(self._get_file_name(schema.name, 'json'), 'w')  # pylint: disable=consider-using-with
+        output_file = open(self._get_file_name(schema.name, 'json'), 'w', encoding='utf-8')  # pylint: disable=consider-using-with
 
-        schema_json = JsonOutputManager.init_schema()
-        schema_json['name'] = schema.name
-        schema_json['properties'] = {}
+        schema_json = {
+            '$schema': 'https://json-schema.org/draft/2019-09/schema',
+            'type': 'object',
+            'name': schema.name,
+            'properties': {}}
 
         for field in schema.fields:
             schema_json['properties'][field.name] = field.create_json_field(field)
@@ -86,6 +83,7 @@ class JsonOutputManager(OutputManager):
             file.write(schema_json)
 
     def get_schema_file_name(self, name, extension):
+        """Returns a file name for the schema file"""
         return self.output_path + '/' + self.prefix + '-' + name + '.schema.' + extension
 
     def _get_file_name(self, name, extension):
