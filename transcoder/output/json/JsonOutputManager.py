@@ -50,7 +50,7 @@ class JsonOutputManager(OutputManager):
         return 'jsonl'
 
     def _create_field(self, field: DatacastField):
-        return field.create_json_field()
+        return field.create_json_field(field)
 
     def _add_schema(self, schema: DatacastSchema):
         _fields = self._get_field_list(schema.fields)
