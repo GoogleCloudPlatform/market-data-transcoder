@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+OUTPUT_TYPE=${1}
+
+[ -z ${OUTPUT_TYPE} ] && OUTPUT_TYPE=diag
+
 pushd ../..
 
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
@@ -28,6 +32,7 @@ python3 main.py \
   --factory fix \
   --source_file_format_type line_delimited \
   --continue_on_error \
+  --output_type ${OUTPUT_TYPE} \
   --message_type_inclusions NewOrderSingle
 
 rm 42_order_single.txt FIX42.xml
