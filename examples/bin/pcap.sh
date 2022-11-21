@@ -17,6 +17,10 @@
 # limitations under the License.
 #
 
+OUTPUT_TYPE=${1}
+
+[ -z ${OUTPUT_TYPE} ] && OUTPUT_TYPE=diag
+
 pushd ../..
 
 wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary_v12.xml'
@@ -28,6 +32,7 @@ python3 main.py \
   --factory cme \
   --source_file_format_type pcap \
   --message_skip_bytes 16 \
+  --output_type ${OUTPUT_TYPE} \
   --message_type_inclusions SnapshotFullRefreshTCPLongQty68
 
 rm SnapshotFullRefreshTcpLongQty.pcap templates_FixBinary_v12.xml
