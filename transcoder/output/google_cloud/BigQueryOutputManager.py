@@ -88,7 +88,7 @@ class BigQueryOutputManager(OutputManager):
         return True
 
     def _add_schema(self, schema: DatacastSchema):
-        bq_schema = _fields = self._get_field_list(schema.fields)
+        bq_schema = self._get_field_list(schema.fields)
         table_ref = bigquery.TableReference(self.dataset_ref, schema.name)
 
         if self._does_table_exist(schema.name) is True:

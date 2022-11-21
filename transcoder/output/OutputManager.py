@@ -33,6 +33,11 @@ class OutputManager:
         """Returns identifier of output type"""
         raise OutputFunctionNotDefinedError
 
+    @staticmethod
+    def supports_data_writing():
+        """Returns flag indicating if data writes are supported"""
+        return True
+
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
         self.schema_thread_pool_executor: ThreadPoolExecutor = concurrent.futures.ThreadPoolExecutor(
             max_workers=schema_max_workers)
