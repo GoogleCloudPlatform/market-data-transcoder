@@ -18,8 +18,6 @@
 #
 
 import json
-import os
-import sys
 
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output import OutputManager
@@ -34,23 +32,13 @@ class BaseAvroOutputManager(OutputManager):
         self.prefix = prefix
         self.schemas = {}
         self.writers = {}
-
-        # pylint: disable=duplicate-code
-        if output_path is None:
-            rel_path = "avroOut"
-            main_script_dir = os.path.dirname(sys.argv[0])
-            self.output_path = os.path.join(main_script_dir, rel_path)
-        else:
-            self.output_path = output_path
-
-        exists = os.path.exists(self.output_path)
-        if not exists:
-            os.makedirs(self.output_path)
+        self.output_path = self.create_output_path(output_path, 'avroOut')
 
     def _create_field(self, field: DatacastField):
         return field.create_avro_field()
 
     def _add_schema(self, schema: DatacastSchema):
+        # pylint: disable=duplicate-code
         _fields = self._get_field_list(schema.fields)
         if schema.name in self.schemas:
             del self.schemas[schema.name]
