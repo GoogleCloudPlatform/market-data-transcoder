@@ -20,9 +20,9 @@ A schema (also known as a data dictionary) is similar to an API specification, b
 
 The transcoder's current input schema support is for Simple Binary Encoding (SBE) XML as well as QuickFIX-styled FIX protocol schema representations (also in XML).
 
-The target schema and message encoding is Avro, which can be encapsulated in either POSIX files or sent over Pub/Sub topics. BigQuery is another output destination option, with each message type in the schema becoming a single table in BigQuery to which messages encountered in the source data will be streamed.
+Target schema and data elements are rendered based on the specified `output_type`. With no output type specified, the transcoder defaults to displaying the YAML representation of transcoded messages to the console, and does not perform persistent schema transformations. For Avro and JSON, the transcoded schema and data files are encapsulated in POSIX files locally. Direct trancoding to BigQuery and Pub/Sub targets are supported, with the transcoded schemas being applied prior to message ingestion or publishing. Terraform configurations for BigQuery and Pub/Sub resources can also be derived from a specified input schema. The Terraform options only render the configurations locally and do not execute Terraform `apply`. The `--create_schemas_only` option transcodes  schemas in isolation for other output types.
 
-The names of the output resources will individually correspond to the names of the message types defined in the input schema. For example, the transcoder will create and use a Pub/Sub topic named "NewOrderSingle" for publishing FIX `NewOrderSingle` messages found in source data. Similarly, if an output type of `bigquery` is selected, the transcoder will create a `NewOrderSingle` table in the dataset specified by `--destination_dataset_id`. By default, Avro encoded output will be saved to a file named `<message type>.avro` in either the `avroOut` directory or a directory specified using the `--output_path` parameter.
+The names of the output resources will individually correspond to the names of the message types defined in the input schema. For example, the transcoder will create and use a Pub/Sub topic named "NewOrderSingle" for publishing FIX `NewOrderSingle` messages found in source data. Similarly, if an output type of `bigquery` is selected, the transcoder will create a `NewOrderSingle` table in the dataset specified by `--destination_dataset_id`. By default, Avro and JSON encoded output will be saved to a file named `<message type>` with the respective extensions in a directory specified using the `--output_path` parameter.
 
 #### Message
 
@@ -33,7 +33,7 @@ A message represents a discrete interaction between two systems sharing a schema
 
 Encodings describe how the contents of a message payload are represented to systems. Many familiar encodings, such as JSON, YAML or CSV, are self-describing and do not strictly require that applications use a separate schema definition. However, binary encodings such as SBE, Avro and Protocol Buffers require that applications employ the associated schema in order to properly interpret messages.
 
-The transcoder's supported inbound encodings are SBE binary and ASCII-encoded (tag=value) FIX. Outbound encodings for Pub/Sub message payloads can be Avro binary or Avro JSON. 
+The transcoder's supported inbound encodings are SBE binary and ASCII-encoded (tag=value) FIX. Outbound encodings for Pub/Sub message payloads can be Avro binary or Avro JSON. Local files can be generated in either Avro or JSON.
 
 The transcoder supports base64 decoding of messages using the `--base64` and `--base64_urlsafe` options.
 
@@ -43,7 +43,7 @@ A message transport describes the mechanism for transferring messages between sy
 
 The transcoder's currently supported inbound message source transports are PCAP files, length-delimited binary files, and newline-delimited ASCII files. Multicast UDP and Pub/Sub inbound transports are on the roadmap.
 
-Outbound transport options are locally stored Avro files, Pub/Sub topics or BigQuery tables. If no `output_type` is specified, the transcoded messages are output to the console encoded in YAML and not persisted automatically.
+Outbound transport options are locally stored Avro and JSON POSIX files, and Pub/Sub topics or BigQuery tables. If no `output_type` is specified, the transcoded messages are output to the console encoded in YAML and not persisted automatically. Additionally, Google Cloud resource definitions for specified schemas can be encapsulated in Terraform configurations.
 
 #### Message factory
 
@@ -53,38 +53,30 @@ A message factory takes a message payload read from the input source, determines
 
 ```
 # List available cli arguments
-usage: main.py [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE
-               --source_file SOURCE_FILE
-               [--source_file_encoding SOURCE_FILE_ENCODING]
-               --source_file_format_type
-               {pcap,length_delimited,line_delimited,cme_binary_packet}
-               [--base64 | --base64_urlsafe]
-               [--fix_header_tags FIX_HEADER_TAGS]
-               [--fix_separator FIX_SEPARATOR]
-               [--message_handlers MESSAGE_HANDLERS]
-               [--message_skip_bytes MESSAGE_SKIP_BYTES]
-               [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
-               [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
-               [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
-               [--output_path OUTPUT_PATH]
-               [--output_type {diag,avro,fastavro,bigquery,pubsub}]
-               [--error_output_path ERROR_OUTPUT_PATH]
-               [--lazy_create_resources] [--stats_only]
-               [--create_schemas_only]
-               [--destination_project_id DESTINATION_PROJECT_ID]
-               [--destination_dataset_id DESTINATION_DATASET_ID]
-               [--output_encoding {binary,json}]
-               [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
-               [--continue_on_error]
-               [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
+usage: txcode [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE --source_file
+              SOURCE_FILE [--source_file_encoding SOURCE_FILE_ENCODING]
+              --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
+              [--base64 | --base64_urlsafe] [--fix_header_tags FIX_HEADER_TAGS]
+              [--fix_separator FIX_SEPARATOR] [--message_handlers MESSAGE_HANDLERS]
+              [--message_skip_bytes MESSAGE_SKIP_BYTES]
+              [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
+              [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
+              [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
+              [--output_path OUTPUT_PATH]
+              [--output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl}]
+              [--error_output_path ERROR_OUTPUT_PATH] [--lazy_create_resources] [--stats_only]
+              [--create_schemas_only] [--destination_project_id DESTINATION_PROJECT_ID]
+              [--destination_dataset_id DESTINATION_DATASET_ID]
+              [--output_encoding {binary,json}]
+              [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
+              [--continue_on_error] [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
 
 Datacast Transcoder process input arguments
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  --continue_on_error   Indicates if an exception file should be created, and
-                        records continued to be processed upon message level
-                        exceptions
+  --continue_on_error   Indicates if an exception file should be created, and records continued
+                        to be processed upon message level exceptions
   --log {notset,debug,info,warning,error,critical}
                         The default logging level
   -q, --quiet           Suppress message output to console
@@ -101,34 +93,29 @@ Input source arguments:
                         The source file character encoding
   --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
                         The source file format
-  --base64              Indicates if each individual message extracted from
-                        the source is base 64 encoded
-  --base64_urlsafe      Indicates if each individual message extracted from
-                        the source is base 64 url safe encoded
+  --base64              Indicates if each individual message extracted from the source is base
+                        64 encoded
+  --base64_urlsafe      Indicates if each individual message extracted from the source is base
+                        64 url safe encoded
   --fix_header_tags FIX_HEADER_TAGS
                         Comma delimited list of fix header tags
   --fix_separator FIX_SEPARATOR
                         The unicode int representing the fix message separator
   --message_handlers MESSAGE_HANDLERS
-                        Comma delimited list of message handlers in priority
-                        order
+                        Comma delimited list of message handlers in priority order
   --message_skip_bytes MESSAGE_SKIP_BYTES
-                        Number of bytes to skip before processing individual
-                        messages within a repeated length delimited file
-                        message source
+                        Number of bytes to skip before processing individual messages within a
+                        repeated length delimited file message source
   --message_type_exclusions MESSAGE_TYPE_EXCLUSIONS
-                        Comma-delimited list of message types to exclude when
-                        processing
+                        Comma-delimited list of message types to exclude when processing
   --message_type_inclusions MESSAGE_TYPE_INCLUSIONS
-                        Comma-delimited list of message types to include when
-                        processing
+                        Comma-delimited list of message types to include when processing
   --sampling_count SAMPLING_COUNT
-                        To be used for testing only - the sampling count
-                        indicates how many of each distinct message type to
-                        process, any additional will be skipped
+                        To be used for testing only - the sampling count indicates how many of
+                        each distinct message type to process, any additional will be skipped
   --skip_bytes SKIP_BYTES
-                        Number of bytes to skip before processing the file.
-                        Useful for skipping file-level headers
+                        Number of bytes to skip before processing the file. Useful for skipping
+                        file-level headers
   --skip_lines SKIP_LINES
                         Number of lines to skip before processing the file
   --source_file_endian {big,little}
@@ -137,42 +124,39 @@ Input source arguments:
 Output arguments:
   --output_path OUTPUT_PATH
                         Output file path. Defaults to avroOut
-  --output_type {diag,avro,fastavro,bigquery,pubsub}
+  --output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl}
                         Output format type
   --error_output_path ERROR_OUTPUT_PATH
-                        Error output file path if --continue_on_error flag
-                        enabled. Defaults to errorOut
+                        Error output file path if --continue_on_error flag enabled. Defaults to
+                        errorOut
   --lazy_create_resources
-                        Flag indicating that output resources for message
-                        types should be only created as messages of each type
-                        are encountered in the source data. Default behavior
-                        is to create resources for each message type before
-                        messages are processed. Particularly useful when
-                        working with FIX but only processing a limited set of
-                        message types in the source data
-  --stats_only          Flag indicating that transcoder should only report on
-                        message type counts without parsing messages further
+                        Flag indicating that output resources for message types should be only
+                        created as messages of each type are encountered in the source data.
+                        Default behavior is to create resources for each message type before
+                        messages are processed. Particularly useful when working with FIX but
+                        only processing a limited set of message types in the source data
+  --stats_only          Flag indicating that transcoder should only report on message type
+                        counts without parsing messages further
   --create_schemas_only
-                        Flag indicating that transcoder should only create
-                        output resource schemas and not output message data
+                        Flag indicating that transcoder should only create output resource
+                        schemas and not output message data
 
 Google Cloud arguments:
   --destination_project_id DESTINATION_PROJECT_ID
-                        The Google Cloud project ID for the destination
-                        resource
+                        The Google Cloud project ID for the destination resource
 
 BigQuery arguments:
   --destination_dataset_id DESTINATION_DATASET_ID
-                        The BigQuery dataset for the destination. If it does
-                        not exist, it will be created
+                        The BigQuery dataset for the destination. If it does not exist, it will
+                        be created
 
 Pub/Sub arguments:
   --output_encoding {binary,json}
                         The encoding of the output
   --create_schema_enforcing_topics, --no-create_schema_enforcing_topics
-                        Indicates if Pub/Sub schemas should be created and
-                        used to validate messages sent to a topic (default:
-                        True)
+                        Indicates if Pub/Sub schemas should be created and used to validate
+                        messages sent to a topic (default: True)
+
 ```
 
 # Install requirements
