@@ -81,7 +81,7 @@ bq --format=json head datamine.MDIncrementalRefreshBook46 | head -1 | jq .[0]
 
 ## Process messages from a packet capture file (PCAP)
 
-This example extracts and transcodes messages embedded within a PCAP file. A CME Group SBE schema is used to decode the messages. The first 16 bytes of each payload  is stripped off before the decoded message is manufactured by and returned from the message factory. The schema and output files are written locally in Avro format. Please note that usage of CME Group data is subject to your licensing agreement with CME Group.
+This example extracts and transcodes a message embedded within a PCAP file. A CME Group SBE schema is used to decode the message. The first 16 bytes of the message payload is stripped off before the message is manufactured by and returned from the message factory. The transcoded message is displayed on the console encoded in YAML. Please note that usage of CME Group data is subject to your licensing agreement with CME Group.
 
 ### CLI
 
@@ -92,276 +92,122 @@ wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary_v12
 # download example PCAP to local file system
 wget 'https://github.com/Open-Markets-Initiative/Data/blob/main/Cme/Mdp3.Sbe.v1.12/SnapshotFullRefreshTcpLongQty.68.Tcp.pcap?raw=true' -O SnapshotFullRefreshTcpLongQty.pcap
 
-bin/txcode \
-  --source_file SnapshotFullRefreshTcpLongQty.pcap \         
-  --schema_file templates_FixBinary_v12.xml \                
-  --factory cme \                                            
-  --source_file_format_type pcap \                           
-  --message_skip_bytes 16 \                                  
-  --message_type_inclusions SnapshotFullRefreshTCPLongQty68 \
-  --output_path avroOut \                                    
-  --lazy_create_resources                                    
+# transcode message, display on console only
+bin/txcode  \
+    --factory cme \
+    --schema_file templates_FixBinary_v12.xml \
+    --source_file SnapshotFullRefreshTcpLongQty.pcap \
+    --source_file_format_type pcap \
+    --message_skip_bytes 16 \
+    --message_type_inclusions SnapshotFullRefreshTCPLongQty68
 ```
 
 ### Output
 
 ```
-{"transact_time": 1631080313799842417, "match_event_indicator": "EndOfEvent", "security_id": 11827320, "high_limit_price": {"mantissa": null, "exponent": -9}, "low_limit_price": {"mantissa": 50000, "exponent": -9}, "max_price_variation": {"mantissa": 3000000, "exponent": -9}, "no_md_entries": [{"md_entry_px": {"mantissa": 1183650000, "exponent": -9}, "md_entry_size": 1000000, "number_of_orders": null, "md_price_level": 1, "open_close_settl_flag": null, "md_entry_type": "Market Best Bid"}, {"md_entry_px": {"mantissa": 1183750000, "exponent": -9}, "md_entry_size": 1000000, "number_of_orders": null, "md_price_level": 1, "open_close_settl_flag": null, "md_entry_type": "Market Best Offer"}, {"md_entry_px": {"mantissa": 1183650000, "exponent": -9}, "md_entry_size": 1000000, "number_of_orders": null, "md_price_level": 1, "open_close_settl_flag": null, "md_entry_type": "Bid"}, {"md_entry_px": {"mantissa": 1180000000, "exponent": -9}, "md_entry_size": 1000000, "number_of_orders": null, "md_price_level": 2, "open_close_settl_flag": null, "md_entry_type": "Bid"}, {"md_entry_px": {"mantissa": 1183750000, "exponent": -9}, "md_entry_size": 1000000, "number_of_orders": null, "md_price_level": 1, "open_close_settl_flag": null, "md_entry_type": "Offer"}, {"md_entry_px": {"mantissa": 1207900000, "exponent": -9}, "md_entry_size": 2000000, "number_of_orders": null, "md_price_level": 2, "open_close_settl_flag": null, "md_entry_type": "Offer"}, {"md_entry_px": {"mantissa": 1208000000, "exponent": -9}, "md_entry_size": 2000000, "number_of_orders": null, "md_price_level": 3, "open_close_settl_flag": null, "md_entry_type": "Offer"}, {"md_entry_px": {"mantissa": 1208050000, "exponent": -9}, "md_entry_size": 17000000, "number_of_orders": null, "md_price_level": 4, "open_close_settl_flag": null, "md_entry_type": "Offer"}, {"md_entry_px": {"mantissa": 1208100000, "exponent": -9}, "md_entry_size": 13000000, "number_of_orders": null, "md_price_level": 5, "open_close_settl_flag": null, "md_entry_type": "Offer"}, {"md_entry_px": {"mantissa": 1207300000, "exponent": -9}, "md_entry_size": 0, "number_of_orders": null, "md_price_level": null, "open_close_settl_flag": null, "md_entry_type": "Trade"}]}
+high_limit_price:
+  exponent: -9
+  mantissa: null
+low_limit_price:
+  exponent: -9
+  mantissa: 50000
+match_event_indicator: EndOfEvent
+max_price_variation:
+  exponent: -9
+  mantissa: 3000000
+no_md_entries:
+- md_entry_px:
+    exponent: -9
+    mantissa: 1183650000
+  md_entry_size: 1000000
+  md_entry_type: Market Best Bid
+  md_price_level: 1
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1183750000
+  md_entry_size: 1000000
+  md_entry_type: Market Best Offer
+  md_price_level: 1
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1183650000
+  md_entry_size: 1000000
+  md_entry_type: Bid
+  md_price_level: 1
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1180000000
+  md_entry_size: 1000000
+  md_entry_type: Bid
+  md_price_level: 2
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1183750000
+  md_entry_size: 1000000
+  md_entry_type: Offer
+  md_price_level: 1
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1207900000
+  md_entry_size: 2000000
+  md_entry_type: Offer
+  md_price_level: 2
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1208000000
+  md_entry_size: 2000000
+  md_entry_type: Offer
+  md_price_level: 3
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1208050000
+  md_entry_size: 17000000
+  md_entry_type: Offer
+  md_price_level: 4
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1208100000
+  md_entry_size: 13000000
+  md_entry_type: Offer
+  md_price_level: 5
+  number_of_orders: null
+  open_close_settl_flag: null
+- md_entry_px:
+    exponent: -9
+    mantissa: 1207300000
+  md_entry_size: 0
+  md_entry_type: Trade
+  md_price_level: null
+  number_of_orders: null
+  open_close_settl_flag: null
+security_id: 11827320
+transact_time: 1631080313799842417
+
 INFO:root:Message type inclusions: ['SnapshotFullRefreshTCPLongQty68']
 INFO:root:Source record count: 1
 INFO:root:Processed record count: 1
 INFO:root:Processed schema count: 1
 INFO:root:Summary of message counts: {'SnapshotFullRefreshTCPLongQty68': 1}
 INFO:root:Summary of error message counts: {}
-INFO:root:Message rate: 151.998784 per second
-INFO:root:Total runtime in seconds: 0.006579
-INFO:root:Total runtime in minutes: 0.00011
-```
-
-### View transcoded Avro
-```
-# download avro-tools JAR to inspect Avro files 
-wget https://dlcdn.apache.org/avro/stable/java/avro-tools-1.11.1.jar
-
-java -jar avro-tools-1.11.1.jar tojson --pretty avroOut/SnapshotFullRefreshTcpLongQty.68.Tcp-SnapshotFullRefreshTCPLongQty68.avro 
-```
-
-### Output
-```
-{
-  "transact_time" : {
-    "double" : 1.6310803137998423E18
-  },
-  "match_event_indicator" : {
-    "string" : "EndOfEvent"
-  },
-  "security_id" : {
-    "long" : 11827320
-  },
-  "high_limit_price" : {
-    "mantissa" : null,
-    "exponent" : {
-      "int" : -9
-    }
-  },
-  "low_limit_price" : {
-    "mantissa" : {
-      "long" : 50000
-    },
-    "exponent" : {
-      "int" : -9
-    }
-  },
-  "max_price_variation" : {
-    "mantissa" : {
-      "long" : 3000000
-    },
-    "exponent" : {
-      "int" : -9
-    }
-  },
-  "no_md_entries" : {
-    "array" : [ {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1183650000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 1
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Market Best Bid"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1183750000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 1
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Market Best Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1183650000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 1
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Bid"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1180000000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 2
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Bid"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1183750000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 1
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1207900000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 2000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 2
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1208000000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 2000000.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 3
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1208050000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1.7E7
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 4
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1208100000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 1.3E7
-      },
-      "number_of_orders" : null,
-      "md_price_level" : {
-        "int" : 5
-      },
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Offer"
-      }
-    }, {
-      "md_entry_px" : {
-        "mantissa" : {
-          "long" : 1207300000
-        },
-        "exponent" : {
-          "int" : -9
-        }
-      },
-      "md_entry_size" : {
-        "double" : 0.0
-      },
-      "number_of_orders" : null,
-      "md_price_level" : null,
-      "open_close_settl_flag" : null,
-      "md_entry_type" : {
-        "string" : "Trade"
-      }
-    } ]
-  }
-}
+INFO:root:Message rate: 127.000254 per second
+INFO:root:Total runtime in seconds: 0.007874
+INFO:root:Total runtime in minutes: 0.000131
 ```
 
 ## Publish FIX messages stored in a file to Pub/Sub as Avro binary
@@ -388,7 +234,6 @@ bin/txcode \
 ### Output
 
 ```
-{"BeginString": "FIX.4.2", "BodyLength": 153, "MsgType": "ORDER_SINGLE", "SenderCompID": "BLP", "TargetCompID": "SCHB", "MsgSeqNum": 1, "SenderSubID": "30737", "PossResend": "YES", "SendingTime": "20000809-20:20:50", "ClOrdID": "90001008", "Account": "10030003", "HandlInst": "AUTOMATED_EXECUTION_ORDER_PUBLIC_BROKER_INTERVENTION_OK", "Symbol": "TESTA", "Side": "BUY", "OrderQty": 4000.0, "OrdType": "LIMIT", "TimeInForce": "DAY", "Price": 30.0, "Rule80A": "INDIVIDUAL_INVESTOR_SINGLE_ORDER", "TransactTime": "20000809-18:20:32", "CheckSum": "061"}
 INFO:root:Message type inclusions: ['NewOrderSingle']
 INFO:root:Source record count: 1
 INFO:root:Processed record count: 1
@@ -415,10 +260,9 @@ wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/4
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 
 bin/txcode \
-  --source_file /dev/null  \
+  --create_schemas_only \
   --schema_file FIX42.xml \
   --factory fix \
-  --source_file_format_type line_delimited \
   --destination_project_id $(gcloud config get-value project) \
   --continue_on_error \
   --output_encoding json \
