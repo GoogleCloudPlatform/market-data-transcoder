@@ -22,7 +22,9 @@ from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
 from transcoder.output.diag import DiagnosticOutputManager
 from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
+from transcoder.output.google_cloud.terraform import BigQueryTerraformOutputManager, PubSubTerraformOutputManager
 from transcoder.output.json import JsonOutputManager
+
 
 
 def all_output_identifiers():
@@ -33,6 +35,8 @@ def all_output_identifiers():
         FastAvroOutputManager.output_type_identifier(),
         BigQueryOutputManager.output_type_identifier(),
         PubSubOutputManager.output_type_identifier(),
+        BigQueryTerraformOutputManager.output_type_identifier(),
+        PubSubTerraformOutputManager.output_type_identifier(),
         JsonOutputManager.output_type_identifier()
     ]
 
@@ -56,6 +60,12 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
     elif output_name == BigQueryOutputManager.output_type_identifier():
         output = BigQueryOutputManager(destination_project_id, destination_dataset_id, output_prefix,
                                        lazy_create_resources=lazy_create_resources)
+    elif output_name == BigQueryTerraformOutputManager.output_type_identifier():
+        output = BigQueryTerraformOutputManager(destination_project_id, destination_dataset_id, output_file_path)
+    elif output_name == PubSubTerraformOutputManager.output_type_identifier():
+        output = PubSubTerraformOutputManager(destination_project_id, output_encoding=output_encoding,
+                                              create_schema_enforcing_topics=create_schema_enforcing_topics,
+                                              output_path=output_file_path)
     elif output_name == DiagnosticOutputManager.output_type_identifier():
         output = DiagnosticOutputManager()
     elif output_name == JsonOutputManager.output_type_identifier():
