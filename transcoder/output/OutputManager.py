@@ -18,6 +18,8 @@
 #
 
 import concurrent
+import os
+import sys
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 
@@ -95,3 +97,16 @@ class OutputManager:
     def wait_for_completion(self):
         """Extend or override to wait until output manager has fully completed writing and other work"""
         self.wait_for_schema_creation()
+
+    def create_output_path(self, output_path: str, relative_path: str):
+        """Creates the output path if it doesn't exist. Output path will be created as {output_path}/{relative_path}"""
+        _output_path = None
+        if output_path is None:
+            main_script_dir = os.path.dirname(sys.argv[0])
+            _output_path = os.path.join(main_script_dir, relative_path)
+        else:
+            _output_path = output_path
+        exists = os.path.exists(_output_path)
+        if not exists:
+            os.makedirs(_output_path)
+        return _output_path

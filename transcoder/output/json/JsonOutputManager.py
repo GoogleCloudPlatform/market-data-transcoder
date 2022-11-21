@@ -18,8 +18,6 @@
 #
 import datetime
 import json
-import os
-import sys
 
 from transcoder.message import DatacastSchema, DatacastField
 from transcoder.output import OutputManager
@@ -33,17 +31,7 @@ class JsonOutputManager(OutputManager):
         self.prefix = prefix
         self.schemas = {}
         self.writers = {}
-
-        if output_path is None:
-            rel_path = "jsonOut"
-            main_script_dir = os.path.dirname(sys.argv[0])
-            self.output_path = os.path.join(main_script_dir, rel_path)
-        else:
-            self.output_path = output_path
-
-        exists = os.path.exists(self.output_path)
-        if not exists:
-            os.makedirs(self.output_path)
+        self.output_path = self.create_output_path(output_path, 'jsonOut')
 
     @staticmethod
     def output_type_identifier():
@@ -53,6 +41,7 @@ class JsonOutputManager(OutputManager):
         return field.create_json_field(field)
 
     def _add_schema(self, schema: DatacastSchema):
+        # pylint: disable=duplicate-code
         if schema.name in self.schemas:
             del self.schemas[schema.name]
         if schema.name in self.writers:

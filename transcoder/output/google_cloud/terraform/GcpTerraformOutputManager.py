@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-import os
-import sys
-
 from transcoder.output import OutputManager
 
 
@@ -36,18 +33,7 @@ class GCPTerraformOutputManager(OutputManager):
         self.prefix = prefix
         self.schemas = {}
         self.writers = {}
-
-        # pylint: disable=duplicate-code
-        if output_path is None:
-            rel_path = "tfOut"
-            main_script_dir = os.path.dirname(sys.argv[0])
-            self.output_path = os.path.join(main_script_dir, rel_path)
-        else:
-            self.output_path = output_path
-
-        exists = os.path.exists(self.output_path)
-        if not exists:
-            os.makedirs(self.output_path)
+        self.output_path = self.create_output_path(output_path, 'tfOut')
 
     def _save_schema(self, name, content):
         with open(self._get_file_name(name, 'tf'), mode='wt', encoding='utf-8') as file:
