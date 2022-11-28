@@ -77,7 +77,7 @@ class JsonOutputManager(OutputManager):
         return ''
 
     def _save_schema(self, name, schema_json):
-        with open(self.get_schema_file_name(name, 'json'), mode='wt', encoding='utf-8') as file:
+        with open(self.get_schema_file_name(name, 'jsonl'), mode='wt', encoding='utf-8') as file:
             file.write(schema_json)
 
     def get_schema_file_name(self, name, extension):
