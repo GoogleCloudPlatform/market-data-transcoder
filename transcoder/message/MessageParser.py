@@ -69,7 +69,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.all_handlers = []
         self.handlers_enabled = False
         self.file_name_without_extension = os.path.basename(
-            os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin-test'
+            os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
 
         self.error_writer = ErrorWriter(prefix=self.file_name_without_extension,
                                         output_path=self.error_output_path)
