@@ -18,6 +18,7 @@
 #
 
 import os
+import sys
 
 from transcoder import LineEncoding
 from transcoder.source.file import FileMessageSource
@@ -37,8 +38,14 @@ class LineDelimitedFileMessageSource(FileMessageSource):
         self.skip_lines = skip_lines
 
     def open(self):
-        self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, mode='rt', encoding=self.encoding)  # pylint: disable=consider-using-with
+        if not sys.stdin.isatty():
+            sys.stdin.seek(0, os.SEEK_END)
+            self.file_size = sys.stdin.tell()
+            sys.stdin.seek(0)
+            self.file_handle = sys.stdin
+        else:
+            self.file_size = os.path.getsize(self.path)
+            self.file_handle = open(self.path, mode='rt', encoding=self.encoding)  # pylint: disable=consider-using-with
 
     def get_message_iterator(self):
         if self.file_size == 0:
