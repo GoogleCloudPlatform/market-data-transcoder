@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-import os
-import sys
-
 from transcoder import LineEncoding
 from transcoder.source.file import FileMessageSource
 
@@ -33,26 +30,18 @@ class LineDelimitedFileMessageSource(FileMessageSource):
 
     def __init__(self, file_path: str, encoding: str, skip_lines: int = 0,
                  message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
-        super().__init__(file_path, line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
-        self.encoding = encoding
+        super().__init__(file_path, file_open_mode='rt', file_encoding=encoding,
+                         line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
         self.skip_lines = skip_lines
 
-    def open(self):
-        if not sys.stdin.isatty():
-            sys.stdin.seek(0, os.SEEK_END)
-            self.file_size = sys.stdin.tell()
-            sys.stdin.seek(0)
-            self.file_handle = sys.stdin
-        else:
-            self.file_size = os.path.getsize(self.path)
-            self.file_handle = open(self.path, mode='rt', encoding=self.encoding)  # pylint: disable=consider-using-with
-
-    def get_message_iterator(self):
+    def prepare(self):
         if self.file_size == 0:
             return
         if self.skip_lines > 0:
             for _ in range(self.skip_lines):
                 self.file_handle.readline()
+
+    def get_message_iterator(self):
         while line := self.file_handle.readline():
             self.increment_count()
             yield self.decode_message(line)

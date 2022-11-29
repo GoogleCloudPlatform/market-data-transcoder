@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-import os
-
 from transcoder.source.file.FileMessageSource import FileMessageSource
 
 
@@ -31,19 +29,18 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
 
     def __init__(self, file_path: str, skip_bytes: int = 0, endian: str = 'big',
                  message_skip_bytes: int = 0, message_length_byte_length: int = 2):
-        super().__init__(file_path)
+        super().__init__(file_path, file_open_mode='rb')
         self.skip_bytes = skip_bytes
         self.endian = endian
         self.message_skip_bytes = message_skip_bytes
         self.message_length_byte_length = message_length_byte_length
 
-    def open(self):
-        self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
+    def prepare(self):
         if self.skip_bytes > 0:
             self.file_handle.read(self.skip_bytes)
 
     def get_message_iterator(self):
+        # If STDIN, won't work as file_size will be None.
         while self.file_handle.tell() < self.file_size:
             if self.message_skip_bytes > 0:
                 self.file_handle.read(self.message_skip_bytes)

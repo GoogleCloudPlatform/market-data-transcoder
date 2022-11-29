@@ -18,7 +18,6 @@
 #
 
 import logging
-import os
 
 import dpkt
 
@@ -33,14 +32,12 @@ class PcapFileMessageSource(FileMessageSource):
         return 'pcap'
 
     def __init__(self, file_path: str, message_skip_bytes: int = 0, length_threshold: int = 50):
-        super().__init__(file_path)
+        super().__init__(file_path, file_open_mode='rb')
         self.message_skip_bytes = message_skip_bytes
         self.pcap_reader: dpkt.pcap.Reader = None
         self.length_threshold = length_threshold
 
-    def open(self):
-        self.file_size = os.path.getsize(self.path)
-        self.file_handle = open(self.path, 'rb')  # pylint: disable=consider-using-with
+    def prepare(self):
         self.pcap_reader = dpkt.pcap.Reader(self.file_handle)
 
     def get_message_iterator(self):
