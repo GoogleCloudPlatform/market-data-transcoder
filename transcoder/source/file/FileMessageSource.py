@@ -19,6 +19,8 @@
 
 import base64
 import logging
+import os
+import sys
 from io import IOBase
 
 from transcoder import LineEncoding
@@ -32,9 +34,12 @@ class FileMessageSource(Source):
     def source_type_identifier():
         raise SourceFunctionNotDefinedError
 
-    def __init__(self, file_path: str, message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
+    def __init__(self, file_path: str, file_open_mode: str, file_encoding: str = None,
+                 message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
         super().__init__()
         self.path = file_path
+        self.file_open_mode = file_open_mode
+        self.file_encoding = file_encoding
         self.message_skip_bytes = message_skip_bytes
         self.line_encoding = line_encoding
         self.file_handle: IOBase = None
@@ -42,7 +47,22 @@ class FileMessageSource(Source):
         self.log_percentage_read_enabled = logging.getLogger().isEnabledFor(logging.DEBUG)
 
     def open(self):
-        raise SourceFunctionNotDefinedError
+        if not sys.stdin.isatty():
+            if sys.stdin.seekable():
+                sys.stdin.seek(0, os.SEEK_END)
+                self.file_size = sys.stdin.tell()
+                sys.stdin.seek(0)
+            else:
+                self.log_percentage_read_enabled = False
+            self.file_handle = sys.stdin
+        else:
+            self.file_size = os.path.getsize(self.path)
+            self.file_handle = open(self.path, mode=self.file_open_mode,  # pylint: disable=consider-using-with
+                                    encoding=self.file_encoding)
+        self.prepare()
+
+    def prepare(self):
+        pass
 
     def close(self):
         self.file_handle.close()
@@ -51,7 +71,7 @@ class FileMessageSource(Source):
         raise SourceFunctionNotDefinedError
 
     def _log_percentage_read(self):
-        if self.log_percentage_read_enabled is True:
+        if self.file_size and self.log_percentage_read_enabled is True:
             logging.debug('Percentage read: %f%%', round((self.file_handle.tell() / self.file_size) * 100, 6))
 
     def decode_message(self, record):
