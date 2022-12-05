@@ -49,7 +49,7 @@ class JsonOutputManager(OutputManager):
             del self.writers[schema.name]
 
         output_file = open(  # pylint: disable=consider-using-with
-            self._get_file_name(schema.name, 'json'), 'w',
+            self._get_file_name(schema.name, 'jsonl'), 'w',
             encoding='utf-8')
 
         schema_json = {
@@ -77,7 +77,7 @@ class JsonOutputManager(OutputManager):
         return ''
 
     def _save_schema(self, name, schema_json):
-        with open(self.get_schema_file_name(name, 'jsonl'), mode='wt', encoding='utf-8') as file:
+        with open(self.get_schema_file_name(name, 'json'), mode='wt', encoding='utf-8') as file:
             file.write(schema_json)
 
     def get_schema_file_name(self, name, extension):
