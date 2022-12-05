@@ -48,9 +48,12 @@ class FileMessageSource(Source):
 
     def open(self):
         if not sys.stdin.isatty():
-            sys.stdin.seek(0, os.SEEK_END)
-            self.file_size = sys.stdin.tell()
-            sys.stdin.seek(0)
+            if sys.stdin.seekable():
+                sys.stdin.seek(0, os.SEEK_END)
+                self.file_size = sys.stdin.tell()
+                sys.stdin.seek(0)
+            else:
+                self.log_percentage_read_enabled = False
             self.file_handle = sys.stdin
         else:
             self.file_size = os.path.getsize(self.path)
