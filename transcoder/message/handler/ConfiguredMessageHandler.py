@@ -22,20 +22,20 @@ from transcoder.message.handler.MessageHandler import MessageHandler
 from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntField
 
 import json
-
+import os
 
 class ConfiguredMessageHandler(MessageHandler):
     """ A MessageHandler abstract derivative class configurable via a local, eponymously-named JSON file  """
 
     def __init__(self, parser: MessageParser):
         super().__init__(parser=parser)
-        self.configuration = load_config()
+        self.config = self.load_config()
 
-
-    def load_config:
+    def load_config(self):
         opts = None
         try:
-            config_file_name = self.__class__.__name__ + '.json'
+            config_file_name = str(os.getcwd()) + '/' + self.__class__.__name__ + '.json'
+            print(config_file_name)
             handle = open(config_file_name, 'rt')
             opts = json.loads(handle.read())
             handle.close()
