@@ -21,3 +21,4 @@
 
 from .CmeBinaryPacketHandler import CmeBinaryPacketHandler
 from .TimestampPullForwardHandler import TimestampPullForwardHandler
+from .ConfiguredMessageHandler import ConfiguredMessageHandler
