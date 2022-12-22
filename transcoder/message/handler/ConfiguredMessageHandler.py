@@ -35,7 +35,6 @@ class ConfiguredMessageHandler(MessageHandler):
         opts = None
         try:
             config_file_name = str(os.getcwd()) + '/' + self.__class__.__name__ + '.json'
-            print(config_file_name)
             handle = open(config_file_name, 'rt')
             opts = json.loads(handle.read())
             handle.close()
