@@ -40,6 +40,7 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
             self.file_handle.read(self.skip_bytes)
 
     def get_message_iterator(self):
+        # pylint: disable=duplicate-code
         while True:
             if self.message_skip_bytes > 0:
                 # Skip bytes based on the message_skip_bytes value
