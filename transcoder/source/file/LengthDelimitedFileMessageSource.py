@@ -43,21 +43,21 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
         while True:
             if self.message_skip_bytes > 0:
                 # Skip bytes based on the message_skip_bytes value
-                byte = self.file_handle.read(self.message_skip_bytes)
-                if not byte:
+                skipped_bytes = self.file_handle.read(self.message_skip_bytes)
+                if not skipped_bytes:
                     break
 
             # Read the message length
-            byte = self.file_handle.read(self.message_length_byte_length)
-            if not byte:
+            msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
+            if not msg_len_bytes:
                 break
 
-            message_length = int.from_bytes(byte, self.endian)
+            message_length = int.from_bytes(msg_len_bytes, self.endian)
             self.increment_count()
 
             # Get the message
-            byte = self.file_handle.read(message_length)
-            if not byte:
+            msg_bytes = self.file_handle.read(message_length)
+            if not msg_bytes:
                 break
-            yield byte
+            yield msg_bytes
             self._log_percentage_read()
