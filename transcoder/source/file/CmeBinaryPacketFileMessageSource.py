@@ -49,8 +49,12 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
             message_length = int.from_bytes(parent_msg_bytes, self.endian)
             remaining_message_length = message_length
 
-            # skip binary packet header 12 bytes
-            self.file_handle.seek(12, 1)
+            # Skip binary packet header 12 bytes
+            # Unable seek on a stream,
+            # self.file_handle.seek(12, 1)
+            packet_header_bytes = self.file_handle.read(12)
+            if not packet_header_bytes:
+                break
 
             # Read message header message size 2 bytes
             msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
