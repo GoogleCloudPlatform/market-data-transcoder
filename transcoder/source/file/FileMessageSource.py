@@ -47,7 +47,11 @@ class FileMessageSource(Source):
         self.log_percentage_read_enabled = logging.getLogger().isEnabledFor(logging.DEBUG)
 
     def open(self):
-        if not sys.stdin.isatty():
+        if self.path is not None:
+            self.file_size = os.path.getsize(self.path)
+            self.file_handle = open(self.path, mode=self.file_open_mode,  # pylint: disable=consider-using-with
+                                    encoding=self.file_encoding)
+        elif sys.stdin.isatty():
             if sys.stdin.seekable():
                 sys.stdin.seek(0, os.SEEK_END)
                 self.file_size = sys.stdin.tell()
@@ -55,14 +59,11 @@ class FileMessageSource(Source):
             else:
                 self.log_percentage_read_enabled = False
             self.file_handle = sys.stdin.buffer.raw
-        else:
-            self.file_size = os.path.getsize(self.path)
-            self.file_handle = open(self.path, mode=self.file_open_mode,  # pylint: disable=consider-using-with
-                                    encoding=self.file_encoding)
+
         self.prepare()
 
     def prepare(self):
-        pass
+        """This is called after open. Prepare file for iteration, skips etc."""
 
     def close(self):
         self.file_handle.close()

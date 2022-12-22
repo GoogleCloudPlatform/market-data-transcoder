@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+import sys
+
 from transcoder import LineEncoding
 from transcoder.source.file import FileMessageSource
 
@@ -35,7 +37,8 @@ class LineDelimitedFileMessageSource(FileMessageSource):
         self.skip_lines = skip_lines
 
     def prepare(self):
-        if self.file_size == 0:
+        # file_size is only determinable on seekable input
+        if sys.stdin.seekable() is True and self.file_size == 0:
             return
         if self.skip_lines > 0:
             for _ in range(self.skip_lines):
