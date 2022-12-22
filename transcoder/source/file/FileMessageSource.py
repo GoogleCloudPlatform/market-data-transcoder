@@ -54,7 +54,7 @@ class FileMessageSource(Source):
                 sys.stdin.seek(0)
             else:
                 self.log_percentage_read_enabled = False
-            self.file_handle = sys.stdin
+            self.file_handle = sys.stdin.buffer.raw
         else:
             self.file_size = os.path.getsize(self.path)
             self.file_handle = open(self.path, mode=self.file_open_mode,  # pylint: disable=consider-using-with

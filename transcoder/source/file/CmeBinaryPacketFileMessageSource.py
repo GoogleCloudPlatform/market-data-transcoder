@@ -35,37 +35,56 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
                          message_length_byte_length=message_length_byte_length)
 
     def get_message_iterator(self):
-        while self.file_handle.tell() < self.file_size:
+        while True:
             if self.message_skip_bytes > 0:
                 # Skip the channel id 2 bytes
-                self.file_handle.read(self.message_skip_bytes)
+                skipped_bytes = self.file_handle.read(self.message_skip_bytes)
+                if not skipped_bytes:
+                    break
 
-            # read the parent message length 2 bytes
-            message_length = int.from_bytes(self.file_handle.read(self.message_length_byte_length), self.endian)
+            # Read the parent message length 2 bytes
+            parent_msg_bytes = self.file_handle.read(self.message_length_byte_length)
+            if not parent_msg_bytes:
+                break
+            message_length = int.from_bytes(parent_msg_bytes, self.endian)
             remaining_message_length = message_length
 
-            # skip binary packet header 12 bytes
-            self.file_handle.seek(12, 1)
+            # Skip binary packet header 12 bytes
+            # Unable seek on a stream,
+            # self.file_handle.seek(12, 1)
+            packet_header_bytes = self.file_handle.read(12)
+            if not packet_header_bytes:
+                break
 
-            # read message header message size 2 bytes
-            child_message_length = int.from_bytes(self.file_handle.read(self.message_length_byte_length), self.endian)
+            # Read message header message size 2 bytes
+            msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
+            if not msg_len_bytes:
+                break
+            child_message_length = int.from_bytes(msg_len_bytes, self.endian)
 
             remainder = child_message_length - self.message_length_byte_length
             self.increment_count()
 
-            result = self.file_handle.read(remainder)
+            first_msg_bytes = self.file_handle.read(remainder)
+            if not first_msg_bytes:
+                break
             # print(''.join('{:02x}'.format(x) for x in result))
-            yield result
+            yield first_msg_bytes
 
             # Subtract out the binary packet header 12 bytes
             remaining_message_length = remaining_message_length - child_message_length - 12
 
             while remaining_message_length > 0:
-                child_message_length = int.from_bytes(self.file_handle.read(self.message_length_byte_length),
-                                                      self.endian)
+                child_msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
+                if not child_msg_len_bytes:
+                    break
+                child_message_length = int.from_bytes(child_msg_len_bytes, self.endian)
                 remainder = child_message_length - self.message_length_byte_length
                 self.increment_count()
-                yield self.file_handle.read(remainder)
+                child_msg_bytes = self.file_handle.read(remainder)
+                if not child_msg_bytes:
+                    break
+                yield child_msg_bytes
                 remaining_message_length = remaining_message_length - child_message_length
 
             self._log_percentage_read()
