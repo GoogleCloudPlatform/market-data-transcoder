@@ -63,7 +63,7 @@ class FileMessageSource(Source):
         self.prepare()
 
     def prepare(self):
-        pass
+        """This is called after open. Prepare file for iteration, skips etc."""
 
     def close(self):
         self.file_handle.close()

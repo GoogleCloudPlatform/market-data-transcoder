@@ -35,6 +35,7 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
                          message_length_byte_length=message_length_byte_length)
 
     def get_message_iterator(self):
+        # pylint: disable=duplicate-code
         while True:
             if self.message_skip_bytes > 0:
                 # Skip the channel id 2 bytes
