@@ -40,12 +40,24 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
             self.file_handle.read(self.skip_bytes)
 
     def get_message_iterator(self):
-        # If STDIN, won't work as file_size will be None.
-        while self.file_handle.tell() < self.file_size:
+        while True:
             if self.message_skip_bytes > 0:
-                self.file_handle.read(self.message_skip_bytes)
+                # Skip bytes based on the message_skip_bytes value
+                byte = self.file_handle.read(self.message_skip_bytes)
+                if not byte:
+                    break
 
-            message_length = int.from_bytes(self.file_handle.read(self.message_length_byte_length), self.endian)
+            # Read the message length
+            byte = self.file_handle.read(self.message_length_byte_length)
+            if not byte:
+                break
+
+            message_length = int.from_bytes(byte, self.endian)
             self.increment_count()
-            yield self.file_handle.read(message_length)
+
+            # Get the message
+            byte = self.file_handle.read(message_length)
+            if not byte:
+                break
+            yield byte
             self._log_percentage_read()
