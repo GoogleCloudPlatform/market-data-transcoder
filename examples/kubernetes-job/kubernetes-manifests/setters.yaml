@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: setters-mdt-sample-job
+  annotations:
+    config.kubernetes.io/local-config: "true"
+data:
+  name: mdt-sample-job
+  image-repo: us-docker.pkg.dev/my-project-id/repo-name
+  service-account: mdt-storage-reader
+  source-file: /data/secdef.dat
+  schema-file: /data/FIX50SP2.CME.xml
+  factory: fix
+  source-file-format-type: line_delimited
+  output-type: diag
+  message-type-inclusions: SecurityDefinition,TradingSessionList

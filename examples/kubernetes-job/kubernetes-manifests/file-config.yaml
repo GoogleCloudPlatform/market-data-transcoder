@@ -1,0 +1,14 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: file-config-simple-job
+  namespace: market-data-transcoder
+  labels:
+    app: market-data-transcoder
+data:
+  source_file: /data/secdef.dat # kpt-set: ${source-file}
+  schema_file: /data/FIX50SP2.CME.xml # kpt-set: ${schema-file}
+  factory: fix # kpt-set: ${factory}
+  source_file_format_type: line_delimited # kpt-set: ${source-file-format-type}
+  output_type: diag # kpt-set: ${output-type}
+  message_type_inclusions: SecurityDefinition,TradingSessionList # kpt-set: ${message-type-inclusions}
