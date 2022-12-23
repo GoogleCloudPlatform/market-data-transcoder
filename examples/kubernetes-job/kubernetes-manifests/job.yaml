@@ -1,0 +1,104 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: transcoder-job-simple-job
+  labels:
+    job: market-data-transcoder
+    app: market-data-transcoder
+  namespace: market-data-transcoder
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      serviceAccountName: mdt-storage-reader-simple-job
+      initContainers:
+        - name: install
+          image: us-docker.pkg.dev/my-project-id/repo-name/wget-init:latest # kpt-set: ${image-repo}/wget-init:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - >-
+                wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/secdef.dat.gz|gunzip - | head -10 > /data/secdef.dat &&
+                wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/TradingSessionList.dat| head -10 >> /data/secdef.dat &&
+                wget -q 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX50SP2.CME.xml' -P /data/
+          # image: google/cloud-sdk
+          # securityContext:
+          #   allowPrivilegeEscalation: false
+          # command:
+          #   - sh
+          #   - -c
+          #   - gcloud storage cp gs://bucket-name/secdef/* /data/
+          volumeMounts:
+            - name: workdir
+              mountPath: /data
+      containers:
+        - name: market-data-transcoder
+          image: us-docker.pkg.dev/my-project-id/repo-name/market-data-transcoder:latest # kpt-set: ${image-repo}/market-data-transcoder:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+          args:
+            - --factory=$(factory)
+            - --schema_file=$(schema_file)
+            - --source_file=$(source_file)
+            - --source_file_format_type=$(source_file_format_type)
+            - --continue_on_error
+            - --output_type=$(output_type)
+            - --message_type_inclusions=$(message_type_inclusions)
+          env:
+            - name: source_file
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: source_file
+            - name: schema_file
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: schema_file
+            - name: factory
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: factory
+            - name: source_file_format_type
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: source_file_format_type
+            - name: output_type
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: output_type
+            - name: message_type_inclusions
+              valueFrom:
+                configMapKeyRef:
+                  name: file-config-simple-job
+                  key: message_type_inclusions
+          resources:
+            requests:
+              cpu: 300m
+              memory: 550M
+              ephemeral-storage: 5Gi
+            limits:
+              cpu: 500m
+              memory: 550M
+              ephemeral-storage: 10Gi
+          volumeMounts:
+            - mountPath: /data
+              name: workdir
+      restartPolicy: Never
+      volumes:
+        - name: workdir
+          emptyDir:
+            sizeLimit: 10Gi
+    metadata:
+      labels:
+        app: market-data-transcoder
+  backoffLimit: 0
