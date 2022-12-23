@@ -51,7 +51,7 @@ class FileMessageSource(Source):
             self.file_size = os.path.getsize(self.path)
             self.file_handle = open(self.path, mode=self.file_open_mode,  # pylint: disable=consider-using-with
                                     encoding=self.file_encoding)
-        elif sys.stdin.isatty():
+        elif not sys.stdin.isatty():
             if sys.stdin.seekable():
                 sys.stdin.seek(0, os.SEEK_END)
                 self.file_size = sys.stdin.tell()
