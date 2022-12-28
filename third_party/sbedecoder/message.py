@@ -30,6 +30,7 @@ from struct import unpack_from
 import numpy as np
 from google.cloud import bigquery
 
+from third_party.sbedecoder.typemap import TypeMap
 from transcoder.message.DatacastField import DatacastField
 
 null_value = {
@@ -57,7 +58,6 @@ json_type_map = {
     'double': 'number',
     'float': 'number'
 }
-
 
 # https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#avro_conversions
 avro_type_map = {
@@ -137,11 +137,14 @@ class SBEMessageField(DatacastField):
     def is_bool_type(self):
         return self.semantic_type == 'bool'
 
+    @property
+    def is_int_type(self):
+        return False
+
     def __str__(self, raw=False):
         if raw and self.value != self.raw_value:
             return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
         return f'{self.name}: {str(self.value)}'
-
 
     @staticmethod
     def get_json_field_type(part: DatacastField = None):
@@ -164,13 +167,12 @@ class SBEMessageField(DatacastField):
             return 'string'
 
     def create_json_field(self, part: DatacastField = None):
-        jsonfield = {}
-        jsonfield['title'] = part.name
+        jsonfield = {'title': part.name}
         if isinstance(part, CompositeMessageField):
             jsonfield['type'] = 'object'
             jsonfield['properties'] = {}
-            for _, fieldpart in enumerate(part.parts):
-                jsonfield['properties'][fieldpart.name] = fieldpart.create_json_field(fieldpart)
+            for _, field_part in enumerate(part.parts):
+                jsonfield['properties'][field_part.name] = field_part.create_json_field(field_part)
         else:
             jsonfield['type'] = part.get_json_field_type(part)
 
@@ -254,7 +256,7 @@ class TypeMessageField(SBEMessageField):
                  field_length=None, optional=False,
                  null_value=None, constant=None, is_string_type=False,
                  semantic_type=None, since_version=0,
-                 primitive_type=None):
+                 primitive_type=None, byte_order: str = None):
         super(SBEMessageField, self).__init__()
         self.name = name
         self.original_name = original_name
@@ -270,6 +272,10 @@ class TypeMessageField(SBEMessageField):
         self.semantic_type = semantic_type
         self.since_version = since_version
         self.primitive_type = primitive_type
+        self.byte_order = byte_order
+
+    def is_int_type(self):
+        return 'int' in self.primitive_type
 
     @property
     def value(self):  # pylint: disable=too-many-return-statements
@@ -306,8 +312,14 @@ class TypeMessageField(SBEMessageField):
         if self.constant is not None:
             return self.constant
 
-        _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer,
-                                 self.msg_offset + self.relative_offset + self.field_offset)[0]
+        start_index = self.msg_offset + self.relative_offset + self.field_offset
+        end_index = start_index + self.field_length
+
+        _, primitive_type_size = TypeMap.primitive_type_map[self.primitive_type]
+        if self.is_int_type() and primitive_type_size != self.field_length:
+            _raw_value = int.from_bytes(self.msg_buffer[start_index: end_index], self.byte_order)
+        else:
+            _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer, start_index)[0]
 
         return _raw_value
 
