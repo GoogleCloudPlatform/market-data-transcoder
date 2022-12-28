@@ -30,6 +30,7 @@ from struct import unpack_from
 import numpy as np
 from google.cloud import bigquery
 
+from third_party.sbedecoder.typemap import TypeMap
 from transcoder.message.DatacastField import DatacastField
 
 null_value = {
@@ -314,9 +315,9 @@ class TypeMessageField(SBEMessageField):
         start_index = self.msg_offset + self.relative_offset + self.field_offset
         end_index = start_index + self.field_length
 
-        # TODO: Only resolve to true if field_length differs from primitive type associated length
-        # Get endianess from schema?
-        if self.is_int_type() and self.field_length == 6:
+        # TODO: Get endianess from schema?
+        _, primitive_type_size = TypeMap.primitive_type_map[self.primitive_type]
+        if self.is_int_type() and primitive_type_size != self.field_length:
             byte_order = None
             if self.endian == '>':
                 byte_order = 'big'

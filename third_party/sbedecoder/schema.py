@@ -30,6 +30,7 @@ from lxml import etree
 
 from third_party.sbedecoder.message import TypeMessageField, EnumMessageField, SetMessageField, CompositeMessageField, \
     SBEMessage, SBERepeatingGroupContainer
+from third_party.sbedecoder.typemap import TypeMap
 
 
 def convert_to_underscore(name):
@@ -71,21 +72,7 @@ class SBESchema:
         }
         self.type_map = {}
         self.message_map = {}
-
-        self.primitive_type_map = {
-            'char': ('c', 1),
-            'int': ('i', 4),
-            'int8': ('b', 1),
-            'int16': ('h', 2),
-            'int32': ('i', 4),
-            'int64': ('q', 8),
-            'uint8': ('B', 1),
-            'uint16': ('H', 2),
-            'uint32': ('I', 4),
-            'uint64': ('Q', 8),
-            'float': ('f', 4),
-            'double': ('d', 8),
-        }
+        self.primitive_type_map = TypeMap.primitive_type_map
 
     @staticmethod
     def _build_type_definition(type_definition):
