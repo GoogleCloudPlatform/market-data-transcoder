@@ -73,6 +73,7 @@ class SBESchema:
         self.type_map = {}
         self.message_map = {}
         self.primitive_type_map = TypeMap.primitive_type_map
+        self.byte_order: str = None
 
     @staticmethod
     def _build_type_definition(type_definition):
@@ -200,7 +201,7 @@ class SBESchema:
                                              is_string_type=is_string_type,
                                              semantic_type=field_semantic_type,
                                              since_version=field_since_version,
-                                             primitive_type=field_type['primitive_type'], endian=endian)
+                                             primitive_type=field_type['primitive_type'], byte_order=self.byte_order)
         elif field_type_type == 'enum':
             encoding_type = field_type['encoding_type']
             encoding_type_type = self.type_map[encoding_type]
@@ -308,7 +309,7 @@ class SBESchema:
                                                    null_value=null_value, constant=constant,
                                                    optional=optional, semantic_type=field_semantic_type,
                                                    since_version=child_since_version,
-                                                   primitive_type=child['primitive_type'], endian=endian)
+                                                   primitive_type=child['primitive_type'], byte_order=self.byte_order)
 
                 if not (constant_defined is True and self.include_constants_in_offset is False):
                     field_offset += primitive_type_size
@@ -377,7 +378,7 @@ class SBESchema:
             message_size_field = TypeMessageField(name='message_size', original_name='message_size',
                                                   description="Header Message Size",
                                                   unpack_fmt=endian + 'H', field_offset=field_offset, field_length=2,
-                                                  endian=endian)
+                                                  byte_order=self.byte_order)
             field_offset += message_size_field.field_length
             message_type.fields.append(message_size_field)
             setattr(message_type, 'message_size', message_size_field)
@@ -392,7 +393,8 @@ class SBESchema:
                                                     unpack_fmt=endian + primitive_type_fmt,
                                                     field_offset=field_offset,
                                                     field_length=primitive_type_size,
-                                                    primitive_type=header_field_type['primitive_type'], endian=endian)
+                                                    primitive_type=header_field_type['primitive_type'],
+                                                    byte_order=self.byte_order)
             field_offset += message_header_field.field_length
             message_type.fields.append(message_header_field)
             setattr(message_type, message_header_field.name, message_header_field)
@@ -431,7 +433,8 @@ class SBESchema:
                                                           unpack_fmt=endian + primitive_type_fmt,
                                                           field_offset=block_field_offset,
                                                           field_length=primitive_type_size,
-                                                          semantic_type=child.get('semantic_type'), endian=endian)
+                                                          semantic_type=child.get('semantic_type'),
+                                                          byte_order=self.byte_order)
                     block_field_offset += primitive_type_size
                 elif child['name'] == 'numInGroup':
                     primitive_type = child['primitive_type']
@@ -444,7 +447,8 @@ class SBESchema:
                                                           unpack_fmt=endian + primitive_type_fmt,
                                                           field_offset=block_field_offset,
                                                           field_length=primitive_type_size,
-                                                          semantic_type=child.get('semantic_type'), endian=endian)
+                                                          semantic_type=child.get('semantic_type'),
+                                                          byte_order=self.byte_order)
                     block_field_offset += primitive_type_size
 
             group_field_offset = 0
@@ -480,8 +484,10 @@ class SBESchema:
                 byte_order = root_attributes['byteOrder']
                 if byte_order == 'littleEndian':
                     endian = '<'
+                    self.byte_order = 'little'
                 elif byte_order == 'bigEndian':
                     endian = '>'
+                    self.byte_order = 'big'
                 else:
                     raise SchemaByteOrderNotDefinedError('byteOrder is not defined in schema root, issue may be '
                                                          'resolved by adding byteOrder to schema root or setting '

@@ -256,7 +256,7 @@ class TypeMessageField(SBEMessageField):
                  field_length=None, optional=False,
                  null_value=None, constant=None, is_string_type=False,
                  semantic_type=None, since_version=0,
-                 primitive_type=None, endian=None):
+                 primitive_type=None, byte_order: str = None):
         super(SBEMessageField, self).__init__()
         self.name = name
         self.original_name = original_name
@@ -272,7 +272,7 @@ class TypeMessageField(SBEMessageField):
         self.semantic_type = semantic_type
         self.since_version = since_version
         self.primitive_type = primitive_type
-        self.endian = endian
+        self.byte_order = byte_order
 
     def is_int_type(self):
         return 'int' in self.primitive_type
@@ -315,15 +315,9 @@ class TypeMessageField(SBEMessageField):
         start_index = self.msg_offset + self.relative_offset + self.field_offset
         end_index = start_index + self.field_length
 
-        # TODO: Get endianess from schema?
         _, primitive_type_size = TypeMap.primitive_type_map[self.primitive_type]
         if self.is_int_type() and primitive_type_size != self.field_length:
-            byte_order = None
-            if self.endian == '>':
-                byte_order = 'big'
-            elif self.endian == '<':
-                byte_order = 'little'
-            _raw_value = int.from_bytes(self.msg_buffer[start_index: end_index], byte_order)
+            _raw_value = int.from_bytes(self.msg_buffer[start_index: end_index], self.byte_order)
         else:
             _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer, start_index)[0]
 
