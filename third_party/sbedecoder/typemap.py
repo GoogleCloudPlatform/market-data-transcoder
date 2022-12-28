@@ -19,7 +19,8 @@
 
 # pylint: disable=invalid-name
 
-class TypeMap:
+class TypeMap:  # pylint: disable=too-few-public-methods)
+    """Type map for primitive types to unpack fmt and length"""
     primitive_type_map = {
         'char': ('c', 1),
         'int': ('i', 4),
