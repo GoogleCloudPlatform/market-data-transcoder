@@ -166,13 +166,12 @@ class SBEMessageField(DatacastField):
             return 'string'
 
     def create_json_field(self, part: DatacastField = None):
-        jsonfield = {}
-        jsonfield['title'] = part.name
+        jsonfield = {'title': part.name}
         if isinstance(part, CompositeMessageField):
             jsonfield['type'] = 'object'
             jsonfield['properties'] = {}
-            for _, fieldpart in enumerate(part.parts):
-                jsonfield['properties'][fieldpart.name] = fieldpart.create_json_field(fieldpart)
+            for _, field_part in enumerate(part.parts):
+                jsonfield['properties'][field_part.name] = field_part.create_json_field(field_part)
         else:
             jsonfield['type'] = part.get_json_field_type(part)
 
