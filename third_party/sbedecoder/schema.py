@@ -213,7 +213,7 @@ class SBESchema:
                                              is_string_type=is_string_type,
                                              semantic_type=field_semantic_type,
                                              since_version=field_since_version,
-                                             primitive_type=field_type['primitive_type'])
+                                             primitive_type=field_type['primitive_type'], endian=endian)
         elif field_type_type == 'enum':
             encoding_type = field_type['encoding_type']
             encoding_type_type = self.type_map[encoding_type]
@@ -321,7 +321,7 @@ class SBESchema:
                                                    null_value=null_value, constant=constant,
                                                    optional=optional, semantic_type=field_semantic_type,
                                                    since_version=child_since_version,
-                                                   primitive_type=child['primitive_type'])
+                                                   primitive_type=child['primitive_type'], endian=endian)
 
                 if not (constant_defined is True and self.include_constants_in_offset is False):
                     field_offset += primitive_type_size
@@ -389,7 +389,8 @@ class SBESchema:
         if self.include_message_size_header:
             message_size_field = TypeMessageField(name='message_size', original_name='message_size',
                                                   description="Header Message Size",
-                                                  unpack_fmt=endian + 'H', field_offset=field_offset, field_length=2)
+                                                  unpack_fmt=endian + 'H', field_offset=field_offset, field_length=2,
+                                                  endian=endian)
             field_offset += message_size_field.field_length
             message_type.fields.append(message_size_field)
             setattr(message_type, 'message_size', message_size_field)
@@ -404,7 +405,7 @@ class SBESchema:
                                                     unpack_fmt=endian + primitive_type_fmt,
                                                     field_offset=field_offset,
                                                     field_length=primitive_type_size,
-                                                    primitive_type=header_field_type['primitive_type'])
+                                                    primitive_type=header_field_type['primitive_type'], endian=endian)
             field_offset += message_header_field.field_length
             message_type.fields.append(message_header_field)
             setattr(message_type, message_header_field.name, message_header_field)
@@ -443,7 +444,7 @@ class SBESchema:
                                                           unpack_fmt=endian + primitive_type_fmt,
                                                           field_offset=block_field_offset,
                                                           field_length=primitive_type_size,
-                                                          semantic_type=child.get('semantic_type'))
+                                                          semantic_type=child.get('semantic_type'), endian=endian)
                     block_field_offset += primitive_type_size
                 elif child['name'] == 'numInGroup':
                     primitive_type = child['primitive_type']
@@ -456,7 +457,7 @@ class SBESchema:
                                                           unpack_fmt=endian + primitive_type_fmt,
                                                           field_offset=block_field_offset,
                                                           field_length=primitive_type_size,
-                                                          semantic_type=child.get('semantic_type'))
+                                                          semantic_type=child.get('semantic_type'), endian=endian)
                     block_field_offset += primitive_type_size
 
             group_field_offset = 0

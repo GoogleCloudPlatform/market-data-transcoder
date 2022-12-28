@@ -58,7 +58,6 @@ json_type_map = {
     'float': 'number'
 }
 
-
 # https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#avro_conversions
 avro_type_map = {
     'int8': 'int',  # BQ converts to INTEGER
@@ -137,11 +136,14 @@ class SBEMessageField(DatacastField):
     def is_bool_type(self):
         return self.semantic_type == 'bool'
 
+    @property
+    def is_int_type(self):
+        return False
+
     def __str__(self, raw=False):
         if raw and self.value != self.raw_value:
             return f'{self.name}: {str(self.value)} ({str(self.raw_value)}'
         return f'{self.name}: {str(self.value)}'
-
 
     @staticmethod
     def get_json_field_type(part: DatacastField = None):
@@ -254,7 +256,7 @@ class TypeMessageField(SBEMessageField):
                  field_length=None, optional=False,
                  null_value=None, constant=None, is_string_type=False,
                  semantic_type=None, since_version=0,
-                 primitive_type=None):
+                 primitive_type=None, endian=None):
         super(SBEMessageField, self).__init__()
         self.name = name
         self.original_name = original_name
@@ -270,6 +272,10 @@ class TypeMessageField(SBEMessageField):
         self.semantic_type = semantic_type
         self.since_version = since_version
         self.primitive_type = primitive_type
+        self.endian = endian
+
+    def is_int_type(self):
+        return 'int' in self.primitive_type
 
     @property
     def value(self):  # pylint: disable=too-many-return-statements
@@ -306,8 +312,20 @@ class TypeMessageField(SBEMessageField):
         if self.constant is not None:
             return self.constant
 
-        _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer,
-                                 self.msg_offset + self.relative_offset + self.field_offset)[0]
+        start_index = self.msg_offset + self.relative_offset + self.field_offset
+        end_index = start_index + self.field_length
+
+        # TODO: Only resolve to true if field_length differs from primitive type associated length
+        # Get endianess from schema?
+        if self.is_int_type() and self.field_length == 6:
+            byte_order = None
+            if self.endian == '>':
+                byte_order = 'big'
+            elif self.endian == '<':
+                byte_order = 'little'
+            _raw_value = int.from_bytes(self.msg_buffer[start_index: end_index], byte_order)
+        else:
+            _raw_value = unpack_from(self.unpack_fmt, self.msg_buffer, start_index)[0]
 
         return _raw_value
 
