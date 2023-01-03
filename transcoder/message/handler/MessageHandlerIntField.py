@@ -33,3 +33,6 @@ class MessageHandlerIntField(DatacastField):
 
     def create_bigquery_field(self, part=None):
         return bigquery.SchemaField(self.name, 'INTEGER', mode="NULLABLE")
+
+    def create_json_field(self, part=None):
+        return {'title': self.name, 'type': 'integer'}
