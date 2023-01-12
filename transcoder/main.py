@@ -137,6 +137,7 @@ def main():
                             help='The default logging level')
     arg_parser.add_argument('-q', '--quiet', action='store_true', help='Suppress message output to console')
 
+    # The relative path of an import would change based on executing the script directly versus from a packaged app
     pkg_vars = {}
     with open(f'{script_dir}/version.py') as fp:
         exec(fp.read(), pkg_vars)
