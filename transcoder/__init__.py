@@ -19,8 +19,8 @@
 
 from enum import Enum
 
-
 # pylint: disable=invalid-name
+
 
 class LineEncoding(Enum):
     """Line encoding types supported for individual message decoding before processing"""
