@@ -30,7 +30,7 @@ import argparse
 import logging
 import os
 
-import version
+from .version import __version__
 
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
@@ -138,7 +138,7 @@ def main():
                             default='info',
                             help='The default logging level')
     arg_parser.add_argument('-q', '--quiet', action='store_true', help='Suppress message output to console')
-    arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {version.__version__}')
+    arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {__version__}')
 
     args = arg_parser.parse_args()
 
