@@ -159,12 +159,30 @@ Pub/Sub arguments:
 
 ```
 
-# Install requirements
+# Installation
+If you are a user looking to use the CLI or library without making changes, you can install the Market Data Transcoder from [PyPI](https://pypi.org/project/market-data-transcoder) using pip:
 ```
+pip install market-data-transcoder
+```
+
+After the pip installation, you can validate that the transcoder is available by the following command:
+```
+txcode --help
+```
+
+# Developers
+If you are looking to extend the functionality of the Market Data Transcoder:
+```
+cd market-data-transcoder
 pip install -r requirements.txt
 ```
 
-### Creating a shortcut
+After installing the required dependencies, you can run the transcoder with the following:
+```
+python main.py --help
+```
+
+## Creating a shortcut
 
 If you prefer to make the transcoder available globally on your machine, execute the scripts below. This script will update the permissions on the txcode symlink to grant execute permissions, and add the txcode symlink to your system PATH variable.
 

@@ -11,3 +11,4 @@ jsonOut/
 tfOut/
 .vscode/
 transcoder/.run
+dist/
