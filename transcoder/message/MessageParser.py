@@ -206,6 +206,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                 #         self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                 #         record = {'data': raw_record}
                 #         self.output_manager.write_record('data', record)
+                #         self.message_parser.increment_summary_count('data')
                 #         continue
 
                 message: ParsedMessage = None
