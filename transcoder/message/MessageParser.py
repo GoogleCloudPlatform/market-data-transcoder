@@ -201,6 +201,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         """Entry point for individual message processing"""
         with source:
             for raw_record in source.get_message_iterator():
+                # TODO
                 # if self.frame_only is True:
                 #     if self.output_manager is not None:
                 #         self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
