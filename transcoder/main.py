@@ -105,6 +105,9 @@ def main():
                                            'source data. Default behavior is to create resources for each message '
                                            'type before messages are processed. Particularly useful when working with '
                                            'FIX but only processing a limited set of message types in the source data')
+    output_options_group.add_argument('--frame_only', action='store_true',
+                                      help='Flag indicating that transcoder should only frame messages into a data '
+                                           'field')
     output_options_group.add_argument('--stats_only', action='store_true',
                                       help='Flag indicating that transcoder should only report on message type counts '
                                            'without parsing messages further')
@@ -167,6 +170,7 @@ def main():
     destination_dataset_id = args.destination_dataset_id
     message_handlers = args.message_handlers
     lazy_create_resources = args.lazy_create_resources
+    frame_only = args.frame_only
     stats_only = args.stats_only
     create_schemas_only = args.create_schemas_only
     continue_on_error = args.continue_on_error
@@ -191,7 +195,8 @@ def main():
                                    destination_project_id=destination_project_id,
                                    destination_dataset_id=destination_dataset_id,
                                    message_handlers=message_handlers, lazy_create_resources=lazy_create_resources,
-                                   stats_only=stats_only, create_schemas_only=create_schemas_only,
+                                   frame_only=frame_only, stats_only=stats_only,
+                                   create_schemas_only=create_schemas_only,
                                    continue_on_error=continue_on_error, error_output_path=error_output_path,
                                    quiet=quiet, create_schema_enforcing_topics=create_schema_enforcing_topics,
                                    sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
