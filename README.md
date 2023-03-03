@@ -179,22 +179,6 @@ pip install -r requirements.txt
 
 After installing the required dependencies, you can run the transcoder with the following:
 ```
-python main.py --help
-```
-
-## Creating a shortcut
-
-If you prefer to make the transcoder available globally on your machine, execute the scripts below. This script will update the permissions on the txcode symlink to grant execute permissions, and add the txcode symlink to your system PATH variable.
-
-Note if using macOS with interactive shells, you will need to change '\~/.bash_profile' to '\~/.bash_rc'.
-
-```
-cd market-data-transcoder/
-chmod +x bin/txcode
-inc_path=$(pwd)/path.bash.inc
-echo "
-# The next line updates PATH for the Datacast Transcoder.
-if [ -f '$inc_path' ]; then . '$inc_path'; fi" \
->> ~/.bashrc
-source ~/.bashrc
+export PYTHONPATH=`pwd`
+python ./transcoder/main.py --help
 ```
