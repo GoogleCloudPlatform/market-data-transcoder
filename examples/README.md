@@ -10,7 +10,7 @@ This example extracts and transcodes messages embedded within a CME Group Datami
 ### CLI
 
 ```
-bin/txcode  \
+txcode  \
   --factory cme \
   --schema_file templates_FixBinary_v12.xml \
   --source_file 314-20221007-e \
@@ -93,7 +93,7 @@ wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary_v12
 wget 'https://github.com/Open-Markets-Initiative/Data/blob/main/Cme/Mdp3.Sbe.v1.12/SnapshotFullRefreshTcpLongQty.68.Tcp.pcap?raw=true' -O SnapshotFullRefreshTcpLongQty.pcap
 
 # transcode message, display on console only
-bin/txcode  \
+txcode  \
     --factory cme \
     --schema_file templates_FixBinary_v12.xml \
     --source_file SnapshotFullRefreshTcpLongQty.pcap \
@@ -219,7 +219,7 @@ This example reads a file containing a single FIX message per line and a FIX sch
 ```
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
-bin/txcode \
+txcode \
   --source_file 42_order_single.txt \
   --schema_file FIX42.xml \
   --factory fix \
@@ -259,7 +259,7 @@ gcloud pubsub topics list --format json | jq .[].name | grep NewOrderSingle |tr 
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 
-bin/txcode \
+txcode \
   --create_schemas_only \
   --schema_file FIX42.xml \
   --factory fix \
@@ -279,7 +279,7 @@ pulltop NewOrderSingle
 
 ### Transcode and publish
 ```
-bin/txcode \
+txcode \
   --source_file 42_order_single.txt \
   --schema_file FIX42.xml \
   --factory fix \
@@ -302,7 +302,7 @@ This example extracts and transcodes messages embedded within a Parameta SURFIX 
 ### CLI
 
 ```
-bin/txcode  \
+txcode  \
     --factory fix \
     --schema_file FIX50SP2.SURFIX.xml \
     --source_file spot_fx.dat \
