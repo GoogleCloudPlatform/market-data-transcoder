@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# install the transcoder first using `pip install market-data-transcoder`
+
 OUTPUT_TYPE=${1}
 
 [ -z ${OUTPUT_TYPE} ] && OUTPUT_TYPE=diag
@@ -27,7 +29,7 @@ wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/secdef.dat.gz|gunzip - | h
 wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/TradingSessionList.dat| head -10 >> secdef.dat
 wget -q 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX50SP2.CME.xml'
 
-python3 main.py \
+txcode \
   --source_file secdef.dat \
   --schema_file FIX50SP2.CME.xml \
   --factory fix \
