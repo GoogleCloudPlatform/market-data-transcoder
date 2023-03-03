@@ -1,4 +1,5 @@
 .env
+.run
 .idea/
 *.pyc
 .DS_Store
