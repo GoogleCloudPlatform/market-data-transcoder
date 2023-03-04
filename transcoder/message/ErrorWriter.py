@@ -56,7 +56,7 @@ class ErrorWriter:
 
         if output_path is None:
             rel_path = "errorOut"
-            main_script_dir = os.path.dirname(sys.argv[0])
+            main_script_dir = os.getcwd()
             self.output_path = os.path.join(main_script_dir, rel_path)
         else:
             self.output_path = output_path
