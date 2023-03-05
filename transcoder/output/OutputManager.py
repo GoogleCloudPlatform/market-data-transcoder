@@ -19,7 +19,6 @@
 
 import concurrent
 import os
-import sys
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 
