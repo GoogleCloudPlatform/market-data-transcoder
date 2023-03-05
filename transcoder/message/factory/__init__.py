@@ -21,7 +21,7 @@
 
 from third_party.pyfixmsg.parser import FixParser
 from third_party.sbedecoder import SBEParser
-from .AsxMessageFactory import AsxMessageFactory
+from .ITCHMessageFactory import ITCHMessageFactory
 from .CmeMessageFactory import CmeMessageFactory
 from .MDPMessageFactory import MDPMessageFactory
 from .MemxMessageFactory import MemxMessageFactory

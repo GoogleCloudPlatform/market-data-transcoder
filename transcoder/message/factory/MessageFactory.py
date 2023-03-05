@@ -18,7 +18,7 @@
 #
 
 from third_party.sbedecoder import SBESchema, SBEMessageFactory
-from transcoder.message.factory import AsxMessageFactory, CmeMessageFactory, MemxMessageFactory
+from transcoder.message.factory import ITCHMessageFactory, CmeMessageFactory, MemxMessageFactory
 from transcoder.message.factory.exception.FactoryNotFoundError import FactoryNotFoundError
 
 
@@ -28,8 +28,8 @@ def get_message_factory(name: str, schema_file_path: str) -> SBEMessageFactory:
     schema.parse(schema_file_path)
     factory: SBEMessageFactory = None
 
-    if name == 'asx':
-        factory = AsxMessageFactory(schema)
+    if name == 'itch':
+        factory = ITCHMessageFactory(schema)
     elif name == 'cme':
         factory = CmeMessageFactory(schema)
     elif name == 'memx':
