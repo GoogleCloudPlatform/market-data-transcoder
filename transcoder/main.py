@@ -136,7 +136,13 @@ def main():
                             default='info',
                             help='The default logging level')
     arg_parser.add_argument('-q', '--quiet', action='store_true', help='Suppress message output to console')
-    arg_parser.add_argument('-v', '--version', action='version', version='Datacast Transcoder 1.0.0')
+
+    # The relative path of an import would change based on executing the script directly versus from a packaged app
+    pkg_vars = {}
+    with open(f'{script_dir}/version.py') as fp:
+        exec(fp.read(), pkg_vars)
+    version = pkg_vars['__version__']
+    arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {version}')
 
     args = arg_parser.parse_args()
 

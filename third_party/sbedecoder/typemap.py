@@ -17,22 +17,21 @@
 # limitations under the License.
 #
 
-from google.cloud import bigquery
+# pylint: disable=invalid-name
 
-from transcoder.message.DatacastField import DatacastField
-
-
-class MessageHandlerStringField(DatacastField):
-    """Message handler string type field"""
-
-    def __init__(self, name):
-        self.name = name
-
-    def create_avro_field(self, part=None):
-        return {'name': self.name, 'type': ['null', 'string']}
-
-    def create_bigquery_field(self, part=None):
-        return bigquery.SchemaField(self.name, 'STRING', mode="NULLABLE")
-
-    def create_json_field(self, part=None):
-        return {'title': self.name, 'type': 'string'}
+class TypeMap:  # pylint: disable=too-few-public-methods)
+    """Type map for primitive types to unpack fmt and length"""
+    primitive_type_map = {
+        'char': ('c', 1),
+        'int': ('i', 4),
+        'int8': ('b', 1),
+        'int16': ('h', 2),
+        'int32': ('i', 4),
+        'int64': ('q', 8),
+        'uint8': ('B', 1),
+        'uint16': ('H', 2),
+        'uint32': ('I', 4),
+        'uint64': ('Q', 8),
+        'float': ('f', 4),
+        'double': ('d', 8),
+    }

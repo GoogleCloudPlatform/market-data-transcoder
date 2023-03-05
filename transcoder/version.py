@@ -17,22 +17,4 @@
 # limitations under the License.
 #
 
-from google.cloud import bigquery
-
-from transcoder.message.DatacastField import DatacastField
-
-
-class MessageHandlerStringField(DatacastField):
-    """Message handler string type field"""
-
-    def __init__(self, name):
-        self.name = name
-
-    def create_avro_field(self, part=None):
-        return {'name': self.name, 'type': ['null', 'string']}
-
-    def create_bigquery_field(self, part=None):
-        return bigquery.SchemaField(self.name, 'STRING', mode="NULLABLE")
-
-    def create_json_field(self, part=None):
-        return {'title': self.name, 'type': 'string'}
+__version__ = '1.0.0'

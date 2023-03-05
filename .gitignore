@@ -1,4 +1,5 @@
 .env
+.run
 .idea/
 *.pyc
 .DS_Store
@@ -11,3 +12,4 @@ jsonOut/
 tfOut/
 .vscode/
 transcoder/.run
+dist/
