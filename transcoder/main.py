@@ -30,6 +30,7 @@ import argparse
 import logging
 import os
 import signal
+import sys
 
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
@@ -205,7 +206,7 @@ def main():
 def trap(_signum, _frame):
     """Trap SIGINT to suppress noisy stack traces"""
     print()
-    exit(1)
+    sys.exit(1)
 
 
 if __name__ == "__main__":
