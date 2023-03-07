@@ -23,8 +23,8 @@ from third_party.sbedecoder import SBEMessageFactory
 from transcoder.message.factory.exception import TemplateSchemaNotDefinedError
 
 
-class AsxMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
-    """ASX-specific logic to unpack message from buffer & decode according to message template"""
+class ITCHMessageFactory(SBEMessageFactory):  # pylint: disable=too-few-public-methods
+    """ITCH-specific logic to unpack message from buffer & decode according to message template"""
 
     def build(self, msg_buffer, offset):
         message_type_str = struct.unpack_from('>c', msg_buffer, offset)[0]

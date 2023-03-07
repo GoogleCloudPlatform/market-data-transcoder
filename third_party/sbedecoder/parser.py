@@ -36,7 +36,7 @@ class SBEParser(DatacastParser):
 
     @staticmethod
     def supported_factory_types():
-        return ['asx', 'cme', 'memx']
+        return ['cme', 'itch', 'memx']
 
     def __init__(self, msg_factory, sampling_count: int = None, message_type_inclusions: str = None,
                  message_type_exclusions: str = None, stats_only: bool = False):
