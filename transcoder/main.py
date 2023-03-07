@@ -29,6 +29,7 @@ This script provides a default implementation for the Datacast Transcoder Messag
 import argparse
 import logging
 import os
+import signal
 
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
@@ -37,7 +38,6 @@ from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
 
 script_dir = os.path.dirname(__file__)
-
 
 def main():
     """main entry point for Datacast Transcoder"""
@@ -201,5 +201,10 @@ def main():
     message_parser.process()
 
 
+def trap(signum, frame):
+        print()
+        exit(1)
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, trap)
     main()
