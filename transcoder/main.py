@@ -32,7 +32,6 @@ import os
 import signal
 import sys
 
-from functools import partial
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
 from transcoder.message.factory import all_supported_factory_types
@@ -206,18 +205,18 @@ def main():
 
     message_parser.process()
 
-def trap(signum, frame):
-        global message_parser
-        # TODO: salsferrazza - reconcile duplication between this code and MessageParser.summary(self) 
-#        logging.info('Source record count: %s', message_parser.source.record_count)
-        logging.info('Processed record count: %s', message_parser.message_parser.record_count)
-        logging.info('Processed schema count: %s', message_parser.message_parser.total_schema_count)
-        logging.info('Summary of message counts: %s', message_parser.message_parser.record_type_count)
-        logging.info('Summary of error message counts: %s', message_parser.message_parser.error_record_type_count)
-        exit(1)
+
+def trap(_signum, _frame):
+    global message_parser
+    # TODO: salsferrazza - reconcile duplication between this code and MessageParser.summary(self)
+    #        logging.info('Source record count: %s', message_parser.source.record_count)
+    logging.info('Processed record count: %s', message_parser.message_parser.record_count)
+    logging.info('Processed schema count: %s', message_parser.message_parser.total_schema_count)
+    logging.info('Summary of message counts: %s', message_parser.message_parser.record_type_count)
+    logging.info('Summary of error message counts: %s', message_parser.message_parser.error_record_type_count)
+    sys.exit(1)
 
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, trap)
     main()
-    
