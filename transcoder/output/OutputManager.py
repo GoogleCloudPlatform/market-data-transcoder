@@ -19,10 +19,8 @@
 
 import concurrent
 import os
-import sys
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
-
 from transcoder.message import DatacastField, DatacastSchema
 from transcoder.output.exception import OutputFunctionNotDefinedError, OutputManagerSchemaError
 
