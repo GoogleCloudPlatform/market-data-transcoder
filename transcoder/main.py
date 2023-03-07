@@ -203,6 +203,7 @@ def main():
 
 
 def trap(_signum, _frame):
+    """Trap SIGINT to suppress noisy stack traces"""
     print()
     exit(1)
 
