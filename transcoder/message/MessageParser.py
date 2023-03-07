@@ -50,8 +50,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  message_type_inclusions: str = None, message_type_exclusions: str = None,
                  fix_header_tags: str = None, fix_separator: int = 1):
 
-        self.start_time = None
-        self.source: Source = None
+        self.source = None
         self.source_file_path = source_file_path
         self.source_file_encoding = source_file_encoding
         self.source_file_format_type = source_file_format_type
