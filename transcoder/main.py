@@ -141,7 +141,7 @@ def main():
 
     # The relative path of an import would change based on executing the script directly versus from a packaged app
     pkg_vars = {}
-    with open(f'{script_dir}/version.py') as fp:
+    with open(f'{script_dir}/version.py', encoding="utf-8") as fp:
         exec(fp.read(), pkg_vars)
     version = pkg_vars['__version__']
     arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {version}')
