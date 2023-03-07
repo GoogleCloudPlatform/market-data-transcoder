@@ -39,6 +39,7 @@ from transcoder.source import all_source_identifiers
 
 script_dir = os.path.dirname(__file__)
 
+
 def main():
     """main entry point for Datacast Transcoder"""
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
@@ -201,9 +202,10 @@ def main():
     message_parser.process()
 
 
-def trap(signum, frame):
-        print()
-        exit(1)
+def trap(_signum, _frame):
+    print()
+    exit(1)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, trap)
