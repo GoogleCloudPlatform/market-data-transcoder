@@ -39,10 +39,13 @@ from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
 
 script_dir = os.path.dirname(__file__)
+message_parser: MessageParser = None
 
 
 def main():
     """main entry point for Datacast Transcoder"""
+
+    global message_parser
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
 
     source_options_group = arg_parser.add_argument_group('Input source arguments')
@@ -202,13 +205,17 @@ def main():
 
     message_parser.process()
 
-
-def trap(_signum, _frame):
-    """Trap SIGINT to suppress noisy stack traces"""
-    print()
-    sys.exit(1)
-
+def trap(signum, frame):
+        global message_parser
+        print() # new line after ^C
+        logging.info('Processed record count: %s', message_parser.message_parser.record_count)
+        logging.info('Processed schema count: %s', message_parser.message_parser.total_schema_count)
+        logging.info('Summary of message counts: %s', message_parser.message_parser.record_type_count)
+        logging.info('Summary of error message counts: %s', message_parser.message_parser.error_record_type_count)
+        exit(1)
+>>>>>>> fa4ec03 (refactor, dump record counts on SIGINT)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, trap)
     main()
+    
