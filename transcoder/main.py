@@ -208,6 +208,7 @@ def main():
 def trap(signum, frame):
         global message_parser
         print() # new line after ^C
+        # TODO: salsferrazza - reconcile duplication between this code and MessageParser.summary(self)
         logging.info('Processed record count: %s', message_parser.message_parser.record_count)
         logging.info('Processed schema count: %s', message_parser.message_parser.total_schema_count)
         logging.info('Summary of message counts: %s', message_parser.message_parser.record_type_count)
