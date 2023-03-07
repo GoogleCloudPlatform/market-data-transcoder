@@ -134,10 +134,10 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         if self.create_schemas_only is False:
             self.source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
-                                                self.source_file_format_type, self.source_file_endian,
-                                                skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
-                                                message_skip_bytes=self.message_skip_bytes,
-                                                line_encoding=self.line_encoding)
+                                                     self.source_file_format_type, self.source_file_endian,
+                                                     skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
+                                                     message_skip_bytes=self.message_skip_bytes,
+                                                     line_encoding=self.line_encoding)
 
             self.process_data()
 
@@ -145,7 +145,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             self.output_manager.wait_for_completion()
 
         self.summary()
-            
+
     def summary(self):
         if logging.getLogger().isEnabledFor(logging.INFO):
             end_time = datetime.now()
@@ -180,7 +180,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
             logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
-            
+
     def process_schemas(self):
         """Process the schema specified at runtime"""
         spec_schemas = self.message_parser.process_schema()
