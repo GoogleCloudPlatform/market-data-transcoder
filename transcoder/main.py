@@ -213,7 +213,7 @@ def trap(signum, frame):
         logging.info('Summary of message counts: %s', message_parser.message_parser.record_type_count)
         logging.info('Summary of error message counts: %s', message_parser.message_parser.error_record_type_count)
         exit(1)
->>>>>>> fa4ec03 (refactor, dump record counts on SIGINT)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, trap)
