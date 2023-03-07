@@ -43,4 +43,4 @@ class MessageHandler:
 
     def handle(self, message: ParsedMessage):
         """Extend for handler-specific logic for message processing"""
-        raise Exception
+        raise Exception  # pylint: disable=broad-exception-raised

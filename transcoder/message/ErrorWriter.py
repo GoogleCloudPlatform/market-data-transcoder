@@ -19,7 +19,6 @@
 
 import base64
 import os
-import sys
 import time
 from enum import Enum
 

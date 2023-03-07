@@ -87,7 +87,7 @@ class FixParser(DatacastParser):
                 _group.fields.extend(_group_fields)
                 fields.append(_group)
             else:
-                raise Exception('Composition field type not handled')
+                raise Exception('Composition field type not handled')  # pylint: disable=broad-exception-raised
         return fields
 
     @staticmethod
