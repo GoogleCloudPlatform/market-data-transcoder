@@ -207,6 +207,7 @@ def main():
 
 
 def trap(_signum, _frame):
+    """Trap SIGINT to suppress noisy stack traces"""
     global message_parser
     # TODO: salsferrazza - reconcile duplication between this code and MessageParser.summary(self)
     #        logging.info('Source record count: %s', message_parser.source.record_count)
