@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -23,14 +23,16 @@ from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntF
 
 
 class SequencerHandler(MessageHandler):
+    """ Message handler to append a sequencer number to all messages transcoded from an arbitrary source. Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers were found within the pocket header and not the message itself"""
 
     def __init__(self, parser: MessageParser):
         super().__init__(parser=parser)
         self.sequence_number = 0
+        self.sequence_number_field_name = 'sequence_number'
 
     def append_manufactured_fields(self, schema: DatacastSchema):
         schema.fields.append(MessageHandlerIntField('sequence_number'))
 
     def handle(self, message: ParsedMessage):
         self.sequence_number += 1
-        message.dictionary['sequence_number'] = self.sequence_number
+        message.dictionary[self.sequencer_number_field_name] = self.sequence_number
