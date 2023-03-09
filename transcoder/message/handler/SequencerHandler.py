@@ -17,8 +17,20 @@
 # limitations under the License.
 #
 
-# pylint: disable=invalid-name
+from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message.handler.MessageHandler import MessageHandler
+from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntField
 
-from .SequencertHandler import SequencerHandler
-from .CmeBinaryPacketHandler import CmeBinaryPacketHandler
-from .TimestampPullForwardHandler import TimestampPullForwardHandler
+class SequencerHandler(MessageHandler):
+
+    def __init__(self, parser: MessageParser):
+        super().__init__(parser=parser)
+        self.sequence_number = 0
+
+    def append_manufactured_fields(self, schema: DatacastSchema):
+        schema.fields.append(MessageHandlerIntField('sequence_number'))
+
+    def handle(self, message: ParsedMessage):
+        self.sequence_number += 1
+        message.dictionary['sequence_number'] = self.sequence_number
+
