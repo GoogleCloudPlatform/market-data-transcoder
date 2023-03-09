@@ -21,6 +21,7 @@ from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
 from transcoder.message.handler.MessageHandler import MessageHandler
 from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntField
 
+
 class SequencerHandler(MessageHandler):
 
     def __init__(self, parser: MessageParser):
@@ -33,4 +34,3 @@ class SequencerHandler(MessageHandler):
     def handle(self, message: ParsedMessage):
         self.sequence_number += 1
         message.dictionary['sequence_number'] = self.sequence_number
-
