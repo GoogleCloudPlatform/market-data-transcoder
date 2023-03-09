@@ -35,4 +35,4 @@ class SequencerHandler(MessageHandler):
 
     def handle(self, message: ParsedMessage):
         self.sequence_number += 1
-        message.dictionary[self.sequencer_number_field_name] = self.sequence_number
+        message.dictionary[self.sequence_number_field_name] = self.sequence_number
