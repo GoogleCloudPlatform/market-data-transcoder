@@ -31,7 +31,7 @@ class SequencerHandler(MessageHandler):
         self.sequence_number_field_name = 'sequence_number'
 
     def append_manufactured_fields(self, schema: DatacastSchema):
-        schema.fields.append(MessageHandlerIntField(self.sequencer_number_field_name))
+        schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
 
     def handle(self, message: ParsedMessage):
         self.sequence_number += 1
