@@ -19,5 +19,6 @@
 
 # pylint: disable=invalid-name
 
+from .SequencerHandler import SequencerHandler
 from .CmeBinaryPacketHandler import CmeBinaryPacketHandler
 from .TimestampPullForwardHandler import TimestampPullForwardHandler
