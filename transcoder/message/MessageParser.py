@@ -22,6 +22,8 @@
 import importlib
 import logging
 import os
+import signal
+import sys
 from datetime import datetime
 
 from transcoder import LineEncoding
@@ -99,6 +101,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                                  fix_header_tags=fix_header_tags,
                                                                  fix_separator=fix_separator)
 
+        signal.signal(signal.SIGINT, self.trap)
+
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""
 
@@ -145,9 +149,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         if self.output_manager is not None:
             self.output_manager.wait_for_completion()
 
-        self.summary()
+        self.print_summary()
 
-    def summary(self):
+    def print_summary(self):
         if logging.getLogger().isEnabledFor(logging.INFO):
             end_time = datetime.now()
             time_diff = end_time - self.start_time
@@ -246,3 +250,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         if self.continue_on_error is False:
             raise exception
+
+    def trap(self, _signum, _frame):
+        """Trap SIGINT to suppress noisy stack traces and show interim summary"""
+        print()
+        self.print_summary()
+        sys.exit(1)

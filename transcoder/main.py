@@ -29,8 +29,6 @@ This script provides a default implementation for the Datacast Transcoder Messag
 import argparse
 import logging
 import os
-import signal
-import sys
 
 from transcoder import LineEncoding
 from transcoder.message.MessageParser import MessageParser
@@ -206,13 +204,5 @@ def main():
     message_parser.process()
 
 
-def trap(_signum, _frame):
-    """Trap SIGINT to suppress noisy stack traces and show interim summary"""
-    global message_parser
-    print()
-    message_parser.summary()
-    sys.exit(1)
-
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, trap)
     main()
