@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+from .version import __version__
+
 from enum import Enum
 
 # pylint: disable=invalid-name
