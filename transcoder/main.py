@@ -37,13 +37,11 @@ from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
 
 script_dir = os.path.dirname(__file__)
-message_parser: MessageParser = None
 
 
 def main():
     """main entry point for Datacast Transcoder"""
 
-    global message_parser
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
 
     source_options_group = arg_parser.add_argument_group('Input source arguments')
