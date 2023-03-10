@@ -41,7 +41,6 @@ script_dir = os.path.dirname(__file__)
 
 def main():
     """main entry point for Datacast Transcoder"""
-
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
 
     source_options_group = arg_parser.add_argument_group('Input source arguments')
