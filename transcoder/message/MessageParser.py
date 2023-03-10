@@ -152,6 +152,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.print_summary()
 
     def print_summary(self):
+        """Print summary of the messages that were processed"""
         if logging.getLogger().isEnabledFor(logging.INFO):
             end_time = datetime.now()
             time_diff = end_time - self.start_time
