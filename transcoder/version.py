@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -17,4 +17,4 @@
 # limitations under the License.
 #
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
