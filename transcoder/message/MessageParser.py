@@ -112,7 +112,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             return
 
         self.handlers_enabled = True
-        handler_strs = message_handlers.split()
+        handler_strs = message_handlers.split(',')
         for handler_cls_name in handler_strs:
             module = importlib.import_module('transcoder.message.handler')
             class_ = getattr(module, handler_cls_name)
