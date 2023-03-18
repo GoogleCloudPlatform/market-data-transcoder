@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -62,6 +62,7 @@ class DatacastParser:
         return self.error_summary_count
 
     def process_schema(self) -> [DatacastSchema]:
+        """Processes the schema"""
         if self.frame_only is True:
             return [DatacastSchema.DatacastSchema("data", "data", [MessageHandlerStringField("data")])]
 
@@ -74,6 +75,7 @@ class DatacastParser:
         return filtered_list
 
     def _process_schema(self) -> [DatacastSchema]:
+        """Function for sub-class to implement for processing schema"""
         raise ParserFunctionNotDefinedError
 
     def process_message(self, raw_msg) -> ParsedMessage:

@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -24,7 +24,7 @@ from transcoder.message.exception import MessageParserNotDefinedError
 from transcoder.message.factory.MessageFactory import get_message_factory
 
 
-def get_message_parser(factory: str, schema_file_path: str,
+def get_message_parser(factory: str, schema_file_path: str,  # pylint: disable=too-many-arguments
                        sampling_count: int = None, frame_only: bool = False, stats_only: bool = False,
                        message_type_inclusions: str = None, message_type_exclusions: str = None,
                        fix_header_tags: str = None, fix_separator: int = 1) -> DatacastParser:
