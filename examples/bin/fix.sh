@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# install the transcoder first using `pip install market-data-transcoder`
 
 OUTPUT_TYPE=${1}
 
@@ -26,7 +27,7 @@ pushd ../..
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
 wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
 
-python3 main.py \
+txcode \
   --source_file 42_order_single.txt \
   --schema_file FIX42.xml \
   --factory fix \

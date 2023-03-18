@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -30,7 +30,7 @@ import argparse
 import logging
 import os
 
-from transcoder import LineEncoding
+from transcoder import __version__, LineEncoding
 from transcoder.message.MessageParser import MessageParser
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers
@@ -140,12 +140,7 @@ def main():
                             help='The default logging level')
     arg_parser.add_argument('-q', '--quiet', action='store_true', help='Suppress message output to console')
 
-    # The relative path of an import would change based on executing the script directly versus from a packaged app
-    pkg_vars = {}
-    with open(f'{script_dir}/version.py') as fp:
-        exec(fp.read(), pkg_vars)
-    version = pkg_vars['__version__']
-    arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {version}')
+    arg_parser.add_argument('-v', '--version', action='version', version=f'Datacast Transcoder {__version__}')
 
     args = arg_parser.parse_args()
 

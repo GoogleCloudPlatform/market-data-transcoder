@@ -22,6 +22,8 @@
 import importlib
 import logging
 import os
+import signal
+import sys
 from datetime import datetime
 
 from transcoder import LineEncoding
@@ -49,6 +51,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  create_schema_enforcing_topics: bool = True, sampling_count: int = None,
                  message_type_inclusions: str = None, message_type_exclusions: str = None,
                  fix_header_tags: str = None, fix_separator: int = 1):
+
+        self.start_time = None
+        self.source = None
         self.source_file_path = source_file_path
         self.source_file_encoding = source_file_encoding
         self.source_file_format_type = source_file_format_type
@@ -97,6 +102,8 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                                                                  fix_header_tags=fix_header_tags,
                                                                  fix_separator=fix_separator)
 
+        signal.signal(signal.SIGINT, self.trap)
+
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""
 
@@ -106,7 +113,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             return
 
         self.handlers_enabled = True
-        handler_strs = message_handlers.split()
+        handler_strs = message_handlers.split(',')
         for handler_cls_name in handler_strs:
             module = importlib.import_module('transcoder.message.handler')
             class_ = getattr(module, handler_cls_name)
@@ -128,25 +135,28 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
     def process(self):
         """Entry point for individual message processing"""
-        start_time = datetime.now()
+        self.start_time = datetime.now()
         self.process_schemas()
 
-        source: Source = None
         if self.create_schemas_only is False:
-            source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
-                                                self.source_file_format_type, self.source_file_endian,
-                                                skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
-                                                message_skip_bytes=self.message_skip_bytes,
-                                                line_encoding=self.line_encoding)
+            self.source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
+                                                     self.source_file_format_type, self.source_file_endian,
+                                                     skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
+                                                     message_skip_bytes=self.message_skip_bytes,
+                                                     line_encoding=self.line_encoding)
 
-            self.process_data(source)
+            self.process_data()
 
         if self.output_manager is not None:
             self.output_manager.wait_for_completion()
 
+        self.print_summary()
+
+    def print_summary(self):
+        """Print summary of the messages that were processed"""
         if logging.getLogger().isEnabledFor(logging.INFO):
             end_time = datetime.now()
-            time_diff = end_time - start_time
+            time_diff = end_time - self.start_time
             total_seconds = time_diff.total_seconds()
 
             if self.create_schemas_only is True:
@@ -168,12 +178,12 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                 logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
             if self.create_schemas_only is False:
-                logging.info('Source record count: %s', source.record_count)
+                logging.info('Source record count: %s', self.source.record_count)
                 logging.info('Processed record count: %s', self.message_parser.record_count)
                 logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
                 logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
                 logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
-                logging.info('Message rate: %s per second', round(source.record_count / total_seconds, 6))
+                logging.info('Message rate: %s per second', round(self.source.record_count / total_seconds, 6))
 
             logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
@@ -197,10 +207,10 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         if self.lazy_create_resources is False:
             self.output_manager.wait_for_schema_creation()
 
-    def process_data(self, source):
+    def process_data(self):
         """Entry point for individual message processing"""
-        with source:
-            for raw_record in source.get_message_iterator():
+        with self.source:
+            for raw_record in self.source.get_message_iterator():
                 # TODO
                 # if self.frame_only is True:
                 #     if self.output_manager is not None:
@@ -251,3 +261,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         if self.continue_on_error is False:
             raise exception
+
+    def trap(self, _signum, _frame):
+        """Trap SIGINT to suppress noisy stack traces and show interim summary"""
+        print()
+        self.print_summary()
+        sys.exit(1)

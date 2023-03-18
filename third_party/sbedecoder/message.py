@@ -323,6 +323,9 @@ class TypeMessageField(SBEMessageField):
 
         return _raw_value
 
+    def __repr__(self):
+        return self.name
+
 
 class SetMessageField(SBEMessageField):
     def __init__(self, name=None, original_name=None, id=None, description=None,  # pylint: disable=too-many-arguments

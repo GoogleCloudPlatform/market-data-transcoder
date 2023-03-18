@@ -19,7 +19,6 @@
 
 import concurrent
 import os
-import sys
 from concurrent import futures
 from concurrent.futures import ThreadPoolExecutor
 
@@ -102,7 +101,7 @@ class OutputManager:
         """Creates the output path if it doesn't exist. Output path will be created as {output_path}/{relative_path}"""
         _output_path = None
         if output_path is None:
-            main_script_dir = os.path.dirname(sys.argv[0])
+            main_script_dir = os.getcwd()
             _output_path = os.path.join(main_script_dir, relative_path)
         else:
             _output_path = output_path

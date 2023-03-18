@@ -53,7 +53,7 @@ A message factory takes a message payload read from the input source, determines
 
 ```
 # List available cli arguments
-usage: txcode [-h] --factory {asx,cme,memx,fix} --schema_file SCHEMA_FILE --source_file
+usage: txcode [-h] --factory {cme,itch,memx,fix} --schema_file SCHEMA_FILE --source_file
               SOURCE_FILE [--source_file_encoding SOURCE_FILE_ENCODING]
               --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
               [--base64 | --base64_urlsafe] [--fix_header_tags FIX_HEADER_TAGS]
@@ -83,7 +83,7 @@ options:
   -v, --version         show program's version number and exit
 
 Input source arguments:
-  --factory {asx,cme,memx,fix}
+  --factory {cme,itch,memx,fix}
                         Message factory for decoding
   --schema_file SCHEMA_FILE
                         Path to the schema file
