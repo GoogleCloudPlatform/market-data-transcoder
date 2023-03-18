@@ -28,7 +28,6 @@ from transcoder.message import ParsedMessage
 class TranscodeStep(Enum):
     """Enum of steps at which an error may be encountered"""
     UNKNOWN = 'UNKNOWN'
-    DECODE_MESSAGE = 'decode_message'
     PARSE_MESSAGE = 'parse_message'
     EXECUTE_HANDLERS = 'execute_handlers'
     EXECUTE_HANDLER = 'execute_handler'
