@@ -62,11 +62,10 @@ class DatacastParser:
         return self.error_summary_count
 
     def process_schema(self) -> [DatacastSchema]:
-        """Processes the schema"""
+        """Gets message names from schema file, filters messages to include, sets count dict"""
         if self.frame_only is True:
             return [DatacastSchema.DatacastSchema("data", "data", [MessageHandlerStringField("data")])]
 
-        """Gets message names from schema file, filters messages to include, sets count dict"""
         schema_list = self._process_schema()
         filtered_list = list(filter(lambda x: self.__include_message_type(x.name), schema_list))
         self.total_schema_count = len(filtered_list)
@@ -79,12 +78,11 @@ class DatacastParser:
         raise ParserFunctionNotDefinedError
 
     def process_message(self, raw_msg) -> ParsedMessage:
-        # TODO
+        """Wraps _process_message with count and inclusion behavior"""
         if self.frame_only is True:
             self.increment_summary_count('data')
             return ParsedMessage.ParsedMessage('data', 'data', raw_msg, {'data': raw_msg})
 
-        """Wraps _process_message with count and inclusion behavior"""
         message = self._process_message(raw_msg)
 
         if message is None:
