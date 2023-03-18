@@ -106,8 +106,8 @@ def main():
                                            'type before messages are processed. Particularly useful when working with '
                                            'FIX but only processing a limited set of message types in the source data')
     output_options_group.add_argument('--frame_only', action='store_true',
-                                      help='Flag indicating that transcoder should only frame messages into a data '
-                                           'field')
+                                      help='Flag indicating that transcoder should only frame messages to an output '
+                                           'source')
     output_options_group.add_argument('--stats_only', action='store_true',
                                       help='Flag indicating that transcoder should only report on message type counts '
                                            'without parsing messages further')
