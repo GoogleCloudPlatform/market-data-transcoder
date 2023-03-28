@@ -225,7 +225,6 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             for raw_record in self.source.get_message_iterator():
                 message: ParsedMessage = None
                 try:
-                    self.error_writer.set_step(TranscodeStep.DECODE_MESSAGE)
                     self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                     message = self.message_parser.process_message(raw_record)
 
