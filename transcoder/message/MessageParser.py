@@ -29,7 +29,7 @@ from datetime import datetime
 from transcoder import LineEncoding
 from transcoder.message import DatacastParser, ParsedMessage
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
-from transcoder.message.MessageUtil import get_message_parser
+from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.output import OutputManager
 from transcoder.output.OutputUtil import get_output_manager
 from transcoder.source import Source
@@ -113,20 +113,16 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         self.handlers_enabled = True
         handler_strs = message_handlers.split(',')
-        for handler_cls_name in handler_strs:
+        for handler_spec in handler_strs:
 
-            # parse any handler options here
-            config_dict = {}
             cls_name = None
-            if handler_cls_name.find(':') > -1:
-                parts = handler_cls_name.split(':')
-                cls_name = parts[0]
-                params = parts[1]
-                opt = params.split('=')
-                key = opt[0]
-                val = opt[1]
-                config_dict[key] = val
-
+            config_dict = None
+            if handler_spec.find(':') == -1: # no handler params
+                cls_name = handler_spec
+            else:
+                cls_name = handler_spec.split(':')[0]
+                config_dict = parse_handler_config(handler_spec)
+            
             module = importlib.import_module('transcoder.message.handler')
             class_ = getattr(module, cls_name)
             instance = class_(self, config_dict)
