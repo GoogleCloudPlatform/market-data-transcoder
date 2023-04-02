@@ -31,7 +31,7 @@ class PcapFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'pcap'
 
-    def __init__(self, file_path: str, message_skip_bytes: int = 0, length_threshold: int = 50):
+    def __init__(self, file_path: str, message_skip_bytes: int = 0, length_threshold: int = 0):
         super().__init__(file_path, file_open_mode='rb')
         self.message_skip_bytes = message_skip_bytes
         self.pcap_reader: dpkt.pcap.Reader = None

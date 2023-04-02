@@ -114,9 +114,22 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.handlers_enabled = True
         handler_strs = message_handlers.split(',')
         for handler_cls_name in handler_strs:
+
+            # parse any handler options here
+            config_dict = {}
+            cls_name = None
+            if handler_cls_name.find(':') > -1:
+                parts = handler_cls_name.split(':')
+                cls_name = parts[0]
+                params = parts[1]
+                opt = params.split('=')
+                key = opt[0]
+                val = opt[1]
+                config_dict[key] = val
+            
             module = importlib.import_module('transcoder.message.handler')
-            class_ = getattr(module, handler_cls_name)
-            instance = class_(self)
+            class_ = getattr(module, cls_name)
+            instance = class_(self, config_dict)
             self.all_handlers.append(instance)
 
             if instance.supports_all_message_types is True:

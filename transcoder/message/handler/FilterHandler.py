@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -17,9 +17,20 @@
 # limitations under the License.
 #
 
-# pylint: disable=invalid-name
+from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message.handler.MessageHandler import MessageHandler
 
-from .SequencerHandler import SequencerHandler
-from .CmeBinaryPacketHandler import CmeBinaryPacketHandler
-from .TimestampPullForwardHandler import TimestampPullForwardHandler
-from .FilterHandler import FilterHandler
+class FilterHandler(MessageHandler):
+    """ Message handler to filter by by a single value in message field """
+
+    def __init__(self, parser: MessageParser, config={}):
+        super().__init__(parser=parser, config=config)
+        self.config = config
+        print(str(self.config))
+        self.sequence_number = 0
+        self.sequence_number_field_name = 'sequence_number'
+
+    def handle(self, message: ParsedMessage):
+        if len(self.config.keys()) > 0:
+            if message.dictionary[list(self.config.keys())[0]] == list(self.config.values())[0]:
+                print('filtered')
