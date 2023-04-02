@@ -26,11 +26,8 @@ class FilterHandler(MessageHandler):
     def __init__(self, parser: MessageParser, config={}):
         super().__init__(parser=parser, config=config)
         self.config = config
-        print(str(self.config))
-        self.sequence_number = 0
-        self.sequence_number_field_name = 'sequence_number'
 
     def handle(self, message: ParsedMessage):
         if len(self.config.keys()) > 0:
             if message.dictionary[list(self.config.keys())[0]] == list(self.config.values())[0]:
-                print('filtered')
+                pass
