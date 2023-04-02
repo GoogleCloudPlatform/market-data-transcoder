@@ -17,17 +17,16 @@
 # limitations under the License.
 #
 
-from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message import MessageParser, ParsedMessage
 from transcoder.message.handler.MessageHandler import MessageHandler
 
 class FilterHandler(MessageHandler):
-    """ Message handler to filter by by a single value in message field """
+    """ Handler for filtering messages by a single field's value """
 
-    def __init__(self, parser: MessageParser, config={}):
+    def __init__(self, parser: MessageParser, config=None):
         super().__init__(parser=parser, config=config)
-        self.config = config
 
     def handle(self, message: ParsedMessage):
-        if len(self.config.keys()) > 0:
+        if self.config.keys is not None and len(self.config.keys()) > 0:
             if message.dictionary[list(self.config.keys())[0]] == list(self.config.values())[0]:
-                pass
+                print("filtered")

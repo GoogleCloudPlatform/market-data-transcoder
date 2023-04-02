@@ -27,9 +27,8 @@ class SequencerHandler(MessageHandler):
     Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers
     were found within the pocket header and not the message itself """
 
-    def __init__(self, parser: MessageParser, config={}):
+    def __init__(self, parser: MessageParser, config=None):
         super().__init__(parser=parser, config=config)
-        self.config = config 
         self.sequence_number = 0
         self.sequence_number_field_name = config['field_name']
 

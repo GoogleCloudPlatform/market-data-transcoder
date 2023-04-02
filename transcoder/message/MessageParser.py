@@ -126,7 +126,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                 key = opt[0]
                 val = opt[1]
                 config_dict[key] = val
-            
+
             module = importlib.import_module('transcoder.message.handler')
             class_ = getattr(module, cls_name)
             instance = class_(self, config_dict)
