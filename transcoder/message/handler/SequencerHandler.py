@@ -27,10 +27,11 @@ class SequencerHandler(MessageHandler):
     Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers
     were found within the pocket header and not the message itself """
 
-    def __init__(self, parser: MessageParser):
-        super().__init__(parser=parser)
+    def __init__(self, parser: MessageParser, config={}):
+        super().__init__(parser=parser, config=config)
+        self.config = config 
         self.sequence_number = 0
-        self.sequence_number_field_name = 'sequence_number'
+        self.sequence_number_field_name = config['field_name']
 
     def append_manufactured_fields(self, schema: DatacastSchema):
         schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
