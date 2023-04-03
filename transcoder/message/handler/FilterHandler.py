@@ -37,6 +37,15 @@ class FilterHandler(MessageHandler):
                 message.dictionary = None
 
     @staticmethod
-    def match(first_value, second_value):
-        """ TODO: normalize types between the message field and the CLI handler param, the latter is always a string """
-        return first_value == second_value
+    def match(message_value, filter_value):
+        """ Compares the filter criteria based on the message property type """
+        field_value_type = type(message_value)
+        if field_value_type == str:
+            return message_value == filter_value # already a str
+        elif field_value_type == int:
+            return message_value == int(filter_value)
+        elif field_value_type == float:
+            return message_value == float(filter_value)
+        else:
+            # TODO: will need throw exception instead
+            return False
