@@ -30,7 +30,6 @@ class FilterHandler(MessageHandler):
         if self.config.keys is not None and len(self.config.keys()) > 0:
             prop = list(self.config.keys())[0]
             val = list(self.config.values())[0]
-            
             if prop in message.dictionary:
                 if not self.match(message.dictionary[prop], val):
                     message.dictionary = None
