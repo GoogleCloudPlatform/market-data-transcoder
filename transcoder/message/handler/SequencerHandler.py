@@ -28,9 +28,15 @@ class SequencerHandler(MessageHandler):
 
     def __init__(self, parser: MessageParser, config=None):
         super().__init__(parser=parser, config=config)
+        if config is not None:
+            if 'field_name' in config:
+                self.sequence_number_field_name = config['field_name']
+            else:
+                self.sequence_number_field_name = 'sequence_number';
+        else:
+            self.sequence_number_field_name = 'sequence_number';
         self.sequence_number = 0
-        self.sequence_number_field_name = config['field_name']
-
+            
     def append_manufactured_fields(self, schema: DatacastSchema):
         schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
 
