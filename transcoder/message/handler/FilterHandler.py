@@ -43,8 +43,8 @@ class FilterHandler(MessageHandler):
 
         field_value_type = type(message_value)
         
-        if field_value_type == None:
-            return message_value == None
+        if field_value_type is None:
+            return message_value is None
         if field_value_type == str:
             return message_value == filter_value # already a str
         if field_value_type == int:
