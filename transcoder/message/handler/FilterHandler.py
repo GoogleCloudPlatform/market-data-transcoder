@@ -29,8 +29,15 @@ class FilterHandler(MessageHandler):
     def handle(self, message: ParsedMessage):
         if self.config.keys is not None and len(self.config.keys()) > 0:
             prop = list(self.config.keys())[0]
+            val = list(self.config.values())[0]
+            
             if prop in message.dictionary:
-                if not message.dictionary[list(self.config.keys())[0]] == list(self.config.values())[0]:
+                if not self.match(message.dictionary[prop], val):
                     message.dictionary = None
             else:
                 message.dictionary = None
+
+    @staticmethod
+    def match(first_value, second_value):
+        """ TODO: normalize types between the message field and the CLI handler param, the latter is always a string """
+        return first_value == second_value
