@@ -30,6 +30,7 @@ class FilterHandler(MessageHandler):
         if self.config.keys is not None and len(self.config.keys()) > 0:
             prop = list(self.config.keys())[0]
             val = list(self.config.values())[0]
+            
             if prop in message.dictionary:
                 if not self.match(message.dictionary[prop], val):
                     message.dictionary = None
@@ -39,13 +40,17 @@ class FilterHandler(MessageHandler):
     @staticmethod
     def match(message_value, filter_value):
         """ Compares the filter criteria based on the message property type """
+
         field_value_type = type(message_value)
+        
+        if field_value_type == None:
+            return message_value == None
         if field_value_type == str:
             return message_value == filter_value # already a str
         if field_value_type == int:
-            return message_value == int(filter_value)
+            return message_value == int(filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
         if field_value_type == float:
-            return message_value == float(filter_value)
+            return message_value == float(filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
 
         # TODO: will need throw exception instead
         return False
