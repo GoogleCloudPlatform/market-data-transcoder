@@ -40,7 +40,6 @@ class FilterHandler(MessageHandler):
     @staticmethod
     def match(message_value, filter_value):
         """ Compares the filter criteria based on the message property type """
-
         field_value_type = type(message_value)
         
         if field_value_type is None:
