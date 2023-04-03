@@ -42,10 +42,10 @@ class FilterHandler(MessageHandler):
         field_value_type = type(message_value)
         if field_value_type == str:
             return message_value == filter_value # already a str
-        elif field_value_type == int:
+        if field_value_type == int:
             return message_value == int(filter_value)
-        elif field_value_type == float:
+        if field_value_type == float:
             return message_value == float(filter_value)
-        else:
-            # TODO: will need throw exception instead
-            return False
+
+        # TODO: will need throw exception instead
+        return False
