@@ -235,6 +235,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                     if message.is_empty():
                         continue
 
+                    
                     if self.handlers_enabled is True:
                         self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
                         for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
@@ -242,9 +243,10 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                             handler.handle(message)
 
                     if self.output_manager is not None:
-                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                        self.output_manager.write_record(message.name, message.dictionary)
-
+                        if not message.is_empty():
+                            self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                            self.output_manager.write_record(message.name, message.dictionary)
+                    
                 except Exception as ex:
                     self.handle_exception(raw_record, message, ex)
 

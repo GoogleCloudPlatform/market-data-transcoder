@@ -24,8 +24,7 @@ from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntF
 
 class SequencerHandler(MessageHandler):
     """ Message handler to append a sequencer number to all messages transcoded from an arbitrary source.
-    Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers
-    were found within the pocket header and not the message itself """
+    Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers were found within the pocket header and not the message itself """
 
     def __init__(self, parser: MessageParser, config=None):
         super().__init__(parser=parser, config=config)
