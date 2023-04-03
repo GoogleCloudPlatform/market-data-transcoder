@@ -131,7 +131,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
             if instance.supports_all_message_types is True:
                 self.all_message_type_handlers.append(instance)
                 continue
-            
+
             supported_msg_types = instance.supported_message_types
             for supported_type in supported_msg_types:
                 if supported_type in self.message_handlers:
