@@ -32,11 +32,11 @@ class SequencerHandler(MessageHandler):
             if 'field_name' in config:
                 self.sequence_number_field_name = config['field_name']
             else:
-                self.sequence_number_field_name = 'sequence_number';
+                self.sequence_number_field_name = 'sequence_number'
         else:
-            self.sequence_number_field_name = 'sequence_number';
+            self.sequence_number_field_name = 'sequence_number'
         self.sequence_number = 0
-            
+
     def append_manufactured_fields(self, schema: DatacastSchema):
         schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
 

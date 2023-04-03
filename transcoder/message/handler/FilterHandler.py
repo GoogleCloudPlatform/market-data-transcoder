@@ -28,7 +28,7 @@ class FilterHandler(MessageHandler):
 
     def handle(self, message: ParsedMessage):
         if self.config.keys is not None and len(self.config.keys()) > 0:
-            prop = list(self.config.keys())[0]            
+            prop = list(self.config.keys())[0]
             if prop in message.dictionary:
                 if not message.dictionary[list(self.config.keys())[0]] == list(self.config.values())[0]:
                     message.dictionary = None
