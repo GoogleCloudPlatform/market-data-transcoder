@@ -29,7 +29,7 @@ from datetime import datetime
 from transcoder import LineEncoding
 from transcoder.message import DatacastParser, ParsedMessage
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
-from transcoder.message.MessageUtil import get_message_parser
+from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.output import OutputManager
 from transcoder.output.OutputUtil import get_output_manager
 from transcoder.source import Source
@@ -113,10 +113,18 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
         self.handlers_enabled = True
         handler_strs = message_handlers.split(',')
-        for handler_cls_name in handler_strs:
+        for handler_spec in handler_strs:
+            cls_name = None
+            config_dict = None
+            if handler_spec.find(':') == -1: # no handler params
+                cls_name = handler_spec
+            else:
+                cls_name = handler_spec.split(':')[0]
+                config_dict = parse_handler_config(handler_spec)
+
             module = importlib.import_module('transcoder.message.handler')
-            class_ = getattr(module, handler_cls_name)
-            instance = class_(self)
+            class_ = getattr(module, cls_name)
+            instance = class_(self, config_dict)
             self.all_handlers.append(instance)
 
             if instance.supports_all_message_types is True:
@@ -233,8 +241,9 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                             handler.handle(message)
 
                     if self.output_manager is not None:
-                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                        self.output_manager.write_record(message.name, message.dictionary)
+                        if not message.is_empty():
+                            self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                            self.output_manager.write_record(message.name, message.dictionary)
 
                 except Exception as ex:
                     self.handle_exception(raw_record, message, ex)

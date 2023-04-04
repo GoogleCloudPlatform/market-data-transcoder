@@ -46,3 +46,28 @@ def get_message_parser(factory: str, schema_file_path: str,
         raise MessageParserNotDefinedError
 
     return message_parser
+
+
+def parse_handler_config(handler_config_string: str) -> dict:
+    """ 
+    Extracts the configuration parameters attached to the CLI handler option, 
+    in the format:
+
+    FirstHandler:<param>=<value>,SecondHandler:<param>=<value>
+
+    For example:
+
+    --message_handlers SequencerHandler,FilterHandler:field=value
+
+    would run a SequencerHandler without a config, then pass a single-element dict of field: value to FilterHandler via the config object.
+
+    This routine manufactures the configuration for the Handler from the CLI string
+
+    """
+    if handler_config_string.find(':') != -1:
+        config = {}
+        params = handler_config_string.split(':')[1]
+        keyval = params.split('=')
+        config[keyval[0]] = keyval[1]
+        return config
+    return None
