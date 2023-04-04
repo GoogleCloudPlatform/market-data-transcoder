@@ -1,7 +1,4 @@
 # This is a comment.
 # Each line is a file pattern followed by one or more owners.
 
-*   @GoogleCloudPlatform/datacast-reviewers
-*   @mservidio
-*   @salsferrazza
-*   @t8dogg
+*   @GoogleCloudPlatform/datacast-reviewers @mservidio @salsferrazza @t8dogg
