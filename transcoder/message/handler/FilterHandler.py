@@ -23,9 +23,6 @@ from transcoder.message.handler.MessageHandler import MessageHandler
 class FilterHandler(MessageHandler):
     """ Handler for filtering messages by a single field's value """
 
-    def __init__(self, parser: MessageParser, config=None):
-        super().__init__(parser=parser, config=config)
-
     def handle(self, message: ParsedMessage):
         if self.config.keys is not None and len(self.config.keys()) > 0:
             prop = list(self.config.keys())[0]

@@ -114,7 +114,6 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.handlers_enabled = True
         handler_strs = message_handlers.split(',')
         for handler_spec in handler_strs:
-
             cls_name = None
             config_dict = None
             if handler_spec.find(':') == -1: # no handler params
