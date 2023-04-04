@@ -33,7 +33,7 @@ txcode \
   --schema_file templates_FixBinary_v12.xml \
   --factory cme \
   --source_file_format_type pcap \
-  --message_skip_bytes 14 \
+  --message_skip_bytes 16 \
   --output_type ${OUTPUT_TYPE} \
   --message_type_inclusions SnapshotFullRefreshTCPLongQty68
 
