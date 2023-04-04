@@ -46,7 +46,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                  line_encoding: LineEncoding = None, output_type: str = None, output_path: str = None,
                  output_encoding: str = None, destination_project_id: str = None, destination_dataset_id: str = None,
                  message_handlers: str = None, lazy_create_resources: bool = False,
-                 stats_only: bool = False, create_schemas_only: bool = False,
+                 stats_only: bool = False, frame_only: bool = False, create_schemas_only: bool = False,
                  continue_on_error: bool = False, error_output_path: str = None, quiet: bool = False,
                  create_schema_enforcing_topics: bool = True, sampling_count: int = None,
                  message_type_inclusions: str = None, message_type_exclusions: str = None,
@@ -68,6 +68,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.quiet = quiet
         self.create_schema_enforcing_topics = create_schema_enforcing_topics
         self.create_schemas_only = create_schemas_only
+        self.frame_only = frame_only
         self.output_manager: OutputManager = None
         self.message_handlers = {}
         self.all_message_type_handlers = []
@@ -95,7 +96,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.setup_handlers(message_handlers)
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                  sampling_count=sampling_count,
-                                                                 stats_only=stats_only,
+                                                                 frame_only=frame_only, stats_only=stats_only,
                                                                  message_type_inclusions=message_type_inclusions,
                                                                  message_type_exclusions=message_type_exclusions,
                                                                  fix_header_tags=fix_header_tags,
@@ -218,6 +219,15 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         """Entry point for individual message processing"""
         with self.source:
             for raw_record in self.source.get_message_iterator():
+                # TODO
+                # if self.frame_only is True:
+                #     if self.output_manager is not None:
+                #         self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                #         record = {'data': raw_record}
+                #         self.output_manager.write_record('data', record)
+                #         self.message_parser.increment_summary_count('data')
+                #         continue
+
                 message: ParsedMessage = None
                 try:
                     self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)

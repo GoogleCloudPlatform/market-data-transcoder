@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +19,7 @@
 
 from transcoder.message import DatacastSchema, ParsedMessage
 from transcoder.message.exception import ParserFunctionNotDefinedError
+from transcoder.message.handler.MessageHandlerStringField import MessageHandlerStringField
 
 
 class DatacastParser:
@@ -29,9 +30,10 @@ class DatacastParser:
         """Static method for retrieving list of provider-specific factory classes"""
         raise ParserFunctionNotDefinedError
 
-    def __init__(self, sampling_count: int = None, stats_only: bool = False,
+    def __init__(self, sampling_count: int = None, frame_only: bool = False, stats_only: bool = False,
                  message_type_inclusions: str = None, message_type_exclusions: str = None):
         self.sampling_count = sampling_count
+        self.frame_only = frame_only
         self.stats_only = stats_only
         self.message_type_inclusions = message_type_inclusions.split(
             ',') if message_type_inclusions is not None else None
@@ -61,6 +63,9 @@ class DatacastParser:
 
     def process_schema(self) -> [DatacastSchema]:
         """Gets message names from schema file, filters messages to include, sets count dict"""
+        if self.frame_only is True:
+            return [DatacastSchema.DatacastSchema("data", "data", [MessageHandlerStringField("data")])]
+
         schema_list = self._process_schema()
         filtered_list = list(filter(lambda x: self.__include_message_type(x.name), schema_list))
         self.total_schema_count = len(filtered_list)
@@ -69,10 +74,15 @@ class DatacastParser:
         return filtered_list
 
     def _process_schema(self) -> [DatacastSchema]:
+        """Function for sub-class to implement for processing schema"""
         raise ParserFunctionNotDefinedError
 
     def process_message(self, raw_msg) -> ParsedMessage:
         """Wraps _process_message with count and inclusion behavior"""
+        if self.frame_only is True:
+            self.increment_summary_count('data')
+            return ParsedMessage.ParsedMessage('data', 'data', raw_msg, {'data': raw_msg})
+
         message = self._process_message(raw_msg)
 
         if message is None:
