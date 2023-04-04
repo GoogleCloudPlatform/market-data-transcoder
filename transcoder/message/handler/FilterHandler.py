@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-from transcoder.message import MessageParser, ParsedMessage
+from transcoder.message import ParsedMessage
 from transcoder.message.handler.MessageHandler import MessageHandler
 
 class FilterHandler(MessageHandler):
