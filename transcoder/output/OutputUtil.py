@@ -21,6 +21,7 @@ from transcoder.output import OutputManager
 from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
 from transcoder.output.diag import DiagnosticOutputManager
+from transcoder.output.length_delimited import LengthDelimitedOutputManager
 from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
 from transcoder.output.google_cloud.terraform import BigQueryTerraformOutputManager, PubSubTerraformOutputManager
 from transcoder.output.json import JsonOutputManager
@@ -37,7 +38,8 @@ def all_output_identifiers():
         PubSubOutputManager.output_type_identifier(),
         BigQueryTerraformOutputManager.output_type_identifier(),
         PubSubTerraformOutputManager.output_type_identifier(),
-        JsonOutputManager.output_type_identifier()
+        JsonOutputManager.output_type_identifier(),
+        LengthDelimitedOutputManager.output_type_identifier()
     ]
 
 
@@ -70,6 +72,8 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
         output = DiagnosticOutputManager()
     elif output_name == JsonOutputManager.output_type_identifier():
         output = JsonOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
+    elif output_name = LengthDelimitedOutputManager.output_type_identifier():
+        output = LengthDelimitedOutputManager()
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')
     return output
