@@ -32,7 +32,7 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
                  message_skip_bytes: int = 0, message_length_byte_length: int = 2):
         super().__init__(file_path, skip_bytes=skip_bytes, endian=endian,
                          message_skip_bytes=message_skip_bytes,
-                         message_length_byte_length=message_length_byte_length)
+                         prefix_length=prefix_length)
 
     def get_message_iterator(self):
         # pylint: disable=duplicate-code

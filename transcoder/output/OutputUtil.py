@@ -72,7 +72,7 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
         output = DiagnosticOutputManager()
     elif output_name == JsonOutputManager.output_type_identifier():
         output = JsonOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
-    elif output_name = LengthDelimitedOutputManager.output_type_identifier():
+    elif output_name == LengthDelimitedOutputManager.output_type_identifier():
         output = LengthDelimitedOutputManager()
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')

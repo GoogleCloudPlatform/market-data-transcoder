@@ -29,7 +29,7 @@ from datetime import datetime
 from transcoder import LineEncoding
 from transcoder.message import DatacastParser, ParsedMessage
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
-from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
+#from transcoder.message.MessageUtil import parse_handler_config
 from transcoder.output import OutputManager
 from transcoder.output.OutputUtil import get_output_manager
 from transcoder.source import Source
@@ -80,20 +80,22 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         self.error_writer = ErrorWriter(prefix=self.file_name_without_extension,
                                         output_path=self.error_output_path)
 
-        if output_type is not None:
-            self.output_manager = get_output_manager(output_type,
-                                                     output_prefix=self.file_name_without_extension,
-                                                     output_file_path=output_path,
-                                                     output_encoding=output_encoding,
-                                                     destination_project_id=destination_project_id,
-                                                     destination_dataset_id=destination_dataset_id,
-                                                     lazy_create_resources=lazy_create_resources,
-                                                     create_schema_enforcing_topics=create_schema_enforcing_topics)
+        if output_type is None:
+            output_type = 'length_delimited' if self.frame_only else 'diag'
 
-            if self.output_manager.supports_data_writing() is False:
-                self.create_schemas_only = True
-
-        self.setup_handlers(message_handlers)
+        self.output_manager = get_output_manager(output_type,
+                                                 output_prefix=self.file_name_without_extension,
+                                                 output_file_path=output_path,
+                                                 output_encoding=output_encoding,
+                                                 destination_project_id=destination_project_id,
+                                                 destination_dataset_id=destination_dataset_id,
+                                                 lazy_create_resources=lazy_create_resources,
+                                                 create_schema_enforcing_topics=create_schema_enforcing_topics)
+            
+        if self.output_manager.supports_data_writing() is False:
+            self.create_schemas_only = True
+               
+#        self.setup_handlers(message_handlers)
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                  sampling_count=sampling_count,
                                                                  frame_only=frame_only, stats_only=stats_only,
@@ -106,7 +108,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""
-
+        """
         if message_handlers is None or message_handlers == "":
             return
         if self.create_schemas_only is True:
@@ -140,21 +142,23 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                         self.message_handlers[supported_type].append(instance)
                 else:
                     self.message_handlers[supported_type] = [instance]
-
+        """
     def process(self):
         """Entry point for individual message processing"""
         self.start_time = datetime.now()
-        self.process_schemas()
 
-        if self.create_schemas_only is False:
+        if self.frame_only is False: # only need schemas if we are cracking messages open
+            self.process_schemas()
+
+        if self.create_schemas_only is False: # only need message source if we're not just creating schemas
             self.source: Source = get_message_source(self.source_file_path, self.source_file_encoding,
                                                      self.source_file_format_type, self.source_file_endian,
                                                      skip_lines=self.skip_lines, skip_bytes=self.skip_bytes,
                                                      message_skip_bytes=self.message_skip_bytes,
                                                      line_encoding=self.line_encoding)
-
-            self.process_data()
-
+            
+        self.process_data()
+                        
         if self.output_manager is not None:
             self.output_manager.wait_for_completion()
 

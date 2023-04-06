@@ -31,10 +31,10 @@ import logging
 import os
 
 from transcoder import __version__, LineEncoding
-from transcoder.message.MessageParser import MessageParser
+from transcoder.message import MessageUtil
 from transcoder.message.factory import all_supported_factory_types
-from transcoder.output import all_output_identifiers
-from transcoder.source import all_source_identifiers
+from transcoder.output import all_output_identifiers, get_output_manager
+from transcoder.source import all_source_identifiers, get_message_source
 
 script_dir = os.path.dirname(__file__)
 
@@ -44,10 +44,10 @@ def main():
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
 
     source_options_group = arg_parser.add_argument_group('Input source arguments')
-    source_options_group.add_argument('--factory', required=True, choices=all_supported_factory_types(),
+    source_options_group.add_argument('--factory', choices=all_supported_factory_types(),
                                       help='Message factory for decoding')
-    source_options_group.add_argument('--schema_file', required=True, type=str, help='Path to the schema file')
-    source_options_group.add_argument('--source_file', required=False, type=str, help='Path to the source file')
+    source_options_group.add_argument('--schema_file', type=str, help='Path to the schema file')
+    source_options_group.add_argument('--source_file', type=str, help='Path to the source file')
     source_options_group.add_argument('--source_file_encoding', type=str, default='utf-8', help='The source file '
                                                                                                 'character encoding')
     source_options_group.add_argument('--source_file_format_type', required=True, choices=all_source_identifiers(),
@@ -182,6 +182,62 @@ def main():
     elif args.base64_urlsafe is True:
         line_encoding = LineEncoding.BASE_64_URL_SAFE
 
+    output_prefix = os.path.basename(
+            os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
+
+
+    source = get_message_source(source_file_path, source_file_encoding,
+                                source_file_format_type, source_file_endian,
+                                skip_bytes, skip_lines, message_skip_bytes, None)
+    print(source)
+
+    output_manager = get_output_manager(output_type, output_prefix, output_path,
+                                        output_encoding, destination_project_id,
+                                        destination_dataset_id, lazy_create_resources,
+                                        create_schema_enforcing_topics)
+
+    print(output_manager)
+
+    source.open()
+    for msg in source.get_message_iterator():
+        print(str(len(msg)))
+    
+#    message_parser = MessageUtil.get_message_parser(factory, schema_file_path, sampling_count,
+#                                        message_type_inclusions, message_type_exclusions,
+#                                        fix_header_tags, fix_separator)
+
+#    print(message_parser)
+    
+    """
+    for raw_msg in source.get_message_iterator:
+        msg = message_parser.process_message(raw_record)
+        output_manager.write_record(msg)
+    """
+        
+        
+    # if frame_only, just use source params and output params, no parsing
+    # if schema_only, just use schema and output params, no messages
+    # if stats_only, just use source params and messgae cracking, no transcoding
+
+
+
+        
+    # LengthDelimitedFileMessageSource:
+    # source_file_format_type + endian + skip_bytes + source_file_path + source_file_encoding
+
+    #    SourceUtil
+
+    
+        
+    # DatacastMessage
+    # message_skip_bytes, schema_file, factory, include/exclude, FIX specific 
+
+
+        
+    # OutputManager
+    # OutputUtil
+        
+    """
     message_parser = MessageParser(factory, schema_file_path,
                                    source_file_path, source_file_encoding, source_file_format_type,
                                    source_file_endian, skip_lines=skip_lines, skip_bytes=skip_bytes,
@@ -199,7 +255,7 @@ def main():
                                    fix_header_tags=fix_header_tags, fix_separator=fix_separator)
 
     message_parser.process()
-
+    """
 
 if __name__ == "__main__":
     main()

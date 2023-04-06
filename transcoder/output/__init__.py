@@ -20,4 +20,4 @@
 # pylint: disable=invalid-name
 
 from .OutputManager import OutputManager
-from .OutputUtil import all_output_identifiers
+from .OutputUtil import all_output_identifiers, get_output_manager

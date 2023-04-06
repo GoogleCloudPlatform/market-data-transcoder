@@ -18,7 +18,6 @@
 #
 
 import struct
-import sys.stdout
 from transcoder.output import OutputManager
 
 
@@ -28,8 +27,6 @@ class LengthDelimitedOutputManager(OutputManager):
     @staticmethod
     def output_type_identifier():
         return 'length_delimited'
-
-
 
     def write_record(self, record_type_name, record):
         byte_len = struct.pack('>L', len(record))

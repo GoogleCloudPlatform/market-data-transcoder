@@ -33,29 +33,30 @@ def all_source_identifiers():
     ]
 
 
-def get_message_source(source_name: str,  # pylint: disable=too-many-arguments
+def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
                        source_file_encoding: str, source_file_format_type: str,
                        endian: str, skip_bytes: int = 0, skip_lines: int = 0,
-                       message_skip_bytes: int = 0, message_length_byte_length: int = 2,
+                        message_skip_bytes: int = 0, prefix_length: int = 2,
                        line_encoding: LineEncoding = None) -> Source:
     """Returns a Source implementation instance based on the supplied source name"""
+    print(str(locals()))
+    print(str(prefix_length))
     source: Source = None
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
-        source = PcapFileMessageSource(source_name, message_skip_bytes=message_skip_bytes)
+        source = PcapFileMessageSource(source_loc, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LengthDelimitedFileMessageSource.source_type_identifier():
-        source = LengthDelimitedFileMessageSource(source_name, skip_bytes=skip_bytes,
-                                                  message_skip_bytes=message_skip_bytes,
-                                                  message_length_byte_length=message_length_byte_length)
+        source = LengthDelimitedFileMessageSource(source_loc, skip_bytes=skip_bytes,
+                                                  message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
-        source = LineDelimitedFileMessageSource(source_name, encoding=source_file_encoding,
+        source = LineDelimitedFileMessageSource(source_loc, encoding=source_file_encoding,
                                                 skip_lines=skip_lines,
                                                 line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == CmeBinaryPacketFileMessageSource.source_type_identifier():
-        source = CmeBinaryPacketFileMessageSource(source_name, endian, skip_bytes=skip_bytes,
+        source = CmeBinaryPacketFileMessageSource(source_loc, endian, skip_bytes=skip_bytes,
                                                   message_skip_bytes=message_skip_bytes,
-                                                  message_length_byte_length=message_length_byte_length)
+                                                  prefix_length=prefix_length)
     else:
-        raise UnsupportedFileTypeError(f'Source {source_name} is not supported')
+        raise UnsupportedFileTypeError(f'Source {source_loc} is not supported')
     return source
 
 
