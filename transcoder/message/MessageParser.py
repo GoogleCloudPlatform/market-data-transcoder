@@ -26,10 +26,8 @@ import signal
 import sys
 from datetime import datetime
 
-from transcoder import LineEncoding
 from transcoder.message import DatacastParser, ParsedMessage
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
-#from transcoder.message.MessageUtil import parse_handler_config
 from transcoder.output import OutputManager
 from transcoder.output.OutputUtil import get_output_manager
 from transcoder.source import Source
@@ -95,7 +93,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
                
-#        self.setup_handlers(message_handlers)
+        self.setup_handlers(message_handlers)
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                  sampling_count=sampling_count,
                                                                  frame_only=frame_only, stats_only=stats_only,
@@ -108,7 +106,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""
-        """
+
         if message_handlers is None or message_handlers == "":
             return
         if self.create_schemas_only is True:
@@ -142,7 +140,7 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
                         self.message_handlers[supported_type].append(instance)
                 else:
                     self.message_handlers[supported_type] = [instance]
-        """
+
     def process(self):
         """Entry point for individual message processing"""
         self.start_time = datetime.now()
@@ -221,44 +219,43 @@ class MessageParser:  # pylint: disable=too-many-instance-attributes
 
     def process_data(self):
         """Entry point for individual message processing"""
-        with self.source:
-            for raw_record in self.source.get_message_iterator():
-                message: ParsedMessage = None
-                try:
+#        with self.source:
+#            for raw_record in self.source.get_message_iterator():
+#                message: ParsedMessage = None
+#        try:
+ #                   if self.frame_only is True:
+  #                      self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+   #                     self.output_manager.write_record(None, record)
+    #                    self.message_parser.increment_summary_count('unframed messages')
+     #                   continue
+     
+        self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
+        message = self.message_parser.process_message(raw_record)
 
-                    if self.frame_only is True:
-                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                        self.output_manager.write_record(None, record)
-                        self.message_parser.increment_summary_count('unframed messages')
-                        continue
+        if message is None:
+            return
 
-                    self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
-                    message = self.message_parser.process_message(raw_record)
+        if message.exception is not None:
+            self.handle_exception(raw_record, message, message.exception)
 
-                    if message is None:
-                        continue
+            # For messages that contain no fields, the dictionary will be empty.
+            # Skip as no schema is created for these.
+            if message.is_empty():
+                return
 
-                    if message.exception is not None:
-                        self.handle_exception(raw_record, message, message.exception)
+            if self.handlers_enabled is True:
+                self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
+                for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
+                    self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
+                    handler.handle(message)
 
-                    # For messages that contain no fields, the dictionary will be empty.
-                    # Skip as no schema is created for these.
-                    if message.is_empty():
-                        continue
+            if self.output_manager is not None:
+                if not message.is_empty():
+                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                    self.output_manager.write_record(message.name, message.dictionary)
 
-                    if self.handlers_enabled is True:
-                        self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
-                        for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
-                            self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
-                            handler.handle(message)
-
-                    if self.output_manager is not None:
-                        if not message.is_empty():
-                            self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                            self.output_manager.write_record(message.name, message.dictionary)
-
-                except Exception as ex:
-                    self.handle_exception(raw_record, message, ex)
+ #           except Exception as ex:
+ #               self.handle_exception(raw_record, message, ex)
 
     def handle_exception(self, raw_record, message, exception):
         """Process exceptions encountered in the message processing runtime"""

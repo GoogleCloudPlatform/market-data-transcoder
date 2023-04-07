@@ -19,9 +19,8 @@
 
 import sys
 
-from transcoder import LineEncoding
+from transcoder.source import LineEncoding
 from transcoder.source.file import FileMessageSource
-
 
 class LineDelimitedFileMessageSource(FileMessageSource):
     """Reads line delimited files and yields individual records for message consumption"""
@@ -32,8 +31,10 @@ class LineDelimitedFileMessageSource(FileMessageSource):
 
     def __init__(self, file_path: str, encoding: str, skip_lines: int = 0,
                  message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
-        super().__init__(file_path, file_open_mode='rt', file_encoding=encoding,
-                         line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
+
+        super().__init__(file_path, file_open_mode='rt', file_encoding=encoding)
+        self.message_skip_bytes = message_skip_bytes
+        self.line_encoding = line_encoding
         self.skip_lines = skip_lines
 
     def prepare(self):
@@ -49,3 +50,18 @@ class LineDelimitedFileMessageSource(FileMessageSource):
             self.increment_count()
             yield self.decode_message(line)
             self._log_percentage_read()
+            
+    def decode_message(self, record):
+        """Performs line decoding and message skip bytes for line encoded cases"""
+        message = record
+        if self.line_encoding is LineEncoding.BASE_64:
+            message = base64.b64decode(record)
+        elif self.line_encoding is LineEncoding.BASE_64_URL_SAFE:
+            message = base64.urlsafe_b64decode(record)
+
+        if self.message_skip_bytes > 0 and isinstance(message, bytes):
+            # print(''.join('{:02x}'.format(x) for x in message))
+            message = message[self.message_skip_bytes:]
+            # print(''.join('{:02x}'.format(x) for x in message))
+
+        return message

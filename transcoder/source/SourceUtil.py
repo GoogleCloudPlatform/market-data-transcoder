@@ -17,8 +17,7 @@
 # limitations under the License.
 #
 
-from transcoder import LineEncoding
-from transcoder.source import Source
+from transcoder.source import Source, LineEncoding
 from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMessageSource, \
     LineDelimitedFileMessageSource, CmeBinaryPacketFileMessageSource
 
@@ -37,17 +36,26 @@ def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
                        source_file_encoding: str, source_file_format_type: str,
                        endian: str, skip_bytes: int = 0, skip_lines: int = 0,
                         message_skip_bytes: int = 0, prefix_length: int = 2,
-                       line_encoding: LineEncoding = None) -> Source:
+                        base64: bool = False, base64_urlsafe: bool = False) -> Source:
     """Returns a Source implementation instance based on the supplied source name"""
     print(str(locals()))
     print(str(prefix_length))
     source: Source = None
+
+    
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
         source = PcapFileMessageSource(source_loc, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LengthDelimitedFileMessageSource.source_type_identifier():
         source = LengthDelimitedFileMessageSource(source_loc, skip_bytes=skip_bytes,
                                                   message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
+
+        line_encoding = None
+        if base64 is True:
+            line_encoding = LineEncoding.BASE_64
+        elif base64_urlsafe is True:
+            line_encoding = LineEncoding.BASE_64_URL_SAFE
+
         source = LineDelimitedFileMessageSource(source_loc, encoding=source_file_encoding,
                                                 skip_lines=skip_lines,
                                                 line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)

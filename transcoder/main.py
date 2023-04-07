@@ -30,7 +30,7 @@ import argparse
 import logging
 import os
 
-from transcoder import __version__, LineEncoding
+from transcoder import __version__, LineEncoding, Transcoder
 from transcoder.message import MessageUtil
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers, get_output_manager
@@ -175,87 +175,19 @@ def main():
     message_type_exclusions = args.message_type_exclusions
     fix_header_tags = args.fix_header_tags
     fix_separator = args.fix_separator
+    base64 = args.base64
+    base64_urlsafe = args.base64_urlsafe
 
-    line_encoding = None
-    if args.base64 is True:
-        line_encoding = LineEncoding.BASE_64
-    elif args.base64_urlsafe is True:
-        line_encoding = LineEncoding.BASE_64_URL_SAFE
+    txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
+                        source_file_format_type, source_file_endian, skip_lines, skip_bytes,
+                        message_skip_bytes, quiet, output_type, output_path, error_output_path,
+                        destination_project_id, destination_dataset_id, message_handlers,
+                        lazy_create_resources, frame_only, stats_only, create_schemas_only,
+                        continue_on_error, create_schema_enforcing_topics, sampling_count,
+                        message_type_inclusions, message_type_exclusions, fix_header_tags,
+                        fix_separator, base64, base64_urlsafe)
 
-    output_prefix = os.path.basename(
-            os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
-
-
-    source = get_message_source(source_file_path, source_file_encoding,
-                                source_file_format_type, source_file_endian,
-                                skip_bytes, skip_lines, message_skip_bytes, None)
-    print(source)
-
-    output_manager = get_output_manager(output_type, output_prefix, output_path,
-                                        output_encoding, destination_project_id,
-                                        destination_dataset_id, lazy_create_resources,
-                                        create_schema_enforcing_topics)
-
-    print(output_manager)
-
-    source.open()
-    for msg in source.get_message_iterator():
-        print(str(len(msg)))
-    
-#    message_parser = MessageUtil.get_message_parser(factory, schema_file_path, sampling_count,
-#                                        message_type_inclusions, message_type_exclusions,
-#                                        fix_header_tags, fix_separator)
-
-#    print(message_parser)
-    
-    """
-    for raw_msg in source.get_message_iterator:
-        msg = message_parser.process_message(raw_record)
-        output_manager.write_record(msg)
-    """
-        
-        
-    # if frame_only, just use source params and output params, no parsing
-    # if schema_only, just use schema and output params, no messages
-    # if stats_only, just use source params and messgae cracking, no transcoding
-
-
-
-        
-    # LengthDelimitedFileMessageSource:
-    # source_file_format_type + endian + skip_bytes + source_file_path + source_file_encoding
-
-    #    SourceUtil
-
-    
-        
-    # DatacastMessage
-    # message_skip_bytes, schema_file, factory, include/exclude, FIX specific 
-
-
-        
-    # OutputManager
-    # OutputUtil
-        
-    """
-    message_parser = MessageParser(factory, schema_file_path,
-                                   source_file_path, source_file_encoding, source_file_format_type,
-                                   source_file_endian, skip_lines=skip_lines, skip_bytes=skip_bytes,
-                                   message_skip_bytes=message_skip_bytes, line_encoding=line_encoding,
-                                   output_type=output_type, output_path=output_path, output_encoding=output_encoding,
-                                   destination_project_id=destination_project_id,
-                                   destination_dataset_id=destination_dataset_id,
-                                   message_handlers=message_handlers, lazy_create_resources=lazy_create_resources,
-                                   frame_only=frame_only, stats_only=stats_only,
-                                   create_schemas_only=create_schemas_only,
-                                   continue_on_error=continue_on_error, error_output_path=error_output_path,
-                                   quiet=quiet, create_schema_enforcing_topics=create_schema_enforcing_topics,
-                                   sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
-                                   message_type_exclusions=message_type_exclusions,
-                                   fix_header_tags=fix_header_tags, fix_separator=fix_separator)
-
-    message_parser.process()
-    """
+    txcode.transcode()
 
 if __name__ == "__main__":
     main()
