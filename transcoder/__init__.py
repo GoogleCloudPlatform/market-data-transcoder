@@ -41,12 +41,12 @@ class Transcoder:
 
 
     def __init__(self, factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
-                 source_file_format_type: str, source_file_endian: str, skip_lines: int, skip_bytes: int, message_skip_bytes: int,
-                 quiet: bool, output_type: str, output_encoding: str, output_path: str, error_output_path: str,
-                 destination_project_id: str, destination_dataset_id: str, message_handlers: str,
-                 lazy_create_resources: bool, frame_only: bool, stats_only: bool, create_schemas_only: bool,
-                 continue_on_error: bool, create_schema_enforcing_topics: bool, sampling_count: int,
-                 message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
+                 source_file_format_type: str, source_file_endian: str, prefix_length: int, skip_lines: int,
+                 skip_bytes: int,  message_skip_bytes: int, quiet: bool, output_type: str, output_encoding: str,
+                 output_path: str, error_output_path: str, destination_project_id: str, destination_dataset_id: str,
+                 message_handlers: str, lazy_create_resources: bool, frame_only: bool, stats_only: bool,
+                 create_schemas_only: bool, continue_on_error: bool, create_schema_enforcing_topics: bool,
+                 sampling_count: int, message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
         print(locals())
@@ -58,6 +58,7 @@ class Transcoder:
         self.error_output_path = error_output_path
         self.output_encoding = output_encoding
         self.frame_only = frame_only
+        self.create_schemas_only = create_schemas_only
         
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
@@ -71,7 +72,8 @@ class Transcoder:
         if create_schemas_only is False:
             self.source = get_message_source(source_file_path, source_file_encoding,
                                             source_file_format_type, source_file_endian,
-                                            skip_bytes, skip_lines, message_skip_bytes, base64, base64_urlsafe)
+                                            skip_bytes, skip_lines, message_skip_bytes,
+                                            prefix_length, base64, base64_urlsafe)
         print(self.source)
 
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
@@ -101,7 +103,6 @@ class Transcoder:
                 if self.frame_only:
                     self.output_manager.write_record(None, raw_msg)
                 else:
-                    # where does the type name come from?
                     self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                     msg = self.message_parser.process_message(raw_msg)
 
@@ -110,7 +111,8 @@ class Transcoder:
                     
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
-        
+                    
+        self.print_summary()
 
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""

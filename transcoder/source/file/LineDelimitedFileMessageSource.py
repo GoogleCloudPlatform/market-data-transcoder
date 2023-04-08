@@ -19,7 +19,7 @@
 
 import sys
 
-from transcoder.source import LineEncoding
+from transcoder.source.LineEncoding import LineEncoding
 from transcoder.source.file import FileMessageSource
 
 class LineDelimitedFileMessageSource(FileMessageSource):
@@ -37,6 +37,8 @@ class LineDelimitedFileMessageSource(FileMessageSource):
         self.line_encoding = line_encoding
         self.skip_lines = skip_lines
 
+        print(self.line_encoding)
+        
     def prepare(self):
         # file_size is only determinable on seekable input
         if sys.stdin.seekable() is True and self.file_size == 0:
@@ -54,9 +56,9 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def decode_message(self, record):
         """Performs line decoding and message skip bytes for line encoded cases"""
         message = record
-        if self.line_encoding is LineEncoding.BASE_64:
+        if self.line_encoding == LineEncoding.BASE_64.value:
             message = base64.b64decode(record)
-        elif self.line_encoding is LineEncoding.BASE_64_URL_SAFE:
+        elif self.line_encoding == LineEncoding.BASE_64_URL_SAFE.value:
             message = base64.urlsafe_b64decode(record)
 
         if self.message_skip_bytes > 0 and isinstance(message, bytes):

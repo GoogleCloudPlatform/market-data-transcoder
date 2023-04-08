@@ -72,6 +72,8 @@ def main():
                                            'repeated '
                                            'length delimited file message source')
 
+    source_options_group.add_argument('--prefix_length', type=int, default=2,
+                                      help='How many bytes to use for the length prefix of length-delimited binary sources')
     message_filter_group = source_options_group.add_mutually_exclusive_group()
     message_filter_group.add_argument('--message_type_exclusions', type=str,
                                       help='Comma-delimited list of message types to exclude '
@@ -154,6 +156,7 @@ def main():
     source_file_encoding = args.source_file_encoding
     source_file_format_type = args.source_file_format_type
     source_file_endian = args.source_file_endian
+    prefix_length = args.prefix_length
     skip_lines = args.skip_lines
     skip_bytes = args.skip_bytes
     message_skip_bytes = args.message_skip_bytes
@@ -180,9 +183,9 @@ def main():
     base64_urlsafe = args.base64_urlsafe
 
     txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
-                        source_file_format_type, source_file_endian, skip_lines, skip_bytes,
-                        message_skip_bytes, quiet, output_type, output_encoding, output_path,
-                        error_output_path, destination_project_id, destination_dataset_id,
+                        source_file_format_type, source_file_endian, prefix_length, skip_lines,
+                        skip_bytes, message_skip_bytes, quiet, output_type, output_encoding,
+                        output_path, error_output_path, destination_project_id, destination_dataset_id,
                         message_handlers, lazy_create_resources, frame_only, stats_only,
                         create_schemas_only, continue_on_error, create_schema_enforcing_topics,
                         sampling_count, message_type_inclusions, message_type_exclusions,
