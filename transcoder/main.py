@@ -182,6 +182,16 @@ def main():
     base64 = args.base64
     base64_urlsafe = args.base64_urlsafe
 
+
+    # Need to mutex --frame_only and --factory
+    """
+parser = argparse.ArgumentParser(prog='PROG')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--foo', action='store_true')
+group.add_argument('--bar', action='store_false')
+parser.parse_args([])
+    """
+    
     txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
                         source_file_format_type, source_file_endian, prefix_length, skip_lines,
                         skip_bytes, message_skip_bytes, quiet, output_type, output_encoding,

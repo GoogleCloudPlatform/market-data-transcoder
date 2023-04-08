@@ -49,7 +49,6 @@ class Transcoder:
                  sampling_count: int, message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
-        print(locals())
         self.message_handlers = message_handlers
         self.all_message_type_handlers = []
         self.all_handlers = []
@@ -78,7 +77,7 @@ class Transcoder:
                                             prefix_length, base64, base64_urlsafe)
 
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
-                                                output_encoding, destination_project_id,
+                                                output_encoding, self.prefix_length, destination_project_id,
                                                 destination_dataset_id, lazy_create_resources,
                                                 create_schema_enforcing_topics)  
 
