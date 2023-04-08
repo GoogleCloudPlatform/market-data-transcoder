@@ -112,7 +112,7 @@ class Transcoder:
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
                     
-        if self.output_manager is not None:
+        if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()
 
         self.print_summary()
