@@ -59,6 +59,8 @@ class Transcoder:
         self.output_encoding = output_encoding
         self.frame_only = frame_only
         self.create_schemas_only = create_schemas_only
+        self.lazy_create_resources = lazy_create_resources
+        self.prefix_length = prefix_length
         
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
@@ -74,24 +76,21 @@ class Transcoder:
                                             source_file_format_type, source_file_endian,
                                             skip_bytes, skip_lines, message_skip_bytes,
                                             prefix_length, base64, base64_urlsafe)
-        print(self.source)
 
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
                                                 output_encoding, destination_project_id,
                                                 destination_dataset_id, lazy_create_resources,
                                                 create_schema_enforcing_topics)  
-        print(self.output_manager)
 
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
-        
-        
-        self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
-                                                                sampling_count, frame_only,
-                                                                stats_only, message_type_inclusions,
-                                                                message_type_exclusions, fix_header_tags,
-                                                                fix_separator)
-        print(self.message_parser)
+
+        if self.frame_only is False: # don't need a parser for just framibg
+            self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
+                                                                    sampling_count, frame_only,
+                                                                    stats_only, message_type_inclusions,
+                                                                    message_type_exclusions, fix_header_tags,
+                                                                    fix_separator)
 
         self.setup_handlers()
                
@@ -104,15 +103,19 @@ class Transcoder:
                 if self.frame_only:
                     self.output_manager.write_record(None, raw_msg)
                 else:
-                    self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
-                    msg = self.message_parser.process_message(raw_msg)
+                    if self.output_manager is not None:
+                        self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
+                        msg = self.message_parser.process_message(raw_msg)
 
-                    if msg is None:
-                        continue
+                        if msg is None:
+                            continue
                     
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
                     
+        if self.output_manager is not None:
+            self.output_manager.wait_for_completion()
+
         self.print_summary()
 
     def setup_handlers(self):
@@ -188,6 +191,26 @@ class Transcoder:
             logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
+    def process_schemas(self):
+        """Process the schema specified at runtime"""
+        spec_schemas = self.message_parser.process_schema()
+        for schema in spec_schemas:
+            if len(schema.fields) == 0:
+                logging.info('Schema "%s" contains no field definitions, skipping schema creation', schema.name)
+                continue
+
+            for handler in self.all_handlers:
+                if handler.supports_all_message_types is True \
+                        or schema.message_id in handler.supported_message_types:
+                    handler.append_manufactured_fields(schema)
+
+            self.output_manager.enqueue_schema(schema)
+
+        # Only need to wait if lazy create is off, and you want to force creation before data is read
+        if self.lazy_create_resources is False:
+            self.output_manager.wait_for_schema_creation()
+
+            
     def handle_exception(self, raw_record, message, exception):
         """Process exceptions encountered in the message processing runtime"""
         if message is not None:

@@ -18,18 +18,22 @@
 #
 
 import struct
+import sys
 from transcoder.output import OutputManager
 
 
 class LengthDelimitedOutputManager(OutputManager):
     """Output manager for representing  messages in diagnostic notation"""
 
+    def __init__(self, prefix_length: int):
+        self.prefix_length = prefix_length
+        
     @staticmethod
     def output_type_identifier():
         return 'length_delimited'
 
     def write_record(self, record_type_name, record):
-        byte_len = struct.pack('>L', len(record))
+        byte_len = struct.pack('>H', len(record))
         sys.stdout.buffer.write(byte_len + record)
 
         

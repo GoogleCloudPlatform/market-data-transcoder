@@ -45,6 +45,7 @@ def all_output_identifiers():
 
 def get_output_manager(output_name: str, output_prefix: str = None, output_file_path: str = None,
                        output_encoding: str = None,
+                       prefix_length: int = 2,
                        destination_project_id: str = None,
                        destination_dataset_id: str = None,
                        lazy_create_resources: bool = False,
@@ -73,7 +74,7 @@ def get_output_manager(output_name: str, output_prefix: str = None, output_file_
     elif output_name == JsonOutputManager.output_type_identifier():
         output = JsonOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
     elif output_name == LengthDelimitedOutputManager.output_type_identifier():
-        output = LengthDelimitedOutputManager()
+        output = LengthDelimitedOutputManager(prefix_length=prefix_length)
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')
     return output
