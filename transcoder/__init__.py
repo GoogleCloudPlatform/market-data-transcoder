@@ -50,7 +50,7 @@ class Transcoder:
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
         print(locals())
-        self.message_handlers = {}
+        self.message_handlers = message_handlers
         self.all_message_type_handlers = []
         self.all_handlers = []
         self.handlers_enabled = False
@@ -93,6 +93,7 @@ class Transcoder:
                                                                 fix_separator)
         print(self.message_parser)
 
+        self.setup_handlers()
                
         
     def transcode(self):
@@ -114,16 +115,16 @@ class Transcoder:
                     
         self.print_summary()
 
-    def setup_handlers(self, message_handlers: str):
+    def setup_handlers(self):
         """Initialize MessageHandler instances to employ at runtime"""
 
-        if message_handlers is None or message_handlers == "":
+        if self.message_handlers is None or self.message_handlers == "":
             return
-        if self.create_schemas_only is True:
+        if self.create_schemas_only is True or self.frame_only is True:
             return
 
         self.handlers_enabled = True
-        handler_strs = message_handlers.split(',')
+        handler_strs = self.message_handlers.split(',')
         for handler_spec in handler_strs:
             cls_name = None
             config_dict = None
@@ -135,9 +136,9 @@ class Transcoder:
 
             module = importlib.import_module('transcoder.message.handler')
             class_ = getattr(module, cls_name)
-            instance = class_(self, config_dict)
+            instance = class_(config_dict)
             self.all_handlers.append(instance)
-
+            
             if instance.supports_all_message_types is True:
                 self.all_message_type_handlers.append(instance)
                 continue
