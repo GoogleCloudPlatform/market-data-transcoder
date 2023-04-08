@@ -19,7 +19,7 @@
 
 import math
 
-from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message import ParsedMessage, DatacastSchema
 from transcoder.message.handler.MessageHandler import MessageHandler
 from transcoder.message.handler.MessageHandlerFloatField import MessageHandlerFloatField
 
@@ -27,8 +27,8 @@ from transcoder.message.handler.MessageHandlerFloatField import MessageHandlerFl
 class CmeBinaryPacketHandler(MessageHandler):
     """CME binary package message handler which appends and computes a new field md_entry_calculated_px"""
 
-    def __init__(self, parser: MessageParser):
-        super().__init__(parser=parser)
+    def __init__(self):
+        super().__init__()
 
     def append_manufactured_fields(self, schema: DatacastSchema):
         if schema.name != 'MDIncrementalRefreshOrderBook47':

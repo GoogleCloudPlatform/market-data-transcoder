@@ -17,16 +17,22 @@
 # limitations under the License.
 #
 
-import os
+import importlib
 import logging
+import os
+import signal
+import sys
+
+from datetime import datetime
 from enum import Enum
+
+
 from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.message import DatacastParser
 from transcoder.message.factory import all_supported_factory_types
+from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.output import all_output_identifiers, get_output_manager, OutputManager
 from transcoder.source import all_source_identifiers, get_message_source, Source
-from transcoder import __version__, LineEncoding
-from .version import __version__
 
 # pylint: disable=invalid-name
     
@@ -36,8 +42,8 @@ class Transcoder:
 
     def __init__(self, factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
                  source_file_format_type: str, source_file_endian: str, skip_lines: int, skip_bytes: int, message_skip_bytes: int,
-                 quiet: bool, output_type: str, output_path: str, error_output_path: str,
-                 destination_project_Id: str, destination_dataset_id: str, message_handlers: str,
+                 quiet: bool, output_type: str, output_encoding: str, output_path: str, error_output_path: str,
+                 destination_project_id: str, destination_dataset_id: str, message_handlers: str,
                  lazy_create_resources: bool, frame_only: bool, stats_only: bool, create_schemas_only: bool,
                  continue_on_error: bool, create_schema_enforcing_topics: bool, sampling_count: int,
                  message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
@@ -48,7 +54,11 @@ class Transcoder:
         self.all_message_type_handlers = []
         self.all_handlers = []
         self.handlers_enabled = False
-
+        self.continue_on_error = continue_on_error
+        self.error_output_path = error_output_path
+        self.output_encoding = output_encoding
+        self.frame_only = frame_only
+        
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
 
@@ -58,16 +68,16 @@ class Transcoder:
         self.error_writer = ErrorWriter(prefix=self.output_prefix,
                                         output_path=self.error_output_path)
 
-        self.source = get_message_source(source_file_path, source_file_encoding,
-                                source_file_format_type, source_file_endian,
-                                skip_bytes, skip_lines, message_skip_bytes, base64, base64_urlsafe)
+        if create_schemas_only is False:
+            self.source = get_message_source(source_file_path, source_file_encoding,
+                                            source_file_format_type, source_file_endian,
+                                            skip_bytes, skip_lines, message_skip_bytes, base64, base64_urlsafe)
         print(self.source)
 
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
-                                        output_encoding, destination_project_id,
-                                        destination_dataset_id, lazy_create_resources,
-                                        create_schema_enforcing_topics)
-
+                                                output_encoding, destination_project_id,
+                                                destination_dataset_id, lazy_create_resources,
+                                                create_schema_enforcing_topics)  
         print(self.output_manager)
 
         if self.output_manager.supports_data_writing() is False:
@@ -75,15 +85,15 @@ class Transcoder:
         
         
         self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
-                                                                        sampling_count, frame_only,
-                                                                        stats_only, message_type_inclusions,
-                                                                        message_type_exclusions, fix_header_tags,
-                                                                        fix_separator)
+                                                                sampling_count, frame_only,
+                                                                stats_only, message_type_inclusions,
+                                                                message_type_exclusions, fix_header_tags,
+                                                                fix_separator)
         print(self.message_parser)
 
                
         
-    def transcode():
+    def transcode(self):
         """Entry point for transcoding session"""
         self.start_time = datetime.now()
         with self.source:
@@ -95,10 +105,12 @@ class Transcoder:
                     self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                     msg = self.message_parser.process_message(raw_msg)
 
+                    if msg is None:
+                        continue
                     
-                    self.output_manager.write_record('', msg.dictionary)
+                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                    self.output_manager.write_record(msg.name, msg.dictionary)
         
-
 
     def setup_handlers(self, message_handlers: str):
         """Initialize MessageHandler instances to employ at runtime"""
@@ -184,6 +196,7 @@ class Transcoder:
 
         if self.continue_on_error is False:
             raise exception
+
 
     def trap(self, _signum, _frame):
         """Trap SIGINT to suppress noisy stack traces and show interim summary"""

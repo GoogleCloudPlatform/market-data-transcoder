@@ -39,7 +39,6 @@ class FileMessageSource(Source):
         self.path = file_path
         self.file_open_mode = file_open_mode
         self.file_encoding = file_encoding
-        self.message_skip_bytes = message_skip_bytes
         self.file_handle: IOBase = None
         self.file_size = 0
         self.log_percentage_read_enabled = logging.getLogger().isEnabledFor(logging.DEBUG)

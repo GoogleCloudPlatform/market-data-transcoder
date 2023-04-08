@@ -51,7 +51,6 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
                 break
 
             message_length = int.from_bytes(msg_len_bytes, self.endian)
-            print(str(message_length))
             self.increment_count()
 
             # Get the message

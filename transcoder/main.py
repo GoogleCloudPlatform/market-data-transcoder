@@ -30,11 +30,12 @@ import argparse
 import logging
 import os
 
-from transcoder import __version__, LineEncoding, Transcoder
+from transcoder.version import __version__
 from transcoder.message import MessageUtil
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers, get_output_manager
 from transcoder.source import all_source_identifiers, get_message_source
+from transcoder import Transcoder
 
 script_dir = os.path.dirname(__file__)
 
@@ -180,12 +181,12 @@ def main():
 
     txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
                         source_file_format_type, source_file_endian, skip_lines, skip_bytes,
-                        message_skip_bytes, quiet, output_type, output_path, error_output_path,
-                        destination_project_id, destination_dataset_id, message_handlers,
-                        lazy_create_resources, frame_only, stats_only, create_schemas_only,
-                        continue_on_error, create_schema_enforcing_topics, sampling_count,
-                        message_type_inclusions, message_type_exclusions, fix_header_tags,
-                        fix_separator, base64, base64_urlsafe)
+                        message_skip_bytes, quiet, output_type, output_encoding, output_path,
+                        error_output_path, destination_project_id, destination_dataset_id,
+                        message_handlers, lazy_create_resources, frame_only, stats_only,
+                        create_schemas_only, continue_on_error, create_schema_enforcing_topics,
+                        sampling_count, message_type_inclusions, message_type_exclusions,
+                        fix_header_tags, fix_separator, base64, base64_urlsafe)
 
     txcode.transcode()
 
