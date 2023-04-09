@@ -49,6 +49,8 @@ class Transcoder:
                  sampling_count: int, message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
+        signal.signal(signal.SIGINT, self.trap)
+
         self.message_handlers = message_handlers
         self.all_message_type_handlers = []
         self.all_handlers = []
@@ -168,24 +170,29 @@ class Transcoder:
                 logging.info('Output manager \'%s\' does not support message writes',
                              self.output_manager.output_type_identifier())
 
-            if self.message_parser.stats_only is True:
-                logging.info('Run in stats_only mode')
+            if self.frame_only is False:
+                
+                if self.message_parser.stats_only is True:
+                    logging.info('Run in stats_only mode')
 
-            if self.message_parser.use_sampling is True:
-                logging.info('Sampling count: %s', self.message_parser.sampling_count)
+                if self.message_parser.use_sampling is True:
+                    logging.info('Sampling count: %s', self.message_parser.sampling_count)
 
-            if self.message_parser.message_type_inclusions is not None:
-                logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
-            elif self.message_parser.message_type_exclusions is not None:
-                logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
+                if self.message_parser.message_type_inclusions is not None:
+                    logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
+                elif self.message_parser.message_type_exclusions is not None:
+                    logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
-            if self.create_schemas_only is False:
+                if self.create_schemas_only is False:
+                    logging.info('Source record count: %s', self.source.record_count)
+                    logging.info('Processed record count: %s', self.message_parser.record_count)
+                    logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
+                    logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
+                    logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
+                    logging.info('Message rate: %s per second', round(self.source.record_count / total_seconds, 6))
+
+            else:
                 logging.info('Source record count: %s', self.source.record_count)
-                logging.info('Processed record count: %s', self.message_parser.record_count)
-                logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
-                logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
-                logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
-                logging.info('Message rate: %s per second', round(self.source.record_count / total_seconds, 6))
 
             logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
             logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
