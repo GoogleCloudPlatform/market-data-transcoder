@@ -28,7 +28,7 @@ class LengthDelimitedOutputManager(OutputManager):
     def __init__(self, prefix_length: int):
         super().__init__()
         self.prefix_length = prefix_length
-        
+
     @staticmethod
     def output_type_identifier():
         return 'length_delimited'
