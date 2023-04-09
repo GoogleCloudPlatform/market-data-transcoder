@@ -26,7 +26,7 @@ class LengthDelimitedOutputManager(OutputManager):
     """ Output manager for length-prefixed binary files sent to standard output """
 
     def __init__(self, prefix_length: int):
-        suoer().__init__()
+        super().__init__()
         self.prefix_length = prefix_length
         
     @staticmethod
@@ -36,5 +36,3 @@ class LengthDelimitedOutputManager(OutputManager):
     def write_record(self, record_type_name, record):
         byte_len = struct.pack('>H', len(record))
         sys.stdout.buffer.write(byte_len + record)
-
-        
