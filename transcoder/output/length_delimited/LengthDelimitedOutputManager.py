@@ -23,9 +23,10 @@ from transcoder.output import OutputManager
 
 
 class LengthDelimitedOutputManager(OutputManager):
-    """Output manager for representing  messages in diagnostic notation"""
+    """ Output manager for length-prefixed binary files sent to standard output """
 
     def __init__(self, prefix_length: int):
+        suoer().__init__()
         self.prefix_length = prefix_length
         
     @staticmethod
