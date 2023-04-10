@@ -92,10 +92,10 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
         if self.frame_only is False: # don't need a parser for just framibg
             self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
-                                                                    sampling_count, frame_only,
-                                                                    stats_only, message_type_inclusions,
-                                                                    message_type_exclusions, fix_header_tags,
-                                                                    fix_separator)
+                                                                    sampling_count, stats_only,
+                                                                    message_type_inclusions,
+                                                                    message_type_exclusions,
+                                                                    fix_header_tags, fix_separator)
 
         self.setup_handlers()
 
@@ -114,8 +114,8 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                         if msg is None:
                             continue
 
-                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                    self.output_manager.write_record(msg.name, msg.dictionary)
+                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                        self.output_manager.write_record(msg.name, msg.dictionary)
 
         if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()
