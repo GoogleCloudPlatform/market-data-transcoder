@@ -43,13 +43,15 @@ def all_output_identifiers():
     ]
 
 
-def get_output_manager(output_name: str, output_prefix: str = None, output_file_path: str = None,
-                       output_encoding: str = None,
-                       prefix_length: int = 2,
-                       destination_project_id: str = None,
-                       destination_dataset_id: str = None,
-                       lazy_create_resources: bool = False,
-                       create_schema_enforcing_topics: bool = True):
+def get_output_manager(output_name: str, # pylint: disable=too-many-arguments
+                        output_prefix: str = None,
+                        output_file_path: str = None,
+                        output_encoding: str = None,
+                        prefix_length: int = 2,
+                        destination_project_id: str = None,
+                        destination_dataset_id: str = None,
+                        lazy_create_resources: bool = False,
+                        create_schema_enforcing_topics: bool = True):
     """Returns OutputManager instance based on the supplied name"""
     output: OutputManager = None
     if output_name == AvroOutputManager.output_type_identifier():

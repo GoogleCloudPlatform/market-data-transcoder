@@ -29,7 +29,7 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
         return 'cme_binary_packet'
 
     def __init__(self, file_path: str, endian: str, skip_bytes: int = 0,
-                 message_skip_bytes: int = 0, message_length_byte_length: int = 2):
+                 message_skip_bytes: int = 0, prefix_length: int = 2):
         super().__init__(file_path, skip_bytes=skip_bytes, endian=endian,
                          message_skip_bytes=message_skip_bytes,
                          prefix_length=prefix_length)
@@ -44,7 +44,7 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
                     break
 
             # Read the parent message length 2 bytes
-            parent_msg_bytes = self.file_handle.read(self.message_length_byte_length)
+            parent_msg_bytes = self.file_handle.read(self.prefix_length)
             if not parent_msg_bytes:
                 break
             message_length = int.from_bytes(parent_msg_bytes, self.endian)
@@ -58,12 +58,12 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
                 break
 
             # Read message header message size 2 bytes
-            msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
+            msg_len_bytes = self.file_handle.read(self.prefix_length)
             if not msg_len_bytes:
                 break
             child_message_length = int.from_bytes(msg_len_bytes, self.endian)
 
-            remainder = child_message_length - self.message_length_byte_length
+            remainder = child_message_length - self.prefix_length
             self.increment_count()
 
             first_msg_bytes = self.file_handle.read(remainder)
@@ -76,11 +76,11 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
             remaining_message_length = remaining_message_length - child_message_length - 12
 
             while remaining_message_length > 0:
-                child_msg_len_bytes = self.file_handle.read(self.message_length_byte_length)
+                child_msg_len_bytes = self.file_handle.read(self.prefix_length)
                 if not child_msg_len_bytes:
                     break
                 child_message_length = int.from_bytes(child_msg_len_bytes, self.endian)
-                remainder = child_message_length - self.message_length_byte_length
+                remainder = child_message_length - self.prefix_length
                 self.increment_count()
                 child_msg_bytes = self.file_handle.read(remainder)
                 if not child_msg_bytes:

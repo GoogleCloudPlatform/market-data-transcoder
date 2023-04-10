@@ -20,5 +20,3 @@
 # pylint: disable=invalid-name
 
 from .SourceUtil import all_source_identifiers, get_message_source
-
-
