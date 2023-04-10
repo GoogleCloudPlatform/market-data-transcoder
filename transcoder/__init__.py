@@ -129,6 +129,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.print_summary()
 
     def execute_handlers(self, message):
+        """ Executes in sequence the message handlers specified for this transcoding instance """
         if self.handlers_enabled is True: # execute handlers
             self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
             for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
