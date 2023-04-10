@@ -41,7 +41,7 @@ def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
     """Returns a Source implementation instance based on the supplied source name"""
 
     source: Source = None
-    
+
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
         source = PcapFileMessageSource(source_loc, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LengthDelimitedFileMessageSource.source_type_identifier():
@@ -53,7 +53,7 @@ def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
 
         print(list(LineEncoding))
-        
+
         if base64 is True:
             line_encoding = LineEncoding.BASE_64
         elif base64_urlsafe is True:

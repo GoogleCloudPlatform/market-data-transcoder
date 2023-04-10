@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-import base64
 import logging
 import os
 import sys
@@ -71,4 +70,3 @@ class FileMessageSource(Source):
     def _log_percentage_read(self):
         if self.file_size and self.log_percentage_read_enabled is True:
             logging.debug('Percentage read: %f%%', round((self.file_handle.tell() / self.file_size) * 100, 6))
-

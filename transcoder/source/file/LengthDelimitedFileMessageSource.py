@@ -42,7 +42,7 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
 
     def get_message_iterator(self):
         # pylint: disable=duplicate-code
-        while True: 
+        while True:
 
             # Read the message length
             msg_len_bytes = self.file_handle.read(self.prefix_length) #self.message_length_byte_length) #self.message_length_byte_length) #self.message_length_byte_length)

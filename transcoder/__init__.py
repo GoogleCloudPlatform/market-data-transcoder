@@ -36,7 +36,7 @@ from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.output import all_output_identifiers, get_output_manager, OutputManager
 from transcoder.source import all_source_identifiers, get_message_source, Source
 
-# pylint: disable=invalid-name    
+# pylint: disable=invalid-name
 class Transcoder: # pylint: disable=too-many-instance-attributes
     """ Main entry point for transcodihg sessions, bounded by a schema, source and parser """
 
@@ -66,7 +66,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.prefix_length = prefix_length
         self.quiet = quiet
         self.start_time = None
-        
+
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
 
@@ -86,7 +86,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                                 output_encoding, self.prefix_length, destination_project_id,
                                                 destination_dataset_id, lazy_create_resources,
                                                 create_schema_enforcing_topics)
-        
+
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
 
@@ -98,7 +98,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                                                     fix_separator)
 
         self.setup_handlers()
-        
+
     def transcode(self):
         """Entry point for transcoding session"""
         self.start_time = datetime.now()
@@ -113,13 +113,13 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
                         if msg is None:
                             continue
-                    
+
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
-                    
+
         if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()
-            
+
         self.print_summary()
 
     def setup_handlers(self):
@@ -145,7 +145,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
             class_ = getattr(module, cls_name)
             instance = class_(config_dict)
             self.all_handlers.append(instance)
-            
+
             if instance.supports_all_message_types is True:
                 self.all_message_type_handlers.append(instance)
                 continue
@@ -174,7 +174,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                              self.output_manager.output_type_identifier())
 
             if self.frame_only is False:
-                
+
                 if self.message_parser.stats_only is True:
                     logging.info('Run in stats_only mode')
 
@@ -219,7 +219,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         if self.lazy_create_resources is False:
             self.output_manager.wait_for_schema_creation()
 
-            
+
     def handle_exception(self, raw_record, message, exception):
         """Process exceptions encountered in the message processing runtime"""
         if message is not None:
