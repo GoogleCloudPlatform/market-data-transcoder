@@ -37,11 +37,11 @@ def get_message_parser(factory: str, schema_file_path: str,  # pylint: disable=t
                                     message_type_exclusions=message_type_exclusions,
                                     frame_only=frame_only,stats_only=stats_only)
     elif factory in FixParser.supported_factory_types():
-            message_parser = FixParser(schema_file_path=schema_file_path, sampling_count=sampling_count,
-                                        message_type_inclusions=message_type_inclusions,
-                                        message_type_exclusions=message_type_exclusions,
-                                        fix_header_tags=fix_header_tags, fix_separator=fix_separator,
-                                        frame_only=frame_only, stats_only=stats_only)
+        message_parser = FixParser(schema_file_path=schema_file_path, sampling_count=sampling_count,
+                                    message_type_inclusions=message_type_inclusions,
+                                    message_type_exclusions=message_type_exclusions,
+                                    fix_header_tags=fix_header_tags, fix_separator=fix_separator,
+                                    frame_only=frame_only, stats_only=stats_only)
     else:
         raise MessageParserNotDefinedError
 
