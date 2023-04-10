@@ -66,7 +66,8 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.prefix_length = prefix_length
         self.quiet = quiet
         self.start_time = None
-
+        self.stats_only = stats_only
+        
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
 
@@ -104,18 +105,16 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.start_time = datetime.now()
         with self.source:
             for raw_msg in self.source.get_message_iterator():
-                if self.frame_only:
+                if self.frame_only: # don't parse message
                     self.output_manager.write_record(None, raw_msg)
-                else:
-                    if self.output_manager is not None:
+                else: # parse message
+                    if self.stats_only is False: # output message
                         self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                         msg = self.message_parser.process_message(raw_msg)
-
-                        if msg is None:
-                            continue
-
-                        self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                        self.output_manager.write_record(msg.name, msg.dictionary)
+                                          
+                        if msg.ignored is not True: # write to output
+                            self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                            self.output_manager.write_record(msg.name, msg.dictionary)
 
         if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()

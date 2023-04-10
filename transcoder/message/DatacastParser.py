@@ -79,9 +79,6 @@ class DatacastParser:
 
     def process_message(self, raw_msg) -> ParsedMessage:
         """Wraps _process_message with count and inclusion behavior"""
-        if self.frame_only is True:
-            self.increment_summary_count('data')
-            return ParsedMessage.ParsedMessage('data', 'data', raw_msg, {'data': raw_msg})
 
         message = self._process_message(raw_msg)
 
