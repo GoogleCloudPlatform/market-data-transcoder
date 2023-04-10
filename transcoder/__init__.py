@@ -53,7 +53,8 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
         signal.signal(signal.SIGINT, self.trap)
 
-        self.message_handlers = message_handlers
+        self.message_handler_spec = message_handlers
+        self.message_handlers = {}
         self.all_message_type_handlers = []
         self.all_handlers = []
         self.handlers_enabled = False
@@ -77,12 +78,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.error_writer = ErrorWriter(prefix=self.output_prefix,
                                         output_path=self.error_output_path)
 
-        if create_schemas_only is False:
-            self.source = get_message_source(source_file_path, source_file_encoding,
-                                            source_file_format_type, source_file_endian,
-                                            skip_bytes, skip_lines, message_skip_bytes,
-                                            prefix_length, base64, base64_urlsafe)
-
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
                                                 output_encoding, self.prefix_length, destination_project_id,
                                                 destination_dataset_id, lazy_create_resources,
@@ -91,14 +86,20 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
 
-        if self.frame_only is False: # don't need a parser for just framibg
+        if create_schemas_only is False:
+            self.source = get_message_source(source_file_path, source_file_encoding,
+                                            source_file_format_type, source_file_endian,
+                                            skip_bytes, skip_lines, message_skip_bytes,
+                                            prefix_length, base64, base64_urlsafe)
+
+
+        if self.frame_only is False: # don't need a parser for just framing
             self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                     sampling_count, stats_only,
                                                                     message_type_inclusions,
                                                                     message_type_exclusions,
                                                                     fix_header_tags, fix_separator)
-
-        self.setup_handlers()
+            self.setup_handlers()
 
     def transcode(self):
         """Entry point for transcoding session"""
@@ -111,10 +112,21 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                     if self.stats_only is False: # output message
                         self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
                         msg = self.message_parser.process_message(raw_msg)
-                                          
-                        if msg.ignored is not True: # write to output
-                            self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                            self.output_manager.write_record(msg.name, msg.dictionary)
+
+                        if msg.exception is not None:
+                            self.handle_exception(raw_record, msg, msg.exception)
+                            continue
+                            
+                        if msg.ignored is False: # pass inclusions / exclusions
+                            if self.handlers_enabled is True: # execute handlers
+                                self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
+                                for handler in self.all_message_type_handlers + self.message_handlers.get(msg.type, []):
+                                    self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
+                                    handler.handle(msg)
+
+                            if msg.ignored is False: 
+                                self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                                self.output_manager.write_record(msg.name, msg.dictionary)
 
         if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()
@@ -124,13 +136,11 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
     def setup_handlers(self):
         """Initialize MessageHandler instances to employ at runtime"""
 
-        if self.message_handlers is None or self.message_handlers == "":
-            return
-        if self.create_schemas_only is True or self.frame_only is True:
+        if self.message_handler_spec is None or self.message_handler_spec == "":
             return
 
         self.handlers_enabled = True
-        handler_strs = self.message_handlers.split(',')
+        handler_strs = self.message_handler_spec.split(',')
         for handler_spec in handler_strs:
             cls_name = None
             config_dict = None
