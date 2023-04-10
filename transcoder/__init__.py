@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=broad-except
+
 import importlib
 import logging
 import os
@@ -35,11 +37,12 @@ from transcoder.output import all_output_identifiers, get_output_manager, Output
 from transcoder.source import all_source_identifiers, get_message_source, Source
 
 # pylint: disable=invalid-name    
-class Transcoder:
+class Transcoder: # pylint: disable=too-many-instance-attributes
     """ Main entry point for transcodihg sessions, bounded by a schema, source and parser """
 
 
-    def __init__(self, factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
+    def __init__(self, # pylint: disable=too-many-arguments),too-many-locals
+                 factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
                  source_file_format_type: str, source_file_endian: str, prefix_length: int, skip_lines: int,
                  skip_bytes: int,  message_skip_bytes: int, quiet: bool, output_type: str, output_encoding: str,
                  output_path: str, error_output_path: str, destination_project_id: str, destination_dataset_id: str,
@@ -61,6 +64,8 @@ class Transcoder:
         self.create_schemas_only = create_schemas_only
         self.lazy_create_resources = lazy_create_resources
         self.prefix_length = prefix_length
+        self.quiet = quiet
+        self.start_time = None
         
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'

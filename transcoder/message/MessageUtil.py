@@ -29,20 +29,19 @@ def get_message_parser(factory: str, schema_file_path: str,  # pylint: disable=t
                        message_type_inclusions: str = None, message_type_exclusions: str = None,
                        fix_header_tags: str = None, fix_separator: int = 1) -> DatacastParser:
     """Returns a DatacastParser instance based on the supplied factory name"""
- 
     message_parser: DatacastParser = None
     if factory in SBEParser.supported_factory_types():
             message_factory = get_message_factory(factory, schema_file_path)
             message_parser = SBEParser(message_factory, sampling_count=sampling_count,
-                                               message_type_inclusions=message_type_inclusions,
-                                               message_type_exclusions=message_type_exclusions,
-                                               frame_only=frame_only, stats_only=stats_only)
+                                       message_type_inclusions=message_type_inclusions,
+                                       message_type_exclusions=message_type_exclusions,
+                                       frame_only=frame_only,stats_only=stats_only)
     elif factory in FixParser.supported_factory_types():
             message_parser = FixParser(schema_file_path=schema_file_path, sampling_count=sampling_count,
-                                               message_type_inclusions=message_type_inclusions,
-                                               message_type_exclusions=message_type_exclusions,
-                                               fix_header_tags=fix_header_tags, fix_separator=fix_separator,
-                                               frame_only=frame_only, stats_only=stats_only)
+                                       message_type_inclusions=message_type_inclusions,
+                                       message_type_exclusions=message_type_exclusions,
+                                       fix_header_tags=fix_header_tags, fix_separator=fix_separator,
+                                       frame_only=frame_only, stats_only=stats_only)
     else:
         raise MessageParserNotDefinedError
 

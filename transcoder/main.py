@@ -31,10 +31,9 @@ import logging
 import os
 
 from transcoder.version import __version__
-from transcoder.message import MessageUtil
 from transcoder.message.factory import all_supported_factory_types
-from transcoder.output import all_output_identifiers, get_output_manager
-from transcoder.source import all_source_identifiers, get_message_source
+from transcoder.output import all_output_identifiers
+from transcoder.source import all_source_identifiers
 from transcoder import Transcoder
 
 script_dir = os.path.dirname(__file__)
@@ -191,7 +190,6 @@ group.add_argument('--foo', action='store_true')
 group.add_argument('--bar', action='store_false')
 parser.parse_args([])
     """
-    
     txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
                         source_file_format_type, source_file_endian, prefix_length, skip_lines,
                         skip_bytes, message_skip_bytes, quiet, output_type, output_encoding,
