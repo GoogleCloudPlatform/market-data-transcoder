@@ -68,7 +68,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.quiet = quiet
         self.start_time = None
         self.stats_only = stats_only
-        
+
         if output_type is None:
             output_type = 'length_delimited' if self.frame_only else 'diag'
 
@@ -114,17 +114,12 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                         msg = self.message_parser.process_message(raw_msg)
 
                         if msg.exception is not None:
-                            self.handle_exception(raw_record, msg, msg.exception)
+                            self.handle_exception(raw_msg, msg, msg.exception)
                             continue
-                            
-                        if msg.ignored is False: # pass inclusions / exclusions
-                            if self.handlers_enabled is True: # execute handlers
-                                self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
-                                for handler in self.all_message_type_handlers + self.message_handlers.get(msg.type, []):
-                                    self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
-                                    handler.handle(msg)
 
-                            if msg.ignored is False: 
+                        if msg.ignored is False: # passed inclusions / exclusions
+                            self.execute_handlers(msg)
+                            if msg.ignored is False: # passed filters
                                 self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                                 self.output_manager.write_record(msg.name, msg.dictionary)
 
@@ -132,6 +127,14 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
             self.output_manager.wait_for_completion()
 
         self.print_summary()
+
+    def execute_handlers(self, message):
+        if self.handlers_enabled is True: # execute handlers
+            self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
+            for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
+                self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
+                handler.handle(message)
+
 
     def setup_handlers(self):
         """Initialize MessageHandler instances to employ at runtime"""
