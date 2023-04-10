@@ -38,8 +38,6 @@ class LineDelimitedFileMessageSource(FileMessageSource):
         self.line_encoding = line_encoding
         self.skip_lines = skip_lines
 
-        print(self.line_encoding)
-
     def prepare(self):
         # file_size is only determinable on seekable input
         if sys.stdin.seekable() is True and self.file_size == 0:

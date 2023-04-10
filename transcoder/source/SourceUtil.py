@@ -52,8 +52,6 @@ def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
 
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
 
-        print(list(LineEncoding))
-
         if base64 is True:
             line_encoding = LineEncoding.BASE_64
         elif base64_urlsafe is True:

@@ -69,9 +69,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.start_time = None
         self.stats_only = stats_only
 
-        if output_type is None:
-            output_type = 'length_delimited' if self.frame_only else 'diag'
-
         self.output_prefix = os.path.basename(
             os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
 
@@ -83,10 +80,10 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                                 destination_dataset_id, lazy_create_resources,
                                                 create_schema_enforcing_topics)
 
+        # TODO: think about this abstraction some more
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
-
-        if create_schemas_only is False:
+        else:
             self.source = get_message_source(source_file_path, source_file_encoding,
                                             source_file_format_type, source_file_endian,
                                             skip_bytes, skip_lines, message_skip_bytes,
@@ -104,6 +101,9 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
     def transcode(self):
         """Entry point for transcoding session"""
         self.start_time = datetime.now()
+        if self.frame_only is False:
+            self.process_schemas()
+
         with self.source:
             for raw_msg in self.source.get_message_iterator():
                 if self.frame_only: # don't parse message
@@ -122,9 +122,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                             if msg.ignored is False: # passed filters
                                 self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                                 self.output_manager.write_record(msg.name, msg.dictionary)
-
-        if self.output_manager is not None and self.frame_only is False:
-            self.output_manager.wait_for_completion()
 
         self.print_summary()
 
@@ -231,7 +228,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         # Only need to wait if lazy create is off, and you want to force creation before data is read
         if self.lazy_create_resources is False:
             self.output_manager.wait_for_schema_creation()
-
 
     def handle_exception(self, raw_record, message, exception):
         """Process exceptions encountered in the message processing runtime"""
