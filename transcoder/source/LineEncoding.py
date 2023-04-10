@@ -34,4 +34,3 @@ class LineEncoding(Enum):
 
     def __repr__(self):
         return self.name
-
