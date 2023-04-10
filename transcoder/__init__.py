@@ -34,8 +34,7 @@ from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.output import all_output_identifiers, get_output_manager, OutputManager
 from transcoder.source import all_source_identifiers, get_message_source, Source
 
-# pylint: disable=invalid-name
-    
+# pylint: disable=invalid-name    
 class Transcoder:
     """ Main entry point for transcodihg sessions, bounded by a schema, source and parser """
 
@@ -81,8 +80,8 @@ class Transcoder:
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
                                                 output_encoding, self.prefix_length, destination_project_id,
                                                 destination_dataset_id, lazy_create_resources,
-                                                create_schema_enforcing_topics)  
-
+                                                create_schema_enforcing_topics)
+        
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
 
@@ -94,7 +93,6 @@ class Transcoder:
                                                                     fix_separator)
 
         self.setup_handlers()
-               
         
     def transcode(self):
         """Entry point for transcoding session"""
@@ -116,7 +114,7 @@ class Transcoder:
                     
         if self.output_manager is not None and self.frame_only is False:
             self.output_manager.wait_for_completion()
-
+            
         self.print_summary()
 
     def setup_handlers(self):
