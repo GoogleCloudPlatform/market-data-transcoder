@@ -110,24 +110,27 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                     self.output_manager.write_record(None, raw_msg)
                 else: # parse message
                     if self.stats_only is False: # output message
-                        self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
-                        try:
-                            msg = self.message_parser.process_message(raw_msg)
-
-                            if msg.exception is not None:
-                                self.handle_exception(raw_msg, msg, msg.exception)
-                                if self.continue_on_error:
-                                    continue
-
-                            if msg.ignored is False: # passed inclusions / exclusions
-                                self.execute_handlers(msg)
-                                if msg.ignored is False: # passed filters
-                                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                                    self.output_manager.write_record(msg.name, msg.dictionary)
-                        except Exception as ex:
-                            self.handle_exception(raw_msg, msg, ex)
+                        self.transcode_message(raw_msg)
 
         self.print_summary()
+
+    def transcode_message(self, raw):
+        """ Transcoding steps executes on each source message """
+        self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
+        try:
+            msg = self.message_parser.process_message(raw)
+
+            if msg.exception is not None:
+                self.handle_exception(raw, msg, msg.exception)
+
+            if msg.ignored is False: # passed inclusions / exclusions
+                self.execute_handlers(msg)
+                if msg.ignored is False: # passed filters
+                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                    self.output_manager.write_record(msg.name, msg.dictionary)
+        except Exception as ex:
+            self.handle_exception(raw, msg, ex)
+
 
     def execute_handlers(self, message):
         """ Executes in sequence the message handlers specified for this transcoding instance """
