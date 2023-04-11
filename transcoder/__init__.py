@@ -111,17 +111,21 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                 else: # parse message
                     if self.stats_only is False: # output message
                         self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
-                        msg = self.message_parser.process_message(raw_msg)
+                        try:
+                            msg = self.message_parser.process_message(raw_msg)
 
-                        if msg.exception is not None:
-                            self.handle_exception(raw_msg, msg, msg.exception)
-                            continue
+                            if msg.exception is not None:
+                                self.handle_exception(raw_msg, msg, msg.exception)
+                                if self.continue_on_error:
+                                    continue
 
-                        if msg.ignored is False: # passed inclusions / exclusions
-                            self.execute_handlers(msg)
-                            if msg.ignored is False: # passed filters
-                                self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
-                                self.output_manager.write_record(msg.name, msg.dictionary)
+                            if msg.ignored is False: # passed inclusions / exclusions
+                                self.execute_handlers(msg)
+                                if msg.ignored is False: # passed filters
+                                    self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
+                                    self.output_manager.write_record(msg.name, msg.dictionary)
+                        except Exception as ex:
+                            self.handle_exception(raw_msg, msg, ex)
 
         self.print_summary()
 
