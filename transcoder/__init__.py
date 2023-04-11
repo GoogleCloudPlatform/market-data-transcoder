@@ -115,7 +115,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.print_summary()
 
     def transcode_message(self, raw):
-        """ Transcoding steps executes on each source message """
+        """ Transcoding steps executed on each source message """
         self.error_writer.set_step(TranscodeStep.PARSE_MESSAGE)
         try:
             msg = self.message_parser.process_message(raw)
