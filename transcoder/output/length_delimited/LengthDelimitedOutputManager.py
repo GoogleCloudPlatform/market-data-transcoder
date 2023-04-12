@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-# pylint: disable=broad-except
+# pylint: disable=broad-exception-raised
 
 import struct
 import sys
