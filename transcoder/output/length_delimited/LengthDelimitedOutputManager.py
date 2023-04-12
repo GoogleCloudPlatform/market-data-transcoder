@@ -25,14 +25,27 @@ from transcoder.output import OutputManager
 class LengthDelimitedOutputManager(OutputManager):
     """ Output manager for length-prefixed binary files sent to standard output """
 
-    def __init__(self, prefix_length: int):
+    def __init__(self, prefix_length: int=2, endian: int='>'):
         super().__init__()
         self.prefix_length = prefix_length
+        self.endian = endian
 
     @staticmethod
     def output_type_identifier():
         return 'length_delimited'
 
+    def pack_spec(self):
+        """ Decide what parameter to pass to struct.pack based on prefix length specified in constructor """
+        if self.prefix_length == 2:
+            return self.endian + 'H'
+        elif self.prefix_length == 4:
+            return self.endian + 'I'
+        elif self.prefix_length == 8:
+            return self.endian + 'Q'
+        else:
+            raise Exception('Valid values for prefix length are 2, 4 or 8')
+
+
     def write_record(self, record_type_name, record):
-        byte_len = struct.pack('>H', len(record))
+        byte_len = struct.pack(self.pack_spec(), len(record))
         sys.stdout.buffer.write(byte_len + record)

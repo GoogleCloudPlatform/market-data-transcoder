@@ -34,7 +34,7 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
         self.skip_bytes = skip_bytes
         self.endian = endian
         self.message_skip_bytes = message_skip_bytes
-        self.prefix_length = 2 if prefix_length is None else prefix_length
+        self.prefix_length = prefix_length
 
     def prepare(self):
         if self.skip_bytes > 0:

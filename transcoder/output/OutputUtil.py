@@ -76,6 +76,7 @@ def get_output_manager(output_name: str, # pylint: disable=too-many-arguments
     elif output_name == JsonOutputManager.output_type_identifier():
         output = JsonOutputManager(output_prefix, output_file_path, lazy_create_resources=lazy_create_resources)
     elif output_name == LengthDelimitedOutputManager.output_type_identifier():
+        # TODO: pass through output endian specification from CLI args
         output = LengthDelimitedOutputManager(prefix_length=prefix_length)
     else:
         raise UnsupportedOutputTypeError(f'Output {output_name} is not supported')

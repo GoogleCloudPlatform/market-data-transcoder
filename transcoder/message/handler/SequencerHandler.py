@@ -41,6 +41,6 @@ class SequencerHandler(MessageHandler):
         schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
 
     def handle(self, message: ParsedMessage):
-        if message.dictionary is not None:
+        if message.ignored is False:
             self.sequence_number += 1
             message.dictionary[self.sequence_number_field_name] = self.sequence_number
