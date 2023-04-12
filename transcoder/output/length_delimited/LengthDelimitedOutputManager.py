@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# pylint: disable=broad-except
+
 import struct
 import sys
 from transcoder.output import OutputManager
@@ -38,12 +40,12 @@ class LengthDelimitedOutputManager(OutputManager):
         """ Decide what parameter to pass to struct.pack based on prefix length specified in constructor """
         if self.prefix_length == 2:
             return self.endian + 'H'
-        elif self.prefix_length == 4:
+        if self.prefix_length == 4:
             return self.endian + 'I'
-        elif self.prefix_length == 8:
+        if self.prefix_length == 8:
             return self.endian + 'Q'
-        else:
-            raise Exception('Valid values for prefix length are 2, 4 or 8')
+
+        raise Exception('Valid values for prefix length are 2, 4 or 8')
 
 
     def write_record(self, record_type_name, record):
