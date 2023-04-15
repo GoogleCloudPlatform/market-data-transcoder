@@ -28,7 +28,7 @@ class TimestampPullForwardHandler(MessageHandler):
     and carries it forward into other message types not of type 'time_message'"""
 
     def __init__(self, config=None):
-        super().__init__()
+        super().__init__(config)
         self.last_timestamp_message = None
         self.last_epoch_seconds = None
         self.time_message_type_name = 'time_message'
