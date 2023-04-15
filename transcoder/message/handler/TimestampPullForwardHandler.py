@@ -27,7 +27,7 @@ class TimestampPullForwardHandler(MessageHandler):
     """Custom message handler that stores the 'second' value from the last message of type 'time_message',
     and carries it forward into other message types not of type 'time_message'"""
 
-    def __init__(self):
+    def __init__(self, config=None):
         super().__init__()
         self.last_timestamp_message = None
         self.last_epoch_seconds = None
