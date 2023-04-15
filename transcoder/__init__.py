@@ -138,7 +138,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
             self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
             for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
                 self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
-#                print(handler.__dict__)
                 handler.handle(message)
 
 
