@@ -33,7 +33,6 @@ class DatacastParser:
     def __init__(self, sampling_count: int = None, frame_only: bool = False, stats_only: bool = False,
                  message_type_inclusions: str = None, message_type_exclusions: str = None):
         self.sampling_count = sampling_count
-        self.frame_only = frame_only
         self.stats_only = stats_only
         self.message_type_inclusions = message_type_inclusions.split(
             ',') if message_type_inclusions is not None else None
@@ -63,9 +62,6 @@ class DatacastParser:
 
     def process_schema(self) -> [DatacastSchema]:
         """Gets message names from schema file, filters messages to include, sets count dict"""
-        if self.frame_only is True:
-            return [DatacastSchema.DatacastSchema("data", "data", [MessageHandlerStringField("data")])]
-
         schema_list = self._process_schema()
         filtered_list = list(filter(lambda x: self.__include_message_type(x.name), schema_list))
         self.total_schema_count = len(filtered_list)
