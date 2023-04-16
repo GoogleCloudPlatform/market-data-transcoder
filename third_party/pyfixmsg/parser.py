@@ -43,9 +43,9 @@ class FixParser(DatacastParser):
     def __init__(self, schema_file_path: str, sampling_count: int = None,  # pylint: disable=too-many-arguments
                  message_type_inclusions: str = None, message_type_exclusions: str = None,
                  fix_header_tags: str = None, fix_separator: int = 1,
-                 frame_only: bool = False, stats_only: bool = False):
+                 stats_only: bool = False):
         super().__init__(sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
-                         message_type_exclusions=message_type_exclusions, frame_only=frame_only, stats_only=stats_only)
+                         message_type_exclusions=message_type_exclusions, stats_only=stats_only)
         self.schema_file_path = schema_file_path
         self.fix_header_tags = fix_header_tags
         self.fix_separator = fix_separator
