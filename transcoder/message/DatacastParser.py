@@ -19,8 +19,6 @@
 
 from transcoder.message import DatacastSchema, ParsedMessage
 from transcoder.message.exception import ParserFunctionNotDefinedError
-from transcoder.message.handler.MessageHandlerStringField import MessageHandlerStringField
-
 
 class DatacastParser:
     """Class encapsulating message parsing and processing functionality """
