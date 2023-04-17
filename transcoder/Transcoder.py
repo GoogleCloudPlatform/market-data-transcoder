@@ -26,15 +26,14 @@ import signal
 import sys
 
 from datetime import datetime
-from enum import Enum
+# from enum import Enum
 
 
 from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.message import DatacastParser
-from transcoder.message.factory import all_supported_factory_types
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
-from transcoder.output import all_output_identifiers, get_output_manager, OutputManager
-from transcoder.source import all_source_identifiers, get_message_source, Source
+from transcoder.output import get_output_manager
+from transcoder.source import get_message_source
 
 # pylint: disable=invalid-name
 class Transcoder: # pylint: disable=too-many-instance-attributes
