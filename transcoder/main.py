@@ -22,19 +22,18 @@
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 
-"""Datacast Transcoder
-This script provides a default implementation for the Datacast Transcoder MessageParser class.
+"""
+CLI entry point for the market data transcoding API
 """
 
 import argparse
 import logging
 import os
 
-from transcoder.version import __version__
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
-from transcoder import Transcoder
+from transcoder import Transcoder, __version__
 
 script_dir = os.path.dirname(__file__)
 
