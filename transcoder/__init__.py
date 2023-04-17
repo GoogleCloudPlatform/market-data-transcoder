@@ -20,3 +20,4 @@
 # pylint: disable=invalid-name
 
 from .Transcoder import Transcoder
+from .version import __version__
