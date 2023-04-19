@@ -32,4 +32,4 @@ class NoParser(DatacastParser):
         """ Update message counter """
         self.record_count += 1
         self.summary_count += 1
-        return None
+        return {}
