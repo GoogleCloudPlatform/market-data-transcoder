@@ -28,7 +28,7 @@ import sys
 from datetime import datetime
 
 from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
-from transcoder.message import DatacastParser
+from transcoder.message import DatacastParser, NoParser
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.output import get_output_manager
 from transcoder.source import get_message_source
@@ -95,6 +95,8 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                                                     message_type_exclusions,
                                                                     fix_header_tags, fix_separator)
             self.setup_handlers()
+        else:
+            self.message_parser: DatacastParser = NoParser()
 
     def transcode(self):
         """Entry point for transcoding session"""
@@ -105,6 +107,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         with self.source:
             for raw_msg in self.source.get_message_iterator():
                 if self.frame_only: # don't parse message
+                    self.message_parser.process_message(raw_msg)
                     self.output_manager.write_record(None, raw_msg)
                 else: # parse message
                     if self.stats_only is False: # output message
