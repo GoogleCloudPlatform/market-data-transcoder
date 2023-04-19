@@ -21,4 +21,3 @@
 
 from .NoParser import NoParser
 from .DatacastParser import DatacastParser
-
