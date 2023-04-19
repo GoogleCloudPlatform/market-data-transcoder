@@ -88,15 +88,15 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                             prefix_length, base64, base64_urlsafe)
 
 
-        if self.frame_only is False: # don't need a parser for just framing
+        if self.frame_only:
+            self.message_parser: DatacastParser = NoParser()
+        else:
             self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
                                                                     stats_only,
                                                                     message_type_inclusions,
                                                                     message_type_exclusions,
                                                                     fix_header_tags, fix_separator)
             self.setup_handlers()
-        else:
-            self.message_parser: DatacastParser = NoParser()
 
     def transcode(self):
         """Entry point for transcoding session"""
