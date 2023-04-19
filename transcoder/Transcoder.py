@@ -26,8 +26,6 @@ import signal
 import sys
 
 from datetime import datetime
-# from enum import Enum
-
 
 from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.message import DatacastParser
@@ -67,6 +65,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         self.quiet = quiet
         self.start_time = None
         self.stats_only = stats_only
+        self.sampling_count = sampling_count
 
         self.output_prefix = os.path.basename(
             os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
@@ -110,6 +109,9 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                 else: # parse message
                     if self.stats_only is False: # output message
                         self.transcode_message(raw_msg)
+
+                if self.message_parser.record_count == self.sampling_count:
+                    break
 
         self.print_summary()
 
