@@ -38,9 +38,9 @@ class SBEParser(DatacastParser):
     def supported_factory_types():
         return ['cme', 'itch', 'memx']
 
-    def __init__(self, msg_factory, sampling_count: int = None, message_type_inclusions: str = None,
+    def __init__(self, msg_factory, message_type_inclusions: str = None,
                  message_type_exclusions: str = None, stats_only: bool = False):
-        super().__init__(sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
+        super().__init__(message_type_inclusions=message_type_inclusions,
                          message_type_exclusions=message_type_exclusions, stats_only=stats_only)
         self.factory = msg_factory
 

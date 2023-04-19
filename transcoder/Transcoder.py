@@ -90,7 +90,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
         if self.frame_only is False: # don't need a parser for just framing
             self.message_parser: DatacastParser = get_message_parser(factory, schema_file_path,
-                                                                    sampling_count, stats_only,
+                                                                    stats_only,
                                                                     message_type_inclusions,
                                                                     message_type_exclusions,
                                                                     fix_header_tags, fix_separator)
@@ -197,8 +197,8 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                 if self.message_parser.stats_only is True:
                     logging.info('Run in stats_only mode')
 
-                if self.message_parser.use_sampling is True:
-                    logging.info('Sampling count: %s', self.message_parser.sampling_count)
+                if self.sampling_count is not None:
+                    logging.info('Sampled messages: %s', self.sampling_count)
 
                 if self.message_parser.message_type_inclusions is not None:
                     logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
