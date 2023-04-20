@@ -33,15 +33,15 @@ from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
 from transcoder.output import get_output_manager
 from transcoder.source import get_message_source
 
+
 # pylint: disable=invalid-name
-class Transcoder: # pylint: disable=too-many-instance-attributes
+class Transcoder:  # pylint: disable=too-many-instance-attributes
     """ Main entry point for transcodihg sessions, bounded by a schema, source and parser """
 
-
-    def __init__(self, # pylint: disable=too-many-arguments),too-many-locals
+    def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
                  factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
                  source_file_format_type: str, source_file_endian: str, prefix_length: int, skip_lines: int,
-                 skip_bytes: int,  message_skip_bytes: int, quiet: bool, output_type: str, output_encoding: str,
+                 skip_bytes: int, message_skip_bytes: int, quiet: bool, output_type: str, output_encoding: str,
                  output_path: str, error_output_path: str, destination_project_id: str, destination_dataset_id: str,
                  message_handlers: str, lazy_create_resources: bool, frame_only: bool, stats_only: bool,
                  create_schemas_only: bool, continue_on_error: bool, create_schema_enforcing_topics: bool,
@@ -74,30 +74,28 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
                                         output_path=self.error_output_path)
 
         self.output_manager = get_output_manager(output_type, self.output_prefix, output_path,
-                                                output_encoding, self.prefix_length, destination_project_id,
-                                                destination_dataset_id, lazy_create_resources,
-                                                create_schema_enforcing_topics)
+                                                 output_encoding, self.prefix_length, destination_project_id,
+                                                 destination_dataset_id, lazy_create_resources,
+                                                 create_schema_enforcing_topics)
 
         # TODO: think about this abstraction some more
         if self.output_manager.supports_data_writing() is False:
             self.create_schemas_only = True
         else:
             self.source = get_message_source(source_file_path, source_file_encoding,
-                                            source_file_format_type, source_file_endian,
-                                            skip_bytes, skip_lines, message_skip_bytes,
-                                            prefix_length, base64, base64_urlsafe)
-
-
+                                             source_file_format_type, source_file_endian,
+                                             skip_bytes, skip_lines, message_skip_bytes,
+                                             prefix_length, base64, base64_urlsafe)
 
         self.message_parser: DatacastParser = NoParser() if self.frame_only else get_message_parser(
-                                                                                                    factory,
-                                                                                                    schema_file_path,
-                                                                                                    stats_only,
-                                                                                                    message_type_inclusions,
-                                                                                                    message_type_exclusions,
-                                                                                                    fix_header_tags,
-                                                                                                    fix_separator
-                                                                                                    )
+            factory,
+            schema_file_path,
+            stats_only,
+            message_type_inclusions,
+            message_type_exclusions,
+            fix_header_tags,
+            fix_separator
+        )
 
         self.setup_handlers()
 
@@ -109,11 +107,11 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
         with self.source:
             for raw_msg in self.source.get_message_iterator():
-                if self.frame_only: # don't parse message
+                if self.frame_only:  # don't parse message
                     self.message_parser.process_message(raw_msg)
                     self.output_manager.write_record(None, raw_msg)
-                else: # parse message
-                    if self.stats_only is False: # output message
+                else:  # parse message
+                    if self.stats_only is False:  # output message
                         self.transcode_message(raw_msg)
 
                 if self.message_parser.record_count == self.sampling_count:
@@ -131,23 +129,21 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
             if msg.exception is not None:
                 self.handle_exception(raw, msg, msg.exception)
 
-            if msg.ignored is False: # passed inclusions / exclusions
+            if msg.ignored is False:  # passed inclusions / exclusions
                 self.execute_handlers(msg)
-                if msg.ignored is False: # passed filters
+                if msg.ignored is False:  # passed filters
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
         except Exception as ex:
             self.handle_exception(raw, msg, ex)
 
-
     def execute_handlers(self, message):
         """ Executes in sequence the message handlers specified for this transcoding instance """
-        if self.handlers_enabled is True: # execute handlers
+        if self.handlers_enabled is True:  # execute handlers
             self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLERS)
             for handler in self.all_message_type_handlers + self.message_handlers.get(message.type, []):
                 self.error_writer.set_step(TranscodeStep.EXECUTE_HANDLER, type(handler).__name__)
                 handler.handle(message)
-
 
     def setup_handlers(self):
         """Initialize MessageHandler instances to employ at runtime"""
@@ -160,7 +156,7 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
         for handler_spec in handler_strs:
             cls_name = None
             config_dict = None
-            if handler_spec.find(':') == -1: # no handler params
+            if handler_spec.find(':') == -1:  # no handler params
                 cls_name = handler_spec
             else:
                 cls_name = handler_spec.split(':')[0]
@@ -255,7 +251,6 @@ class Transcoder: # pylint: disable=too-many-instance-attributes
 
         if self.continue_on_error is False:
             raise exception
-
 
     def trap(self, _signum, _frame):
         """Trap SIGINT to suppress noisy stack traces and show interim summary"""

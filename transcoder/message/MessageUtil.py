@@ -23,7 +23,7 @@ from transcoder.message import DatacastParser
 from transcoder.message.exception import MessageParserNotDefinedError
 from transcoder.message.factory.MessageFactory import get_message_factory
 
-@staticmethod
+
 def get_message_parser(factory: str, schema_file_path: str,  # pylint: disable=too-many-arguments
                        stats_only: bool = False,
                        message_type_inclusions: str = None, message_type_exclusions: str = None,
@@ -33,18 +33,17 @@ def get_message_parser(factory: str, schema_file_path: str,  # pylint: disable=t
     if factory in SBEParser.supported_factory_types():
         message_factory = get_message_factory(factory, schema_file_path)
         message_parser = SBEParser(message_factory,
-                                    message_type_inclusions=message_type_inclusions,
-                                    message_type_exclusions=message_type_exclusions,
-                                    stats_only=stats_only)
+                                   message_type_inclusions=message_type_inclusions,
+                                   message_type_exclusions=message_type_exclusions,
+                                   stats_only=stats_only)
     elif factory in FixParser.supported_factory_types():
         message_parser = FixParser(schema_file_path=schema_file_path,
-                                    message_type_inclusions=message_type_inclusions,
-                                    message_type_exclusions=message_type_exclusions,
-                                    fix_header_tags=fix_header_tags, fix_separator=fix_separator,
-                                    stats_only=stats_only)
+                                   message_type_inclusions=message_type_inclusions,
+                                   message_type_exclusions=message_type_exclusions,
+                                   fix_header_tags=fix_header_tags, fix_separator=fix_separator,
+                                   stats_only=stats_only)
     else:
         raise MessageParserNotDefinedError
-
 
     return message_parser
 
