@@ -71,7 +71,8 @@ def main():
                                            'length delimited file message source')
 
     source_options_group.add_argument('--prefix_length', type=int, default=2,
-                                      help='How many bytes to use for the length prefix of length-delimited binary sources')
+                                      help='How many bytes to use for the length prefix of length-delimited binary '
+                                           'sources')
     message_filter_group = source_options_group.add_mutually_exclusive_group()
     message_filter_group.add_argument('--message_type_exclusions', type=str,
                                       help='Comma-delimited list of message types to exclude '
