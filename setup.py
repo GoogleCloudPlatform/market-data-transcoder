@@ -17,7 +17,12 @@
 # limitations under the License.
 #
 
-# pylint: disable=invalid-name
+from setuptools import setup
 
-from .Transcoder import Transcoder
-from .version import __version__
+if __name__ == "__main__":
+    pkg_vars = {}
+    with open("./transcoder/version.py") as fp:
+        exec(fp.read(), pkg_vars)
+    setup(
+        version=pkg_vars['__version__']
+    )
