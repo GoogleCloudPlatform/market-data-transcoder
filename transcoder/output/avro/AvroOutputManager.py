@@ -19,7 +19,7 @@
 
 import json
 
-import avro.schema
+import avro
 from avro.datafile import DataFileWriter
 from avro.io import DatumWriter
 
