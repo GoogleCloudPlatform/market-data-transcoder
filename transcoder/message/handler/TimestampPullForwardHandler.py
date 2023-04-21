@@ -17,17 +17,18 @@
 # limitations under the License.
 #
 
-from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message import ParsedMessage, DatacastSchema
 from transcoder.message.handler.MessageHandler import MessageHandler
 from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntField
 
 
 class TimestampPullForwardHandler(MessageHandler):
+
     """Custom message handler that stores the 'second' value from the last message of type 'time_message',
     and carries it forward into other message types not of type 'time_message'"""
 
-    def __init__(self, parser: MessageParser):
-        super().__init__(parser=parser)
+    def __init__(self, config=None):
+        super().__init__(config)
         self.last_timestamp_message = None
         self.last_epoch_seconds = None
         self.time_message_type_name = 'time_message'

@@ -17,14 +17,13 @@
 # limitations under the License.
 #
 
-from transcoder.message import MessageParser, ParsedMessage
+from transcoder.message import ParsedMessage
 
 
 class MessageHandler:
     """Base class for handlers of specific message types"""
 
-    def __init__(self, parser: MessageParser, config=None):
-        self.parser = parser
+    def __init__(self, config=None):
         self.config = config
         self.all_value: str = '__ALL__'
 

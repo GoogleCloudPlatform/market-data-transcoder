@@ -22,19 +22,18 @@
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
 
-"""Datacast Transcoder
-This script provides a default implementation for the Datacast Transcoder MessageParser class.
+"""
+CLI entry point for the market data transcoding API
 """
 
 import argparse
 import logging
 import os
 
-from transcoder import __version__, LineEncoding
-from transcoder.message.MessageParser import MessageParser
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
+from transcoder import Transcoder, __version__
 
 script_dir = os.path.dirname(__file__)
 
@@ -44,10 +43,10 @@ def main():
     arg_parser = argparse.ArgumentParser(description='Datacast Transcoder process input arguments', allow_abbrev=False)
 
     source_options_group = arg_parser.add_argument_group('Input source arguments')
-    source_options_group.add_argument('--factory', required=True, choices=all_supported_factory_types(),
+    source_options_group.add_argument('--factory', choices=all_supported_factory_types(),
                                       help='Message factory for decoding')
-    source_options_group.add_argument('--schema_file', required=True, type=str, help='Path to the schema file')
-    source_options_group.add_argument('--source_file', required=False, type=str, help='Path to the source file')
+    source_options_group.add_argument('--schema_file', type=str, help='Path to the schema file')
+    source_options_group.add_argument('--source_file', type=str, help='Path to the source file')
     source_options_group.add_argument('--source_file_encoding', type=str, default='utf-8', help='The source file '
                                                                                                 'character encoding')
     source_options_group.add_argument('--source_file_format_type', required=True, choices=all_source_identifiers(),
@@ -71,6 +70,9 @@ def main():
                                            'repeated '
                                            'length delimited file message source')
 
+    source_options_group.add_argument('--prefix_length', type=int, default=2,
+                                      help='How many bytes to use for the length prefix of length-delimited binary '
+                                           'sources')
     message_filter_group = source_options_group.add_mutually_exclusive_group()
     message_filter_group.add_argument('--message_type_exclusions', type=str,
                                       help='Comma-delimited list of message types to exclude '
@@ -153,6 +155,7 @@ def main():
     source_file_encoding = args.source_file_encoding
     source_file_format_type = args.source_file_format_type
     source_file_endian = args.source_file_endian
+    prefix_length = args.prefix_length
     skip_lines = args.skip_lines
     skip_bytes = args.skip_bytes
     message_skip_bytes = args.message_skip_bytes
@@ -175,30 +178,19 @@ def main():
     message_type_exclusions = args.message_type_exclusions
     fix_header_tags = args.fix_header_tags
     fix_separator = args.fix_separator
+    base64 = args.base64
+    base64_urlsafe = args.base64_urlsafe
 
-    line_encoding = None
-    if args.base64 is True:
-        line_encoding = LineEncoding.BASE_64
-    elif args.base64_urlsafe is True:
-        line_encoding = LineEncoding.BASE_64_URL_SAFE
+    txcode = Transcoder(factory, schema_file_path, source_file_path, source_file_encoding,
+                        source_file_format_type, source_file_endian, prefix_length, skip_lines,
+                        skip_bytes, message_skip_bytes, quiet, output_type, output_encoding,
+                        output_path, error_output_path, destination_project_id, destination_dataset_id,
+                        message_handlers, lazy_create_resources, frame_only, stats_only,
+                        create_schemas_only, continue_on_error, create_schema_enforcing_topics,
+                        sampling_count, message_type_inclusions, message_type_exclusions,
+                        fix_header_tags, fix_separator, base64, base64_urlsafe)
 
-    message_parser = MessageParser(factory, schema_file_path,
-                                   source_file_path, source_file_encoding, source_file_format_type,
-                                   source_file_endian, skip_lines=skip_lines, skip_bytes=skip_bytes,
-                                   message_skip_bytes=message_skip_bytes, line_encoding=line_encoding,
-                                   output_type=output_type, output_path=output_path, output_encoding=output_encoding,
-                                   destination_project_id=destination_project_id,
-                                   destination_dataset_id=destination_dataset_id,
-                                   message_handlers=message_handlers, lazy_create_resources=lazy_create_resources,
-                                   frame_only=frame_only, stats_only=stats_only,
-                                   create_schemas_only=create_schemas_only,
-                                   continue_on_error=continue_on_error, error_output_path=error_output_path,
-                                   quiet=quiet, create_schema_enforcing_topics=create_schema_enforcing_topics,
-                                   sampling_count=sampling_count, message_type_inclusions=message_type_inclusions,
-                                   message_type_exclusions=message_type_exclusions,
-                                   fix_header_tags=fix_header_tags, fix_separator=fix_separator)
-
-    message_parser.process()
+    txcode.transcode()
 
 
 if __name__ == "__main__":

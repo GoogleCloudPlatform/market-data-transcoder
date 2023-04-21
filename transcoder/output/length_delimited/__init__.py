@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -19,4 +19,4 @@
 
 # pylint: disable=invalid-name
 
-from .SourceUtil import all_source_identifiers, get_message_source
+from .LengthDelimitedOutputManager import LengthDelimitedOutputManager

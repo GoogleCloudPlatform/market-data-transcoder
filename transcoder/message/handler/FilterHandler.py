@@ -29,9 +29,9 @@ class FilterHandler(MessageHandler):
             val = list(self.config.values())[0]
             if prop in message.dictionary:
                 if not self.match(message.dictionary[prop], val):
-                    message.dictionary = None
+                    message.ignored = True
             else:
-                message.dictionary = None
+                message.ignored = True
 
     @staticmethod
     def match(message_value, filter_value):

@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -17,6 +17,19 @@
 # limitations under the License.
 #
 
-# pylint: disable=invalid-name
+from .DatacastParser import DatacastParser
 
-from .SourceUtil import all_source_identifiers, get_message_source
+class NoParser(DatacastParser):
+    """ NOOP parser that simply maintains a record count. Intended to be used with the frame-only option. """
+    # pylint: disable=super-init-not-called
+
+    def __init__(self):
+        self.record_count = 0
+        self.summary_count = 0
+
+    # pylint: disable=unused-argument
+    def process_message(self, raw_msg=None):
+        """ Update message counter """
+        self.record_count += 1
+        self.summary_count += 1
+        return {}

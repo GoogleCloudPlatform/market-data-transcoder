@@ -5,5 +5,5 @@ numpy==1.24.2
 fastavro==1.7.3
 six>=1.12.0
 google-cloud-pubsub==2.16.0
-google-cloud-bigquery==3.9.0
+google-cloud-bigquery==3.10.0
 pyyaml==6.0

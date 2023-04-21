@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-from transcoder.message import MessageParser, ParsedMessage, DatacastSchema
+from transcoder.message import ParsedMessage, DatacastSchema
 from transcoder.message.handler.MessageHandler import MessageHandler
 from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntField
 
@@ -26,8 +26,8 @@ class SequencerHandler(MessageHandler):
     """ Message handler to append a sequencer number to all messages transcoded from an arbitrary source.
     Particularly useful when transcoding messages encapsulated in POSIX files where the original sequence numbers were found within the pocket header and not the message itself """
 
-    def __init__(self, parser: MessageParser, config=None):
-        super().__init__(parser=parser, config=config)
+    def __init__(self, config=None):
+        super().__init__(config=config)
         if config is not None:
             if 'field_name' in config:
                 self.sequence_number_field_name = config['field_name']
@@ -41,6 +41,6 @@ class SequencerHandler(MessageHandler):
         schema.fields.append(MessageHandlerIntField(self.sequence_number_field_name))
 
     def handle(self, message: ParsedMessage):
-        if message.dictionary is not None:
+        if message.ignored is False:
             self.sequence_number += 1
             message.dictionary[self.sequence_number_field_name] = self.sequence_number

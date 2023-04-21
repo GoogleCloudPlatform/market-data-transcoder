@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-from transcoder import LineEncoding
 from transcoder.source import Source
+from transcoder.source.LineEncoding import LineEncoding
 from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMessageSource, \
     LineDelimitedFileMessageSource, CmeBinaryPacketFileMessageSource
 
@@ -33,29 +33,43 @@ def all_source_identifiers():
     ]
 
 
-def get_message_source(source_name: str,  # pylint: disable=too-many-arguments
+def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
                        source_file_encoding: str, source_file_format_type: str,
                        endian: str, skip_bytes: int = 0, skip_lines: int = 0,
-                       message_skip_bytes: int = 0, message_length_byte_length: int = 2,
-                       line_encoding: LineEncoding = None) -> Source:
+                        message_skip_bytes: int = 0, prefix_length: int = 2,
+                        base64: bool = False, base64_urlsafe: bool = False) -> Source:
     """Returns a Source implementation instance based on the supplied source name"""
+
     source: Source = None
+
     if source_file_format_type == PcapFileMessageSource.source_type_identifier():
-        source = PcapFileMessageSource(source_name, message_skip_bytes=message_skip_bytes)
+        source = PcapFileMessageSource(source_loc, message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == LengthDelimitedFileMessageSource.source_type_identifier():
-        source = LengthDelimitedFileMessageSource(source_name, skip_bytes=skip_bytes,
+
+        source = LengthDelimitedFileMessageSource(source_loc, skip_bytes=skip_bytes,
                                                   message_skip_bytes=message_skip_bytes,
-                                                  message_length_byte_length=message_length_byte_length)
+                                                  prefix_length=prefix_length)
+
     elif source_file_format_type == LineDelimitedFileMessageSource.source_type_identifier():
-        source = LineDelimitedFileMessageSource(source_name, encoding=source_file_encoding,
+
+        if base64 is True:
+            line_encoding = LineEncoding.BASE_64
+        elif base64_urlsafe is True:
+            line_encoding = LineEncoding.BASE_64_URL_SAFE
+        else:
+            line_encoding = LineEncoding.NONE
+
+        source = LineDelimitedFileMessageSource(source_loc,
+                                                encoding=source_file_encoding,
                                                 skip_lines=skip_lines,
-                                                line_encoding=line_encoding, message_skip_bytes=message_skip_bytes)
+                                                line_encoding=line_encoding,
+                                                message_skip_bytes=message_skip_bytes)
     elif source_file_format_type == CmeBinaryPacketFileMessageSource.source_type_identifier():
-        source = CmeBinaryPacketFileMessageSource(source_name, endian, skip_bytes=skip_bytes,
+        source = CmeBinaryPacketFileMessageSource(source_loc, endian, skip_bytes=skip_bytes,
                                                   message_skip_bytes=message_skip_bytes,
-                                                  message_length_byte_length=message_length_byte_length)
+                                                  prefix_length=prefix_length)
     else:
-        raise UnsupportedFileTypeError(f'Source {source_name} is not supported')
+        raise UnsupportedFileTypeError(f'Source {source_loc} is not supported')
     return source
 
 
