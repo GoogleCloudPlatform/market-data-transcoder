@@ -82,9 +82,7 @@ def main():
                                            'when processing')
 
     source_options_group.add_argument('--sampling_count', type=int, default=None,
-                                      help='To be used for testing only - the sampling count indicates how many of '
-                                           'each distinct '
-                                           'message type to process, any additional will be skipped')
+                                      help='Halt processing after reaching this number of messages. Applied after all Handlers are executed per message')
     source_options_group.add_argument('--skip_bytes', type=int, default=0,
                                       help='Number of bytes to skip before processing the file. Useful for skipping '
                                            'file-level headers')

@@ -52,31 +52,39 @@ A message factory takes a message payload read from the input source, determines
 ### CLI usage
 
 ```
-# List available cli arguments
-usage: txcode [-h] --factory {cme,itch,memx,fix} --schema_file SCHEMA_FILE --source_file
-              SOURCE_FILE [--source_file_encoding SOURCE_FILE_ENCODING]
-              --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
-              [--base64 | --base64_urlsafe] [--fix_header_tags FIX_HEADER_TAGS]
-              [--fix_separator FIX_SEPARATOR] [--message_handlers MESSAGE_HANDLERS]
-              [--message_skip_bytes MESSAGE_SKIP_BYTES]
-              [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
-              [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
-              [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
-              [--output_path OUTPUT_PATH]
-              [--output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl}]
-              [--error_output_path ERROR_OUTPUT_PATH] [--lazy_create_resources] [--stats_only]
-              [--create_schemas_only] [--destination_project_id DESTINATION_PROJECT_ID]
-              [--destination_dataset_id DESTINATION_DATASET_ID]
-              [--output_encoding {binary,json}]
-              [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
-              [--continue_on_error] [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
+usage: txcode  [-h] [--factory {cme,itch,memx,fix}]
+               [--schema_file SCHEMA_FILE] [--source_file SOURCE_FILE]
+               [--source_file_encoding SOURCE_FILE_ENCODING]
+               --source_file_format_type
+               {pcap,length_delimited,line_delimited,cme_binary_packet}
+               [--base64 | --base64_urlsafe]
+               [--fix_header_tags FIX_HEADER_TAGS]
+               [--fix_separator FIX_SEPARATOR]
+               [--message_handlers MESSAGE_HANDLERS]
+               [--message_skip_bytes MESSAGE_SKIP_BYTES]
+               [--prefix_length PREFIX_LENGTH]
+               [--message_type_exclusions MESSAGE_TYPE_EXCLUSIONS | --message_type_inclusions MESSAGE_TYPE_INCLUSIONS]
+               [--sampling_count SAMPLING_COUNT] [--skip_bytes SKIP_BYTES]
+               [--skip_lines SKIP_LINES] [--source_file_endian {big,little}]
+               [--output_path OUTPUT_PATH]
+               [--output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl,length_delimited}]
+               [--error_output_path ERROR_OUTPUT_PATH]
+               [--lazy_create_resources] [--frame_only] [--stats_only]
+               [--create_schemas_only]
+               [--destination_project_id DESTINATION_PROJECT_ID]
+               [--destination_dataset_id DESTINATION_DATASET_ID]
+               [--output_encoding {binary,json}]
+               [--create_schema_enforcing_topics | --no-create_schema_enforcing_topics]
+               [--continue_on_error]
+               [--log {notset,debug,info,warning,error,critical}] [-q] [-v]
 
 Datacast Transcoder process input arguments
 
 options:
   -h, --help            show this help message and exit
-  --continue_on_error   Indicates if an exception file should be created, and records continued
-                        to be processed upon message level exceptions
+  --continue_on_error   Indicates if an exception file should be created, and
+                        records continued to be processed upon message level
+                        exceptions
   --log {notset,debug,info,warning,error,critical}
                         The default logging level
   -q, --quiet           Suppress message output to console
@@ -93,29 +101,37 @@ Input source arguments:
                         The source file character encoding
   --source_file_format_type {pcap,length_delimited,line_delimited,cme_binary_packet}
                         The source file format
-  --base64              Indicates if each individual message extracted from the source is base
-                        64 encoded
-  --base64_urlsafe      Indicates if each individual message extracted from the source is base
-                        64 url safe encoded
+  --base64              Indicates if each individual message extracted from
+                        the source is base 64 encoded
+  --base64_urlsafe      Indicates if each individual message extracted from
+                        the source is base 64 url safe encoded
   --fix_header_tags FIX_HEADER_TAGS
                         Comma delimited list of fix header tags
   --fix_separator FIX_SEPARATOR
                         The unicode int representing the fix message separator
   --message_handlers MESSAGE_HANDLERS
-                        Comma delimited list of message handlers in priority order
+                        Comma delimited list of message handlers in priority
+                        order
   --message_skip_bytes MESSAGE_SKIP_BYTES
-                        Number of bytes to skip before processing individual messages within a
-                        repeated length delimited file message source
+                        Number of bytes to skip before processing individual
+                        messages within a repeated length delimited file
+                        message source
+  --prefix_length PREFIX_LENGTH
+                        How many bytes to use for the length prefix of length-
+                        delimited binary sources
   --message_type_exclusions MESSAGE_TYPE_EXCLUSIONS
-                        Comma-delimited list of message types to exclude when processing
+                        Comma-delimited list of message types to exclude when
+                        processing
   --message_type_inclusions MESSAGE_TYPE_INCLUSIONS
-                        Comma-delimited list of message types to include when processing
+                        Comma-delimited list of message types to include when
+                        processing
   --sampling_count SAMPLING_COUNT
-                        To be used for testing only - the sampling count indicates how many of
-                        each distinct message type to process, any additional will be skipped
+                        Halt processing after reaching this number of
+                        messages. Applied after all Handlers are executed per
+                        message
   --skip_bytes SKIP_BYTES
-                        Number of bytes to skip before processing the file. Useful for skipping
-                        file-level headers
+                        Number of bytes to skip before processing the file.
+                        Useful for skipping file-level headers
   --skip_lines SKIP_LINES
                         Number of lines to skip before processing the file
   --source_file_endian {big,little}
@@ -124,39 +140,43 @@ Input source arguments:
 Output arguments:
   --output_path OUTPUT_PATH
                         Output file path. Defaults to avroOut
-  --output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl}
+  --output_type {diag,avro,fastavro,bigquery,pubsub,bigquery_terraform,pubsub_terraform,jsonl,length_delimited}
                         Output format type
   --error_output_path ERROR_OUTPUT_PATH
-                        Error output file path if --continue_on_error flag enabled. Defaults to
-                        errorOut
+                        Error output file path if --continue_on_error flag
+                        enabled. Defaults to errorOut
   --lazy_create_resources
-                        Flag indicating that output resources for message types should be only
-                        created as messages of each type are encountered in the source data.
-                        Default behavior is to create resources for each message type before
-                        messages are processed. Particularly useful when working with FIX but
-                        only processing a limited set of message types in the source data
-  --stats_only          Flag indicating that transcoder should only report on message type
-                        counts without parsing messages further
+                        Flag indicating that output resources for message
+                        types should be only created as messages of each type
+                        are encountered in the source data. Default behavior
+                        is to create resources for each message type before
+                        messages are processed. Particularly useful when
+                        working with FIX but only processing a limited set of
+                        message types in the source data
+  --frame_only          Flag indicating that transcoder should only frame
+                        messages to an output source
+  --stats_only          Flag indicating that transcoder should only report on
+                        message type counts without parsing messages further
   --create_schemas_only
-                        Flag indicating that transcoder should only create output resource
-                        schemas and not output message data
+                        Flag indicating that transcoder should only create
+                        output resource schemas and not output message data
 
 Google Cloud arguments:
   --destination_project_id DESTINATION_PROJECT_ID
-                        The Google Cloud project ID for the destination resource
+                        The Google Cloud project ID for the destination
+                        resource
 
 BigQuery arguments:
   --destination_dataset_id DESTINATION_DATASET_ID
-                        The BigQuery dataset for the destination. If it does not exist, it will
-                        be created
+                        The BigQuery dataset for the destination. If it does
+                        not exist, it will be created
 
 Pub/Sub arguments:
   --output_encoding {binary,json}
                         The encoding of the output
   --create_schema_enforcing_topics, --no-create_schema_enforcing_topics
-                        Indicates if Pub/Sub schemas should be created and used to validate
-                        messages sent to a topic (default: True)
-
+                        Indicates if Pub/Sub schemas should be created and
+                        used to validate messages sent to a topic
 ```
 
 # Installation
