@@ -66,7 +66,8 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
         self.start_time = None
         self.stats_only = stats_only
         self.sampling_count = sampling_count
-
+        self.transcoded_count = 0
+        
         self.output_prefix = os.path.basename(
             os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
 
@@ -114,7 +115,7 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
                     if self.stats_only is False:  # output message
                         self.transcode_message(raw_msg)
 
-                if self.message_parser.record_count == self.sampling_count:
+                if self.transcoded_count == self.sampling_count:
                     break
 
         self.print_summary()
@@ -134,6 +135,8 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
                 if msg.ignored is False:  # passed filters
                     self.error_writer.set_step(TranscodeStep.WRITE_OUTPUT_RECORD)
                     self.output_manager.write_record(msg.name, msg.dictionary)
+                    self.transcoded_count += 1
+
         except Exception as ex:
             self.handle_exception(raw, msg, ex)
 
@@ -208,8 +211,9 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
                     logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
                 if self.create_schemas_only is False:
-                    logging.info('Source record count: %s', self.source.record_count)
-                    logging.info('Processed record count: %s', self.message_parser.record_count)
+                    logging.info('Source message count: %s', self.source.record_count)
+                    logging.info('Processed message count: %s', self.message_parser.record_count)
+                    logging.info('Transcoded message count: %s', self.transcoded_count)
                     logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
                     logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
                     logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)

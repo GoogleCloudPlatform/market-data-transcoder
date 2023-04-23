@@ -179,6 +179,131 @@ Pub/Sub arguments:
                         used to validate messages sent to a topic
 ```
 
+### Handlers
+
+`txcode` supports the execution of _message handler_ classes that can
+be used to statefully mutate in-flight streams and messages. For example,
+`TimestampPullForwardHandler` will look for a `seconds`-styled ITCH
+message (that informs the stream of the prevailing epochs second to
+apply to all subsequent messages), and append the latest value from
+that to all subsequent messages (between instances of the `seconds`
+message appearing. This helps individual messages be persisted with
+absolute timestamps that require less context to interpret
+(i.e. outbound messages contain more than just "nanoseconds past
+midnight" for a timestamp.
+
+
+Another handler is `SequencerHandler`, which appends a sequence number
+to all outbound messages. This is useful when processing bulk messages
+in length-delimited storage formats, since the IP packet headers that
+frequently contain message sequence numbers may have been stripped.	
+
+`FilterHandler` lets you filter output based upon a property
+of a message. A common use for this is to filter messages pertaining
+only to a particular security identifier or symbol.
+
+Here is an combination of transcoding instances and features that can
+be used to shard the message universe by symbol. First, the mnemonic
+trading symbol identifier must be used to find it's associated integer
+security identifier, which is included across all messages:
+
+```
+
+txcode --source_file 12302019.NASDAQ_ITCH50 --schema_file totalview-itch-50.xml --message_type_inclusions stock_directory --source_file_format_type length_delimited --factory itch --message_handlers FilterHandler:stock=SPY --sampling_count 1
+
+authenticity: P
+etp_flag: Y
+etp_leverage_factor: null
+financial_status_indicator: ' '
+inverse_indicator: null
+ipo_flag: ' '
+issue_classification: Q
+issue_subtype: E
+luld_reference_price_tier: '1'
+market_category: P
+round_lot_size: 100
+round_lots_only: N
+short_sale_threshold_indicator: N
+stock: SPY
+stock_locate: 7451
+timestamp: 11354508113636
+tracking_number: 0
+
+INFO:root:Sampled messages: 1
+INFO:root:Message type inclusions: ['stock_directory']
+INFO:root:Source message count: 7466
+INFO:root:Processed message count: 7451
+INFO:root:Transcoded message count: 1
+INFO:root:Processed schema count: 1
+INFO:root:Summary of message counts: {'stock_directory': 7451}
+INFO:root:Summary of error message counts: {}
+INFO:root:Message rate: 53260.474108 per second
+INFO:root:Total runtime in seconds: 0.140179
+INFO:root:Total runtime in minutes: 0.002336
+```
+
+Taking the value of the field `stock_locate` from the above message
+allows us to filter all messages for that field/value combination. In
+addition, we can append a sequence number to all transcoded messages
+that are output. The below combination returns the original `stock_directory`
+message we used to look up the `stock_locate` code, as well as the
+next two messages in the stream that have the same value for `stock_locate`:
+
+```
+
+txcode --source_file 12302019.NASDAQ_ITCH50 --schema_file totalview-itch-50.xml --source_file_format_type length_delimited --factory itch --message_handlers FilterHandler:stock_locate=7451,SequencerHandler --sampling_count 3 
+
+authenticity: P
+etp_flag: Y
+etp_leverage_factor: null
+financial_status_indicator: ' '
+inverse_indicator: null
+ipo_flag: ' '
+issue_classification: Q
+issue_subtype: E
+luld_reference_price_tier: '1'
+market_category: P
+round_lot_size: 100
+round_lots_only: N
+sequence_number: 1
+short_sale_threshold_indicator: N
+stock: SPY
+stock_locate: 7451
+timestamp: 11354508113636
+tracking_number: 0
+
+reason: ''
+reserved: ' '
+sequence_number: 2
+stock: SPY
+stock_locate: 7451
+timestamp: 11355134575401
+tracking_number: 0
+trading_state: T
+
+reg_sho_action: '0'
+sequence_number: 3
+stock: SPY
+stock_locate: 7451
+timestamp: 11355134599149
+tracking_number: 0
+
+INFO:root:Sampled messages: 3
+INFO:root:Source message count: 23781
+INFO:root:Processed message count: 23781
+INFO:root:Transcoded message count: 3
+INFO:root:Processed schema count: 21
+INFO:root:Summary of message counts: {'system_event': 1, 'stock_directory': 8906, 'stock_trading_action': 7437, 'reg_sho_restriction': 7437, 'market_participant_position': 0, 'mwcb_decline_level': 0, 'ipo_quoting_period_update': 0, 'luld_auction_collar': 0, 'operational_halt': 0, 'add_order_no_attribution': 0, 'add_order_attribution': 0, 'order_executed': 0, 'order_executed_price': 0, 'order_cancelled': 0, 'order_deleted': 0, 'order_replaced': 0, 'trade': 0, 'cross_trade': 0, 'broken_trade': 0, 'net_order_imbalance': 0, 'retail_price_improvement_indicator': 0}
+INFO:root:Summary of error message counts: {}
+INFO:root:Message rate: 80950.257512 per second
+INFO:root:Total runtime in seconds: 0.293773
+INFO:root:Total runtime in minutes: 0.004896
+
+
+```
+
+
+
 # Installation
 If you are a user looking to use the CLI or library without making changes, you can install the Market Data Transcoder from [PyPI](https://pypi.org/project/market-data-transcoder) using pip:
 ```
