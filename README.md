@@ -185,27 +185,28 @@ Pub/Sub arguments:
 be used to statefully mutate in-flight streams and messages. For example,
 `TimestampPullForwardHandler` will look for a `seconds`-styled ITCH
 message (that informs the stream of the prevailing epochs second to
-apply to all subsequent messages), and append the latest value from
+apply to subsequent messages), and append the latest value from
 that to all subsequent messages (between instances of the `seconds`
 message appearing. This helps individual messages be persisted with
 absolute timestamps that require less context to interpret
 (i.e. outbound messages contain more than just "nanoseconds past
 midnight" for a timestamp.
 
-
 Another handler is `SequencerHandler`, which appends a sequence number
 to all outbound messages. This is useful when processing bulk messages
-in length-delimited storage formats, since the IP packet headers that
-frequently contain message sequence numbers may have been stripped.	
+in length-delimited storage formats where the IP packet headers
+containing the original sequence numbers have been stripped.	
 
-`FilterHandler` lets you filter output based upon a property
+`FilterHandler` lets you filter output based upon a specific property
 of a message. A common use for this is to filter messages pertaining
 only to a particular security identifier or symbol.
 
-Here is an combination of transcoding instances and features that can
-be used to shard the message universe by symbol. First, the mnemonic
+Here is a combination of transcoding invocations that can
+be used to shard a message universe by trading symbol. First, the mnemonic
 trading symbol identifier must be used to find it's associated integer
-security identifier, which is included across all messages:
+security identifier (`stock_locate`) which is included in every
+relevant message (as opposed to `stock`, which is absent from
+certain message types):
 
 ```
 

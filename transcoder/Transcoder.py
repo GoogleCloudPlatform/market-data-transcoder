@@ -67,7 +67,7 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
         self.stats_only = stats_only
         self.sampling_count = sampling_count
         self.transcoded_count = 0
-        
+
         self.output_prefix = os.path.basename(
             os.path.splitext(source_file_path)[0]) if source_file_path else 'stdin'
 
