@@ -179,7 +179,7 @@ Pub/Sub arguments:
                         used to validate messages sent to a topic
 ```
 
-### Handlers
+### Message handlers
 
 `txcode` supports the execution of _message handler_ classes that can
 be used to statefully mutate in-flight streams and messages. For example,
