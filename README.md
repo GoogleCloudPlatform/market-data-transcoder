@@ -310,7 +310,7 @@ The syntax for handler specifications is:
 <Handler1>:<Handler1Parameter>=<Handler1Parameter>,<Handler2>
 ```
 
-Message handlers are deployed in `transcoder/messgage/handler/`.
+Message handlers are deployed in `transcoder/message/handler/`.
 
 # Installation
 If you are a user looking to use the CLI or library without making changes, you can install the Market Data Transcoder from [PyPI](https://pypi.org/project/market-data-transcoder) using pip:
