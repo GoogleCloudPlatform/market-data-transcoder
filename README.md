@@ -203,8 +203,9 @@ only to a particular security identifier or symbol.
 
 Here is a combination of transcoding invocations that can
 be used to shard a message universe by trading symbol. First, the mnemonic
-trading symbol identifier must be used to find it's associated integer
-security identifier (`stock_locate`) which is included in every
+trading symbol identifier (`stock`) must be used to find it's associated integer
+security identifier (`stock_locate`) from the `stock_directory`
+message. `stock_locate` is the identifier included in every
 relevant message (as opposed to `stock`, which is absent from
 certain message types):
 
@@ -303,7 +304,13 @@ INFO:root:Total runtime in minutes: 0.004896
 
 ```
 
+The syntax for handler specifications is:
 
+```
+<Handler1>:<Handler1Parameter>=<Handler1Parameter>,<Handler2>
+```
+
+Message handlers are deployed in `transcoder/messgage/handler/`.
 
 # Installation
 If you are a user looking to use the CLI or library without making changes, you can install the Market Data Transcoder from [PyPI](https://pypi.org/project/market-data-transcoder) using pip:
