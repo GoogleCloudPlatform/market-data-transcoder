@@ -315,8 +315,8 @@ class TypeMessageField(SBEMessageField):
         start_index = self.msg_offset + self.relative_offset + self.field_offset
         end_index = start_index + self.field_length
 
-        variable_len_int_handled: bool = False;
         # Handle variable length integers
+        variable_len_int_handled: bool = False;
         if self.primitive_type is not None and self.primitive_type in TypeMap.primitive_type_map:
             _, primitive_type_size = TypeMap.primitive_type_map[self.primitive_type]
             if self.is_int_type() and primitive_type_size != self.field_length:
