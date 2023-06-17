@@ -27,6 +27,11 @@ from transcoder.output.exception import OutputFunctionNotDefinedError
 class BaseAvroOutputManager(OutputManager):
     """Base avro output manager implementation. Used by both avro.io and fastavro implementations."""
 
+    @staticmethod
+    def supports_zero_field_schemas():
+        """Returns flag indicating if the output manager support schemas with zero fields"""
+        return True
+
     def __init__(self, prefix: str, output_path: str, lazy_create_resources: bool = False):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.prefix = prefix

@@ -39,6 +39,11 @@ class OutputManager:
         """Returns flag indicating if data writes are supported"""
         return True
 
+    @staticmethod
+    def supports_zero_field_schemas():
+        """Returns flag indicating if the output manager support schemas with zero fields"""
+        return False
+
     def __init__(self, schema_max_workers=5, lazy_create_resources: bool = False):
         self.schema_thread_pool_executor: ThreadPoolExecutor = concurrent.futures.ThreadPoolExecutor(
             max_workers=schema_max_workers)

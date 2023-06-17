@@ -228,9 +228,9 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
         """Process the schema specified at runtime"""
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
-            if len(schema.fields) == 0:
+            if self.output_manager.supports_zero_field_schemas() is False and len(schema.fields) == 0:
                 logging.info('Schema "%s" contains no field definitions, skipping schema creation', schema.name)
-                # continue
+                continue
 
             for handler in self.all_handlers:
                 if handler.supports_all_message_types is True \
