@@ -24,12 +24,11 @@ import logging
 import os
 import signal
 import sys
-
 from datetime import datetime
 
-from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.message import DatacastParser, NoParser
 from transcoder.message.ErrorWriter import ErrorWriter, TranscodeStep
+from transcoder.message.MessageUtil import get_message_parser, parse_handler_config
 from transcoder.output import get_output_manager
 from transcoder.source import get_message_source
 
@@ -229,7 +228,7 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes
         """Process the schema specified at runtime"""
         spec_schemas = self.message_parser.process_schema()
         for schema in spec_schemas:
-            if len(schema.fields) == 0:
+            if self.output_manager.supports_zero_field_schemas() is False and len(schema.fields) == 0:
                 logging.info('Schema "%s" contains no field definitions, skipping schema creation', schema.name)
                 continue
 
