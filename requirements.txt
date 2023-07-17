@@ -4,6 +4,6 @@ lxml==4.9.2
 numpy==1.25.1
 fastavro==1.8.0
 six>=1.12.0
-google-cloud-pubsub==2.17.1
+google-cloud-pubsub==2.18.0
 google-cloud-bigquery==3.11.3
 pyyaml==6.0
