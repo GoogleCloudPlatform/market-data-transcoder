@@ -2,7 +2,7 @@ avro==1.11.3
 dpkt==1.9.8
 lxml==4.9.3
 numpy==1.26.1
-fastavro==1.8.4
+fastavro==1.9.4
 six>=1.12.0
 google-cloud-pubsub==2.18.4
 google-cloud-bigquery==3.12.0
