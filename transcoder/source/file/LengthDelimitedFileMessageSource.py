@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-from transcoder.source.file.FileMessageSource import FileMessageSource
+from .FileMessageSource import FileMessageSource
 
 
 class LengthDelimitedFileMessageSource(FileMessageSource):
