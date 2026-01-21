@@ -22,7 +22,6 @@ import os
 import sys
 from io import IOBase
 
-
 from transcoder.source.Source import Source, SourceFunctionNotDefinedError
 
 

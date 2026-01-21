@@ -23,7 +23,7 @@
 class ParsedMessage:
     """Represents a message that has been parsed by the transcoder"""
 
-    def __init__(self, data_type, name, raw_message, dictionary=None, exception: Exception = None):
+    def __init__(self, data_type, name, raw_message, dictionary=None, exception: Exception = None): # pylint: disable=too-many-positional-arguments
         """ParsedMessage constructor"""
         self.type = data_type
         self.name = name

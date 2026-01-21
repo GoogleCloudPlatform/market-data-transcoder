@@ -17,11 +17,12 @@
 # limitations under the License.
 #
 
-import sys
 import base64
+import sys
 
 from transcoder.source.LineEncoding import LineEncoding
-from transcoder.source.file import FileMessageSource
+from transcoder.source.file.FileMessageSource import FileMessageSource
+
 
 class LineDelimitedFileMessageSource(FileMessageSource):
     """Reads line delimited files and yields individual records for message consumption"""
@@ -30,7 +31,7 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'line_delimited'
 
-    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0,
+    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0, # pylint: disable=too-many-positional-arguments
                  message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
 
         super().__init__(file_path, file_open_mode='rt', file_encoding=encoding)

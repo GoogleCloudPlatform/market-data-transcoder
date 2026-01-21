@@ -21,10 +21,10 @@ from transcoder.output import OutputManager
 from transcoder.output.avro import AvroOutputManager
 from transcoder.output.avro.FastAvroOutputManager import FastAvroOutputManager
 from transcoder.output.diag import DiagnosticOutputManager
-from transcoder.output.length_delimited import LengthDelimitedOutputManager
 from transcoder.output.google_cloud import PubSubOutputManager, BigQueryOutputManager
 from transcoder.output.google_cloud.terraform import BigQueryTerraformOutputManager, PubSubTerraformOutputManager
 from transcoder.output.json import JsonOutputManager
+from transcoder.output.length_delimited import LengthDelimitedOutputManager
 
 
 def all_output_identifiers():
@@ -42,7 +42,7 @@ def all_output_identifiers():
     ]
 
 
-def get_output_manager(output_name: str,  # pylint: disable=too-many-arguments
+def get_output_manager(output_name: str,  # pylint: disable=too-many-arguments,too-many-positional-arguments
                        output_prefix: str = None,
                        output_file_path: str = None,
                        output_encoding: str = None,

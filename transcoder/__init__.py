@@ -19,5 +19,16 @@
 
 # pylint: disable=invalid-name
 
+__version__ = '1.0.4'
+
+from importlib.metadata import version, PackageNotFoundError
+
 from .Transcoder import Transcoder
-from .version import __version__
+
+try:
+    # This must match the 'name' field in your pyproject.toml
+    __version__ = version("market-data-transcoder")
+except PackageNotFoundError:
+    # This handles the case where the package is not installed
+    # (e.g. running scripts directly from the source folder)
+    __version__ = "unknown"

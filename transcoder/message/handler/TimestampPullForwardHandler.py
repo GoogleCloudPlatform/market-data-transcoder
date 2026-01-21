@@ -23,7 +23,6 @@ from transcoder.message.handler.MessageHandlerIntField import MessageHandlerIntF
 
 
 class TimestampPullForwardHandler(MessageHandler):
-
     """Custom message handler that stores the 'second' value from the last message of type 'time_message',
     and carries it forward into other message types not of type 'time_message'"""
 
