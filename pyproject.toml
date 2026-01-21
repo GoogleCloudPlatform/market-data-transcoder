@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "market-data-transcoder"
-version = "1.0.6"
+version = "1.0.7"
 description = "The Datacast transcoder is a schema-driven, message-oriented utility to simplify the lossless ingestion of common high-performance electronic trading data formats to Google Cloud."
 authors = ["Google Cloud FSI Solutions"]
 readme = "README.md"
