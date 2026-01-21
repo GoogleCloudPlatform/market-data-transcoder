@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-from transcoder.source.file.LengthDelimitedFileMessageSource import LengthDelimitedFileMessageSource
+from transcoder.source.file import LengthDelimitedFileMessageSource
 
 
 class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
