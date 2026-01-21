@@ -21,7 +21,7 @@ import base64
 import sys
 
 from transcoder.source.LineEncoding import LineEncoding
-from transcoder.source.file.FileMessageSource import FileMessageSource
+from .FileMessageSource import FileMessageSource
 
 
 class LineDelimitedFileMessageSource(FileMessageSource):
