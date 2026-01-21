@@ -19,8 +19,8 @@
 
 # pylint: disable=invalid-name
 
+from .CmeBinaryPacketFileMessageSource import CmeBinaryPacketFileMessageSource
 from .FileMessageSource import FileMessageSource
 from .LengthDelimitedFileMessageSource import LengthDelimitedFileMessageSource
-from .CmeBinaryPacketFileMessageSource import CmeBinaryPacketFileMessageSource
 from .LineDelimitedFileMessageSource import LineDelimitedFileMessageSource
 from .PcapFileMessageSource import PcapFileMessageSource
