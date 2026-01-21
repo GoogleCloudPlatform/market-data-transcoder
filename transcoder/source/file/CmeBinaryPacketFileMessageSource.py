@@ -28,7 +28,8 @@ class CmeBinaryPacketFileMessageSource(LengthDelimitedFileMessageSource):
     def source_type_identifier():
         return 'cme_binary_packet'
 
-    def __init__(self, file_path: str, endian: str, skip_bytes: int = 0, # pylint: disable=too-many-positional-arguments
+    def __init__(self, file_path: str, endian: str, skip_bytes: int = 0,
+                 # pylint: disable=too-many-positional-arguments
                  message_skip_bytes: int = 0, prefix_length: int = 2):
         super().__init__(file_path, skip_bytes=skip_bytes, endian=endian,
                          message_skip_bytes=message_skip_bytes,

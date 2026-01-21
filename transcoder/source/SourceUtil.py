@@ -19,10 +19,10 @@
 
 from transcoder.source import Source
 from transcoder.source.LineEncoding import LineEncoding
-from transcoder.source.file.PcapFileMessageSource import PcapFileMessageSource
+from transcoder.source.file.CmeBinaryPacketFileMessageSource import CmeBinaryPacketFileMessageSource
 from transcoder.source.file.LengthDelimitedFileMessageSource import LengthDelimitedFileMessageSource
 from transcoder.source.file.LineDelimitedFileMessageSource import LineDelimitedFileMessageSource
-from transcoder.source.file.CmeBinaryPacketFileMessageSource import CmeBinaryPacketFileMessageSource
+from transcoder.source.file.PcapFileMessageSource import PcapFileMessageSource
 
 
 def all_source_identifiers():

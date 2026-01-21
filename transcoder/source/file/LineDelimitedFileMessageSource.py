@@ -31,7 +31,8 @@ class LineDelimitedFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'line_delimited'
 
-    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0, # pylint: disable=too-many-positional-arguments
+    def __init__(self, file_path: str, encoding: str, skip_lines: int = 0,
+                 # pylint: disable=too-many-positional-arguments
                  message_skip_bytes: int = 0, line_encoding: LineEncoding = None):
 
         super().__init__(file_path, file_open_mode='rt', file_encoding=encoding)

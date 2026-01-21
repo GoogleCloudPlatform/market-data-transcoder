@@ -27,7 +27,8 @@ class LengthDelimitedFileMessageSource(FileMessageSource):
     def source_type_identifier():
         return 'length_delimited'
 
-    def __init__(self, file_path: str, skip_bytes: int = 0, endian: str = 'big', # pylint: disable=too-many-positional-arguments
+    def __init__(self, file_path: str, skip_bytes: int = 0, endian: str = 'big',
+                 # pylint: disable=too-many-positional-arguments
                  message_skip_bytes: int = 0, prefix_length: int = 2):
         super().__init__(file_path, file_open_mode='rb')
 

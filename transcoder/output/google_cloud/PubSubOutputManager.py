@@ -49,7 +49,8 @@ class PubSubOutputManager(OutputManager):
     def output_type_identifier():
         return 'pubsub'
 
-    def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None, # pylint: disable=too-many-positional-arguments
+    def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
+                 # pylint: disable=too-many-positional-arguments
                  lazy_create_resources: bool = False, create_schema_enforcing_topics: bool = True):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.project_id = project_id
