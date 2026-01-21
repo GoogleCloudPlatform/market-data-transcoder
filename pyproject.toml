@@ -14,7 +14,8 @@ repository = "https://github.com/GoogleCloudPlatform/market-data-transcoder"
 documentation = "https://github.com/GoogleCloudPlatform/market-data-transcoder"
 
 packages = [
-    { include = "transcoder" }
+    { include = "transcoder" },
+    { include = "third_party" }
 ]
 
 keywords = [
