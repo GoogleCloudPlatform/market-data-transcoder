@@ -126,7 +126,7 @@ def main():
     pubsub_options_group = arg_parser.add_argument_group('Pub/Sub arguments')
     pubsub_options_group.add_argument('--output_encoding', default='binary', choices=['binary', 'json'],
                                       help='The encoding of the output')
-    pubsub_options_group.add_argument('--create_schema_enforcing_topics', type=bool, default=True,
+    pubsub_options_group.add_argument('--create_schema_enforcing_topics', default=True,
                                       action=argparse.BooleanOptionalAction,
                                       help='Indicates if Pub/Sub schemas should be created and used to validate '
                                            'messages sent to a topic')
