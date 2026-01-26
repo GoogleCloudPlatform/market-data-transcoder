@@ -46,7 +46,7 @@ google-cloud-bigquery = "3.40.0"
 pyyaml = "6.0.3"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.0.0"
+pylint = ">=3,<5"
 
 [tool.poetry.scripts]
 txcode = "transcoder.main:main"
