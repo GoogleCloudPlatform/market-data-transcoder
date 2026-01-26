@@ -20,6 +20,7 @@
 from transcoder.message import DatacastSchema, ParsedMessage
 from transcoder.message.exception import ParserFunctionNotDefinedError
 
+
 class DatacastParser:
     """Class encapsulating message parsing and processing functionality """
 

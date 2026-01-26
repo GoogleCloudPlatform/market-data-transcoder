@@ -327,11 +327,15 @@ txcode --help
 If you are looking to extend the functionality of the Market Data Transcoder:
 ```
 cd market-data-transcoder
-pip install -r requirements.txt
+poetry install
 ```
 
 After installing the required dependencies, you can run the transcoder with the following:
 ```
-export PYTHONPATH=`pwd`
-python ./transcoder/main.py --help
+txcode
+```
+
+# Linting
+```bash
+poetry run pylint transcoder
 ```

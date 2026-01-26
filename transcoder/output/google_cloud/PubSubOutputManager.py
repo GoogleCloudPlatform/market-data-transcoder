@@ -50,6 +50,7 @@ class PubSubOutputManager(OutputManager):
         return 'pubsub'
 
     def __init__(self, project_id: str, output_encoding: str, output_prefix: str = None,
+                 # pylint: disable=too-many-positional-arguments
                  lazy_create_resources: bool = False, create_schema_enforcing_topics: bool = True):
         super().__init__(lazy_create_resources=lazy_create_resources)
         self.project_id = project_id
@@ -188,7 +189,9 @@ class PubSubOutputManager(OutputManager):
                 logging.warning("Failed to update topic labels: %s", err)
 
     @staticmethod
-    def get_callback(publish_future: Future, data: str) -> Callable[[pubsub_v1.publisher.futures.Future], None]:  # pylint: disable=unused-argument
+    # pylint: disable=too-many-positional-arguments,disable=unused-argument
+    def get_callback(publish_future: Future, data: str) -> Callable[
+        [pubsub_v1.publisher.futures.Future], None]:
         """PubSub future callback function used to log publishing errors"""
 
         def callback(_publish_future: pubsub_v1.publisher.futures.Future) -> None:

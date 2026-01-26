@@ -19,8 +19,8 @@
 
 # pylint: disable=invalid-name
 
+from .BigQueryTableSchemaOutOfSyncError import BigQueryTableSchemaOutOfSyncError
 from .OutputFunctionNotDefinedError import OutputFunctionNotDefinedError
 from .OutputManagerSchemaError import OutputManagerSchemaError
 from .OutputNotAvailableError import OutputNotAvailableError
-from .BigQueryTableSchemaOutOfSyncError import BigQueryTableSchemaOutOfSyncError
 from .PubSubTopicSchemaOutOfSyncError import PubSubTopicSchemaOutOfSyncError

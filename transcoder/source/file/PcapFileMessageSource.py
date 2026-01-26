@@ -21,7 +21,7 @@ import logging
 
 import dpkt
 
-from transcoder.source.file.FileMessageSource import FileMessageSource
+from .FileMessageSource import FileMessageSource
 
 
 class PcapFileMessageSource(FileMessageSource):

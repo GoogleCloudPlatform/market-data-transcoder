@@ -19,8 +19,10 @@
 
 from .DatacastParser import DatacastParser
 
+
 class NoParser(DatacastParser):
     """ NOOP parser that simply maintains a record count. Intended to be used with the frame-only option. """
+
     # pylint: disable=super-init-not-called
 
     def __init__(self):

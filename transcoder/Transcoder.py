@@ -34,10 +34,10 @@ from transcoder.source import get_message_source
 
 
 # pylint: disable=invalid-name
-class Transcoder:  # pylint: disable=too-many-instance-attributes
+class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-positional-arguments
     """ Main entry point for transcodihg sessions, bounded by a schema, source and parser """
 
-    def __init__(self,  # pylint: disable=too-many-arguments),too-many-locals
+    def __init__(self,  # pylint: disable=too-many-arguments,too-many-locals
                  factory: str, schema_file_path: str, source_file_path: str, source_file_encoding: str,
                  source_file_format_type: str, source_file_endian: str, prefix_length: int, skip_lines: int,
                  skip_bytes: int, message_skip_bytes: int, quiet: bool, output_type: str, output_encoding: str,

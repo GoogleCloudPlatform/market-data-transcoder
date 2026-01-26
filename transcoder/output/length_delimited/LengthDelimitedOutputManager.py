@@ -21,13 +21,14 @@
 
 import struct
 import sys
+
 from transcoder.output import OutputManager
 
 
 class LengthDelimitedOutputManager(OutputManager):
     """ Output manager for length-prefixed binary files sent to standard output """
 
-    def __init__(self, prefix_length: int=2, endian: int='>'):
+    def __init__(self, prefix_length: int = 2, endian: int = '>'):
         super().__init__()
         self.prefix_length = prefix_length
         self.endian = endian
@@ -46,7 +47,6 @@ class LengthDelimitedOutputManager(OutputManager):
             return self.endian + 'Q'
 
         raise Exception('Valid values for prefix length are 2, 4 or 8')
-
 
     def write_record(self, record_type_name, record):
         byte_len = struct.pack(self.pack_spec(), len(record))

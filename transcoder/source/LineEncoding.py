@@ -19,6 +19,7 @@
 
 from enum import Enum
 
+
 class LineEncoding(Enum):
     """Line encoding types supported for individual message decoding before processing"""
     NONE = 0

@@ -30,10 +30,10 @@ import argparse
 import logging
 import os
 
+from transcoder import Transcoder, __version__
 from transcoder.message.factory import all_supported_factory_types
 from transcoder.output import all_output_identifiers
 from transcoder.source import all_source_identifiers
-from transcoder import Transcoder, __version__
 
 script_dir = os.path.dirname(__file__)
 
@@ -126,7 +126,7 @@ def main():
     pubsub_options_group = arg_parser.add_argument_group('Pub/Sub arguments')
     pubsub_options_group.add_argument('--output_encoding', default='binary', choices=['binary', 'json'],
                                       help='The encoding of the output')
-    pubsub_options_group.add_argument('--create_schema_enforcing_topics', type=bool, default=True,
+    pubsub_options_group.add_argument('--create_schema_enforcing_topics', default=True,
                                       action=argparse.BooleanOptionalAction,
                                       help='Indicates if Pub/Sub schemas should be created and used to validate '
                                            'messages sent to a topic')

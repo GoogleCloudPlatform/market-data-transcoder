@@ -19,8 +19,10 @@
 
 from transcoder.source import Source
 from transcoder.source.LineEncoding import LineEncoding
-from transcoder.source.file import PcapFileMessageSource, LengthDelimitedFileMessageSource, \
-    LineDelimitedFileMessageSource, CmeBinaryPacketFileMessageSource
+from transcoder.source.file.CmeBinaryPacketFileMessageSource import CmeBinaryPacketFileMessageSource
+from transcoder.source.file.LengthDelimitedFileMessageSource import LengthDelimitedFileMessageSource
+from transcoder.source.file.LineDelimitedFileMessageSource import LineDelimitedFileMessageSource
+from transcoder.source.file.PcapFileMessageSource import PcapFileMessageSource
 
 
 def all_source_identifiers():
@@ -33,11 +35,11 @@ def all_source_identifiers():
     ]
 
 
-def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments
+def get_message_source(source_loc: str,  # pylint: disable=too-many-arguments,too-many-positional-arguments
                        source_file_encoding: str, source_file_format_type: str,
                        endian: str, skip_bytes: int = 0, skip_lines: int = 0,
-                        message_skip_bytes: int = 0, prefix_length: int = 2,
-                        base64: bool = False, base64_urlsafe: bool = False) -> Source:
+                       message_skip_bytes: int = 0, prefix_length: int = 2,
+                       base64: bool = False, base64_urlsafe: bool = False) -> Source:
     """Returns a Source implementation instance based on the supplied source name"""
 
     source: Source = None

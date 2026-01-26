@@ -20,6 +20,7 @@
 from transcoder.message import ParsedMessage
 from transcoder.message.handler.MessageHandler import MessageHandler
 
+
 class FilterHandler(MessageHandler):
     """ Handler for filtering messages by a single field's value """
 
@@ -40,11 +41,13 @@ class FilterHandler(MessageHandler):
         if field_value_type is None:
             return message_value is None
         if field_value_type == str:
-            return message_value == filter_value # already a str
+            return message_value == filter_value  # already a str
         if field_value_type == int:
-            return message_value == int(filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
+            return message_value == int(
+                filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
         if field_value_type == float:
-            return message_value == float(filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
+            return message_value == float(
+                filter_value) if filter_value != '' and filter_value is not None else message_value == '' or message_value is None
 
         # TODO: will need throw exception instead
         return False
