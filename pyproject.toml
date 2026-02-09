@@ -41,7 +41,7 @@ lxml = "6.0.2"
 numpy = "2.4.1"
 fastavro = "1.12.1"
 six = ">=1.17.0"
-google-cloud-pubsub = "2.34.0"
+google-cloud-pubsub = "2.35.0"
 google-cloud-bigquery = "3.40.0"
 pyyaml = "6.0.3"
 
