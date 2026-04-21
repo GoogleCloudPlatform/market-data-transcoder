@@ -37,7 +37,7 @@ classifiers = [
 python = "^3.11"
 avro = "1.12.1"
 dpkt = "1.9.8"
-lxml = "6.0.2"
+lxml = "6.1.0"
 numpy = "2.4.1"
 fastavro = "1.12.1"
 six = ">=1.17.0"
