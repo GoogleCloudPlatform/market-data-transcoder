@@ -25,18 +25,18 @@ OUTPUT_TYPE=${1}
 
 pushd ../..
 
-wget 'ftp://ftp.cmegroup.com/SBEFix/Production/Templates/templates_FixBinary.xml'
-wget 'https://github.com/Open-Markets-Initiative/omi-data-packets/raw/refs/heads/main/Cme/Mdp3.Sbe.v1.12/SnapshotFullRefreshTcpLongQty.Tcp.pcap'
+wget -q 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/refs/heads/master/dict/FIX50SP2.CME.xml'
 
-txcode \
-  --source_file SnapshotFullRefreshTcpLongQty.Tcp.pcap  \
-  --schema_file templates_FixBinary.xml \
-  --factory cme \
-  --source_file_format_type pcap \
-  --message_skip_bytes 16 \
-  --output_type ${OUTPUT_TYPE} \
-  --message_type_inclusions SnapshotFullRefreshTCPLongQty68
+wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/secdef.dat.gz|gunzip - | \
+    txcode \
+        --schema_file FIX50SP2.CME.xml \
+        --factory fix \
+        --source_file_format_type line_delimited \
+        --continue_on_error \
+        --output_type ${OUTPUT_TYPE} \
+        --message_type_inclusions SecurityDefinition,TradingSessionList
 
-rm SnapshotFullRefreshTcpLongQty.Tcp.pcap templates_FixBinary.xml
+rm FIX50SP2.CME.xml
 
 popd
+

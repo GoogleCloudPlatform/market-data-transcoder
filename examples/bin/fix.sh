@@ -24,8 +24,8 @@ OUTPUT_TYPE=${1}
 
 pushd ../..
 
-wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/testfiles/42_order_single.txt'
-wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX42.xml'
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/ref/heads/master/testfiles/42_order_single.txt'
+wget 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/ref/heads/master/dict/FIX42.xml'
 
 txcode \
   --source_file 42_order_single.txt \
