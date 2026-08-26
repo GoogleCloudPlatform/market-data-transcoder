@@ -34,7 +34,6 @@ wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/secdef.dat.gz|gunzip - | \
         --source_file_format_type line_delimited \
         --continue_on_error \
         --output_type ${OUTPUT_TYPE} \
-        --message_type_inclusions SecurityDefinition,TradingSessionList
 
 rm FIX50SP2.CME.xml
 
