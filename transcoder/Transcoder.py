@@ -47,13 +47,6 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
                  sampling_count: int, message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
-        signal.signal(signal.SIGINT, self.trap)
-        # SIGINFO (BSD/macOS `kill -s INFO`) and SIGUSR1 (Linux, same as `dd`)
-        # dump a non-destructive progress snapshot to stderr.
-        if hasattr(signal, 'SIGINFO'):
-            signal.signal(signal.SIGINFO, self.dump_progress)
-        signal.signal(signal.SIGUSR1, self.dump_progress)
-
         self.message_handler_spec = message_handlers
         self.message_handlers = {}
         self.all_message_type_handlers = []
@@ -103,6 +96,17 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
         )
 
         self.setup_handlers()
+        self._install_signal_handlers()
+
+    def _install_signal_handlers(self):
+        """Register signal handlers after __init__ state is ready."""
+        signal.signal(signal.SIGINT, self.trap)
+        # SIGINFO (BSD/macOS `kill -s INFO`) and SIGUSR1 (Linux, same as `dd`)
+        # dump a non-destructive progress snapshot to stderr.
+        if hasattr(signal, 'SIGINFO'):
+            signal.signal(signal.SIGINFO, self.dump_progress)
+        if hasattr(signal, 'SIGUSR1'):
+            signal.signal(signal.SIGUSR1, self.dump_progress)
 
     def transcode(self):
         """Entry point for transcoding session"""
@@ -214,7 +218,7 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
 
             if self.output_manager.supports_data_writing() is False:
                 emit('Output manager \'%s\' does not support message writes',
-                             self.output_manager.output_type_identifier())
+                     self.output_manager.output_type_identifier())
 
             if self.frame_only is False:
 
@@ -239,7 +243,9 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
                     emit('Message rate: %s per second', round(self.source.record_count / total_seconds, 6) if total_seconds else 0)
 
             else:
-                emit('Source record count: %s', self.source.record_count)
+                source = getattr(self, 'source', None)
+                if source is not None:
+                    emit('Source record count: %s', source.record_count)
 
             emit('Total runtime in seconds: %s', round(total_seconds, 6))
             emit('Total runtime in minutes: %s', round(total_seconds / 60, 6))
@@ -277,7 +283,10 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
 
     def dump_progress(self, _signum, _frame):
         """Print interim I/O stats to stderr and resume (SIGINFO / SIGUSR1)."""
-        self.print_summary(stream=sys.stderr)
+        try:
+            self.print_summary(stream=sys.stderr)
+        except Exception:  # a progress dump must never abort the run
+            pass
 
     def trap(self, _signum, _frame):
         """Trap SIGINT to suppress noisy stack traces and show interim summary"""
