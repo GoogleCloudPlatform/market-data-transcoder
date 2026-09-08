@@ -312,6 +312,16 @@ The syntax for handler specifications is:
 
 Message handlers are deployed in `transcoder/message/handler/`.
 
+### Progress signals
+
+While a transcode is running you can print an interim stats snapshot to stderr without stopping:
+
+- **SIGINT** (`Ctrl+C`): print summary and exit
+- **SIGINFO** (macOS/BSD, `kill -s INFO <pid>`): print summary and keep running
+- **SIGUSR1** (Linux, `kill -USR1 <pid>`): same as SIGINFO
+
+These dumps go to stderr even when `-q` / `--quiet` is set, since you explicitly asked for them.
+
 # Installation
 If you are a user looking to use the CLI or library without making changes, you can install the Market Data Transcoder from [PyPI](https://pypi.org/project/market-data-transcoder) using pip:
 ```
