@@ -26,8 +26,8 @@ OUTPUT_TYPE=${1}
 pushd ../..
 
 wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/secdef.dat.gz|gunzip - | head -10 > secdef.dat
-wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/TradingSessionList.dat| head -10 >> secdef.dat
-wget -q 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/master/dict/FIX50SP2.CME.xml'
+wget -q -O - ftp://ftp.cmegroup.com/SBEFix/Production/TradingSessionList.dat | head -10 >> secdef.dat
+wget -q 'https://raw.githubusercontent.com/SunGard-Labs/fix2json/refs/heads/master/dict/FIX50SP2.CME.xml'
 
 txcode \
   --source_file secdef.dat \
