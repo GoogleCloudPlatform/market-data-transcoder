@@ -47,8 +47,6 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
                  sampling_count: int, message_type_inclusions: str, message_type_exclusions: str, fix_header_tags: str,
                  fix_separator: int, base64: bool, base64_urlsafe: bool):
 
-        signal.signal(signal.SIGINT, self.trap)
-
         self.message_handler_spec = message_handlers
         self.message_handlers = {}
         self.all_message_type_handlers = []
@@ -98,6 +96,17 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
         )
 
         self.setup_handlers()
+        self._install_signal_handlers()
+
+    def _install_signal_handlers(self):
+        """Register signal handlers after __init__ state is ready."""
+        signal.signal(signal.SIGINT, self.trap)
+        # SIGINFO (BSD/macOS `kill -s INFO`) and SIGUSR1 (Linux, same as `dd`)
+        # dump a non-destructive progress snapshot to stderr.
+        if hasattr(signal, 'SIGINFO'):
+            signal.signal(signal.SIGINFO, self.dump_progress)
+        if hasattr(signal, 'SIGUSR1'):
+            signal.signal(signal.SIGUSR1, self.dump_progress)
 
     def transcode(self):
         """Entry point for transcoding session"""
@@ -182,47 +191,64 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
                 else:
                     self.message_handlers[supported_type] = [instance]
 
-    def print_summary(self):
-        """Print summary of the messages that were processed"""
-        if logging.getLogger().isEnabledFor(logging.INFO):
+    def print_summary(self, stream=None):
+        """Print summary of the messages that were processed.
+
+        When `stream` is set (SIGINFO/SIGUSR1), write the same snapshot there
+        even if the log level would otherwise hide it.
+        """
+        def emit(message, *args):
+            if stream is not None:
+                if args:
+                    message = message % args
+                print(message, file=stream, flush=True)
+            else:
+                logging.info(message, *args)
+
+        if stream is not None or logging.getLogger().isEnabledFor(logging.INFO):
+            if self.start_time is None:
+                emit('Transcode has not started yet')
+                return
             end_time = datetime.now()
             time_diff = end_time - self.start_time
             total_seconds = time_diff.total_seconds()
 
             if self.create_schemas_only is True:
-                logging.info('Run in create_schemas_only mode')
+                emit('Run in create_schemas_only mode')
 
             if self.output_manager.supports_data_writing() is False:
-                logging.info('Output manager \'%s\' does not support message writes',
-                             self.output_manager.output_type_identifier())
+                emit('Output manager \'%s\' does not support message writes',
+                     self.output_manager.output_type_identifier())
 
             if self.frame_only is False:
 
                 if self.message_parser.stats_only is True:
-                    logging.info('Run in stats_only mode')
+                    emit('Run in stats_only mode')
 
                 if self.sampling_count is not None:
-                    logging.info('Sampled messages: %s', self.sampling_count)
+                    emit('Sampled messages: %s', self.sampling_count)
 
                 if self.message_parser.message_type_inclusions is not None:
-                    logging.info('Message type inclusions: %s', self.message_parser.message_type_inclusions)
+                    emit('Message type inclusions: %s', self.message_parser.message_type_inclusions)
                 elif self.message_parser.message_type_exclusions is not None:
-                    logging.info('Message type exclusions: %s', self.message_parser.message_type_exclusions)
+                    emit('Message type exclusions: %s', self.message_parser.message_type_exclusions)
 
                 if self.create_schemas_only is False:
-                    logging.info('Source message count: %s', self.source.record_count)
-                    logging.info('Processed message count: %s', self.message_parser.record_count)
-                    logging.info('Transcoded message count: %s', self.transcoded_count)
-                    logging.info('Processed schema count: %s', self.message_parser.total_schema_count)
-                    logging.info('Summary of message counts: %s', self.message_parser.record_type_count)
-                    logging.info('Summary of error message counts: %s', self.message_parser.error_record_type_count)
-                    logging.info('Message rate: %s per second', round(self.source.record_count / total_seconds, 6))
+                    emit('Source message count: %s', self.source.record_count)
+                    emit('Processed message count: %s', self.message_parser.record_count)
+                    emit('Transcoded message count: %s', self.transcoded_count)
+                    emit('Processed schema count: %s', self.message_parser.total_schema_count)
+                    emit('Summary of message counts: %s', self.message_parser.record_type_count)
+                    emit('Summary of error message counts: %s', self.message_parser.error_record_type_count)
+                    emit('Message rate: %s per second', round(self.source.record_count / total_seconds, 6) if total_seconds else 0)
 
             else:
-                logging.info('Source record count: %s', self.source.record_count)
+                source = getattr(self, 'source', None)
+                if source is not None:
+                    emit('Source record count: %s', source.record_count)
 
-            logging.info('Total runtime in seconds: %s', round(total_seconds, 6))
-            logging.info('Total runtime in minutes: %s', round(total_seconds / 60, 6))
+            emit('Total runtime in seconds: %s', round(total_seconds, 6))
+            emit('Total runtime in minutes: %s', round(total_seconds / 60, 6))
 
     def process_schemas(self):
         """Process the schema specified at runtime"""
@@ -254,6 +280,13 @@ class Transcoder:  # pylint: disable=too-many-instance-attributes,too-many-posit
 
         if self.continue_on_error is False:
             raise exception
+
+    def dump_progress(self, _signum, _frame):
+        """Print interim I/O stats to stderr and resume (SIGINFO / SIGUSR1)."""
+        try:
+            self.print_summary(stream=sys.stderr)
+        except Exception:  # a progress dump must never abort the run
+            pass
 
     def trap(self, _signum, _frame):
         """Trap SIGINT to suppress noisy stack traces and show interim summary"""
